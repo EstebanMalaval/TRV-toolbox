@@ -16,7 +16,7 @@ function onopen(global)
 	selbox.value=global.breaker;
 	searchTerminal(global.breaker);
 	
-	statusbar.innerHTML="<li class=status_bar>The breaker on which the TRV analysis will be done must be in the main design</li>";
+	statusbar.innerHTML="<li class=status_bar>The breaker, the bus and the line on which the TRV analysis will be done must be in the main design</li>";
 	
 	//*Put the list of lines in the html page
 	selbox_line=document.getElementById("line_id");
