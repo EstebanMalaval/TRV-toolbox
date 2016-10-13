@@ -1,0 +1,618 @@
+//Last Change: Esteban MALAVAL 2016-09-26
+
+//Load the necessary device models
+PI=loadLibrary("RLC branches",'PI line 3-phase');
+CPline=loadLibrary("Lines",'CP line/cable 3-phase');
+FDline=loadLibrary("Lines","Frequency dependent line (FD)");
+FDcable=loadLibrary("Lines","Frequency dependent cable (FDQ)");
+WideBand=loadLibrary("Lines","Wideband line/cable");
+
+//Save the data of the device
+savedPositionX=lineDev.posX;
+savedPositionY=lineDev.posY;
+orientation=lineDev.orientation;
+length=lineDev.getAttribute('ModelData').split('\n')[0].split(' ')[0];
+var signal1;
+var signal2;
+
+//Exclude the line
+lineDev.setAttribute('Exclude','Ex');
+
+//Create of the first half of the line
+if(lineDev.getAttribute("Name.Prefix")=="TLM")
+{
+	length=lineDev.getAttribute('ModelData').split('\n')[0].split(' ')[0];
+	//Calculate the absolute distance with the relative distance
+	if(distance_unit=="%")
+	{
+		Distance_from_breaker_to_fault=Distance_from_breaker_to_fault*length/100;
+	}
+	
+	/*****FIRST HALF*****/
+	//Create the first part of the line
+	firstHalf=cct.addDevice(CPline,savedPositionX,savedPositionY,orientation);
+	//Changing the name
+	firstHalf.setAttribute("Name","firstHalf");
+	//Extraction of the attribute "Model data" of the line
+	modeldata=lineDev.getAttribute('ModelData').split(' ');
+	//Changing the length
+	modeldata1=Distance_from_breaker_to_fault+' '+modeldata[1]+' '+modeldata[2]+' '+modeldata[3].split('\n')[0]+'\n'+Distance_from_breaker_to_fault;
+	for(i=4;i<modeldata.length;i++)
+	{
+		modeldata1=modeldata1+' '+modeldata[i];
+	}
+	firstHalf.setAttribute('ModelData',modeldata1);
+	//Changing the Attribute ParamsA
+	firstHalf.setAttribute('ParamsA',lineDev.getAttribute('ParamsA'));
+	
+	/*****SECOND HALF*****/
+	//Create the second part of the line
+	secondHalf=cct.addDevice(CPline,savedPositionX,savedPositionY,orientation);
+	//Changing the name
+	secondHalf.setAttribute("Name","secondHalf");
+	//Extraction of the attribute "Model data" of the line
+	modeldata=lineDev.getAttribute('ModelData').split(' ');
+	
+	//Changing the length
+	modeldata1=(length-Distance_from_breaker_to_fault)+' '+modeldata[1]+' '+modeldata[2]+' '+modeldata[3].split('\n')[0]+'\n'+(length-Distance_from_breaker_to_fault);
+	for(i=4;i<modeldata.length;i++)
+	{
+		modeldata1=modeldata1+' '+modeldata[i];
+	}
+	secondHalf.setAttribute('ModelData',modeldata1);
+	//Changing the Attribute ParamsA
+	secondHalf.setAttribute('ParamsA',lineDev.getAttribute('ParamsA'));
+	
+	//Find the pin of the line which is connected to the breaker
+	if(lineDev.pins[0].signal().name==brkDev.pins[0].signal().name || lineDev.pins[0].signal().name==brkDev.pins[1].signal().name)
+	{
+	signal1=lineDev.pins[0].signal();
+	signal2=lineDev.pins[1].signal();
+	}
+	else if(lineDev.pins[1].signal().name==brkDev.pins[0].signal().name || lineDev.pins[1].signal().name==brkDev.pins[1].signal().name)
+	{
+		signal1=lineDev.pins[1].signal();
+		signal2=lineDev.pins[0].signal();
+	}
+	else
+	{
+		report=report+"Warning: the breaker "+brkdev.name+" and the line "+linedev.name+" are not connected"
+		signal1=lineDev.pins[0].signal();
+		signal2=lineDev.pins[1].signal();
+	}
+	
+	//Connect differently respecting the direction of the line
+	signal1.connectByName(firstHalf.pins[0]);
+	signal2.connectByName(secondHalf.pins[1]);
+	middleSignal=firstHalf.pins[1].signal();
+	middleSignal.connectTo(secondHalf.pins[0]);
+}
+else if(lineDev.getAttribute("Name.Prefix")=="WBline")
+{
+	//Find the wbfit file
+	ParamsA=lineDev.getAttribute('ParamsA');
+	WBfitfileName=ParamsA.split(',')[3];
+	WBfitfileName=WBfitfileName.replace("\n","");
+	WBfile=SPFile(cct.getAttribute("CctPath")+WBfitfileName);	
+	
+	//Find the .cyz file if it exists
+	cyzFileName=WBfitfileName.replace("wbfit_","");
+	cyzFileName=cyzFileName.replace(".dat",".cyz");
+	cyzFile=SPFile(cct.getAttribute("CctPath")+cyzFileName);
+	
+	//Find the .lyz file if it exists
+	lyzFileName=WBfitfileName.replace("wbfit_","");
+	lyzFileName=lyzFileName.replace(".dat",".lyz");
+	lyzFile=SPFile(cct.getAttribute("CctPath")+lyzFileName);
+	
+	//Read the data file (.cyz or .lyz)
+	if(cyzFile.exists())
+	{
+		cyzFile.openRead();
+		text=cyzFile.readText();
+
+	}
+	else if(lyzFile.exists())
+	{
+		lyzFile.openRead();
+		text=cyzFile.readText();
+	}
+	else
+	{
+		alert("Error: There is no Wideband Data file in the directory. Analysis cannot continue");
+		halt();
+	}
+	
+	//Find the length of the line
+	text2=text.split("\n");
+	length=parseFloat(text2[0]);
+	//Calculate the absolute distance with the relative distance
+	if(distance_unit=="%")
+	{
+		Distance_from_breaker_to_fault=Distance_from_breaker_to_fault*length/100;
+	}	
+	Distance_from_breaker_to_fault*=1000;	
+	
+	if(cyzFile.exists())
+	{
+		/*****FIRST HALF*****/
+		//Generate the text of the data file of the first part of the line
+		textFirst=Distance_from_breaker_to_fault;
+		for(i=1;i<text2.length;i++)
+		{
+			textFirst+="\n"+text2[i];
+		}
+		
+		//Write the data file of the first part of the line in a file
+		firstCyzFile=SPFile(cct.getAttribute("CctPath")+"firstPart.cyz");
+		firstCyzFile.openReadWrite();
+		firstCyzFile.remove();
+		firstCyzFile.create();
+		firstCyzFile.writeText(textFirst);
+		firstCyzFile.close();
+		
+		//Remove a previous wbfit datafile
+		wbFirstFile=SPFile(cct.getAttribute("CctPath")+"wbfit_firstPart.dat");
+		wbFirstFile.remove();
+		
+		//Calculate the wbfit datafile from the .cyz or .lyz datafile
+		myrun = run('emtp/AuxLine/wblfitter.exe','"'+firstCyzFile+'"'+' '+0.01,'',4000);
+
+		// alert("Click \"OK\" to continue");
+	/*****SECOND HALF*****/
+		//Generate the text of the data file of the second part of the line
+		textsecond=length-Distance_from_breaker_to_fault;
+		for(i=1;i<text2.length;i++)
+		{
+			textsecond+="\n"+text2[i];
+		}
+		
+		//Write the data file of the second part of the line in a file
+		secondCyzFile=SPFile(cct.getAttribute("CctPath")+"secondPart.cyz");
+		secondCyzFile.openReadWrite();
+		secondCyzFile.remove();
+		secondCyzFile.create();
+		secondCyzFile.writeText(textsecond);
+		secondCyzFile.close();
+		
+		//Remove a previous wbfit datafile
+		wbsecondFile=SPFile(cct.getAttribute("CctPath")+"wbfit_secondPart.dat");
+		wbsecondFile.remove();
+		
+		//Calculate the wbfit datafile from the .cyz or .lyz datafile
+		myrun = run('emtp/AuxLine/wblfitter.exe','"'+secondCyzFile+'"'+' '+0.01,'',4000);
+	}
+	else if(lyzFile.exists())
+	{
+		/*****FIRST HALF*****/
+		//Generate the text of the data file of the first part of the line
+		textFirst=Distance_from_breaker_to_fault;
+		for(i=1;i<text2.length;i++)
+		{
+			textFirst+="\n"+text2[i];
+		}
+		
+		//Write the data file of the first part of the line in a file
+		firstLyzFile=SPFile(cct.getAttribute("CctPath")+"firstPart.Lyz");
+		firstLyzFile.openReadWrite();
+		firstLyzFile.remove();
+		firstLyzFile.create();
+		firstLyzFile.writeText(textFirst);
+		firstLyzFile.close();
+		
+		//Remove a previous wbfit datafile
+		wbFirstFile=SPFile(cct.getAttribute("CctPath")+"wbfit_firstPart.dat");
+		wbFirstFile.remove();
+		
+		//Calculate the wbfit datafile from the .cyz or .lyz datafile
+		myrun = run('emtp/AuxLine/wblfitter.exe','"'+firstLyzFile+'"'+' '+0.01,'',0);
+
+		/*****SECOND HALF*****/
+		//Generate the text of the data file of the first part of the line
+		textsecond=length-Distance_from_breaker_to_fault;
+		for(i=1;i<text2.length;i++)
+		{
+			textsecond+="\n"+text2[i];
+		}
+		
+		//Write the data file of the second part of the line in a file
+		secondLyzFile=SPFile(cct.getAttribute("CctPath")+"secondPart.Lyz");
+		secondLyzFile.openReadWrite();
+		secondLyzFile.remove();
+		secondLyzFile.create();
+		secondLyzFile.writeText(textsecond);
+		secondLyzFile.close();
+		
+		//Remove a previous wbfit datafile
+		wbSecondFile=SPFile(cct.getAttribute("CctPath")+"wbfit_secondPart.dat");
+		wbFirstFile.remove();
+		
+		//Calculate the wbfit datafile from the .cyz or .lyz datafile
+		myrun = run('emtp/AuxLine/wblfitter.exe','"'+secondLyzFile+'"'+' '+0.01,'',0);
+	}
+	else
+	{
+		//Checking if the datafile of the wideband line/cable exists
+		alert("Error : the data file (.cyz or .lyz) is not present in the directory. TRV analysis cannot continue");
+		halt();
+	}
+	
+	//Adding the two parts of the line
+	firstHalf=cct.addDevice(WideBand,savedPositionX,savedPositionY,orientation);
+	secondHalf=cct.addDevice(WideBand,savedPositionX,savedPositionY,orientation);
+
+	//Putting the name of the datafile of each part in the devices
+	firstHalf.setAttribute("ParamsA",ParamsA.replace(WBfitfileName,"wbfit_firstPart.dat"));
+	firstHalf.setAttribute("Name","firstHalf");
+	secondHalf.setAttribute("ParamsA",ParamsA.replace(WBfitfileName,"wbfit_secondPart.dat"));
+	secondHalf.setAttribute("Name","secondHalf");
+		
+	//Connecting both part of the line
+	lineDevPins=lineDev.pins;
+	//Connecting the first half of the line
+	firstLinePins=firstHalf.pins;
+	//Save the visibility of the name of the first pin of the line
+	savedVisibilitySide1=lineDevPins[0].signal().getAttributeVis("Name");
+	//Make visible the first pin of the line
+	lineDevPins[0].signal().setAttributeVis("Name",true);
+	lineDevPins[1].signal().setAttributeVis("Name",true);
+	lineDevPins[2].signal().setAttributeVis("Name",true);
+	
+	
+	if(lineDev.pins[0].signal().name==brkDev.pins[0].signal().name || lineDev.pins[0].signal().name==brkDev.pins[1].signal().name)
+	{
+		//*Connect first side of the first part at the first side of the line
+		firstLinePins[0].emtpPhase="a";
+		lineDevPins[0].signal().connectByName(firstLinePins[0]);
+		firstLinePins[1].emtpPhase="b";
+		lineDevPins[1].signal().connectByName(firstLinePins[1]);
+		firstLinePins[2].emtpPhase="c";
+		lineDevPins[2].signal().connectByName(firstLinePins[2]);
+		
+		//*Connect second side of the first part
+		middleSignal=firstLinePins[3].signal();
+		middleSignal.setAttributeVis("Name",1);
+		middleSignal.connectTo(firstLinePins[4]);
+		middleSignal.connectTo(firstLinePins[5]);
+		middleSignal.connectTo(firstLinePins[3]);
+	}
+	else
+	{
+		//*Connect first side of the first part to the second side of the line
+		lineDevPins[lineDevPins.length-1].signal().setAttributeVis("Name",true);
+		firstLinePins[0].emtpPhase="a";
+		lineDevPins[3].signal().connectByName(firstLinePins[0]);
+		firstLinePins[1].emtpPhase="b";
+		lineDevPins[4].signal().connectByName(firstLinePins[1]);
+		firstLinePins[2].emtpPhase="c";
+		lineDevPins[5].signal().connectByName(firstLinePins[2]);
+		
+		//*Connect second side of the first part
+		middleSignal=firstLinePins[3].signal();
+		middleSignal.setAttributeVis("Name",1);
+		middleSignal.connectTo(firstLinePins[4]);
+		middleSignal.connectTo(firstLinePins[5]);
+		middleSignal.connectTo(firstLinePins[3]);
+	}
+	//Connect the second half of the line
+	secondLinePins=secondHalf.pins;
+	savedVisibilitySide2=lineDevPins[0].signal(lineDevPins.length-1).getAttributeVis("Name");
+	lineDevPins[lineDevPins.length-1].signal().setAttributeVis("Name",true);
+	if(lineDev.pins[0].signal().name==brkDev.pins[0].signal().name || lineDev.pins[0].signal().name==brkDev.pins[1].signal().name)
+	{
+		//*Connect second side of the second part to the second side of the line
+		secondLinePins[3].emtpPhase="a";
+		lineDevPins[3].signal().connectByName(secondLinePins[3]);
+		secondLinePins[4].emtpPhase="b";
+		lineDevPins[4].signal().connectByName(secondLinePins[4]);
+		secondLinePins[5].emtpPhase="c";
+		lineDevPins[5].signal().connectByName(secondLinePins[5]);
+		
+		//*Connect first side of the second part to the middle signal
+		middleSignal.connectTo(secondLinePins[0]);
+		middleSignal.connectTo(secondLinePins[1]);
+		middleSignal.connectTo(secondLinePins[2]);
+	}
+	else
+	{
+		//*Connect second side of the second part to the first side of the line
+		lineDevPins[lineDevPins.length-1].signal().setAttributeVis("Name",true);
+		secondLinePins[3].emtpPhase="a";
+		lineDevPins[0].signal().connectByName(secondLinePins[3]);
+		secondLinePins[4].emtpPhase="b";
+		lineDevPins[1].signal().connectByName(secondLinePins[4]);
+		secondLinePins[5].emtpPhase="c";
+		lineDevPins[2].signal().connectByName(secondLinePins[5]);
+		
+		//*Connect first side of the second part to the middle signal
+		secondLinePins[0].signal().connectByName(middleSignal);
+		secondLinePins[1].signal().connectByName(middleSignal);
+		secondLinePins[2].signal().connectByName(middleSignal);
+	}
+}
+else if(lineDev.getAttribute("Name.Prefix")=="PI")
+{
+	if(distance_unit!="%")
+	{
+		alert("Warning: the length from Bus to fault has been given in absolute value. TRV analysis cannot continue.\nPlease enter this value in %");
+		halt()
+	}
+	
+	ParamsA=lineDev.getAttribute("ParamsA");
+	modelData=lineDev.getAttribute("ModelData");
+	modelDataLines=modelData.split("\n");
+	
+	
+	/*****FIRST HALF*****/
+	//Create the first part of the line
+	firstHalf=cct.addDevice(PI,savedPositionX,savedPositionY,orientation);
+	//Changing the name
+	firstHalf.setAttribute("Name","firstHalf");
+	//Putting the attributes
+		//ParamsA
+		firstHalf.setAttribute("ParamsA",ParamsA);
+		//ModelData
+		newImp="";
+		for(i=0;i<3;i++)
+		{
+			imp=modelDataLines[i].split(" ")
+			for(j=0;j<imp.length;j++)
+			{
+				newImp+=Distance_from_breaker_to_fault*imp[j]/100+" ";
+			}
+			newImp+="\n";
+		}
+		firstHalf.setAttribute("ModelData",newImp+modelDataLines[3]+"\n"+modelDataLines[4]+"\n"+modelDataLines[5]);
+		
+		/*****SECOND HALF*****/
+	//Create the second part of the line
+	secondHalf=cct.addDevice(PI,savedPositionX,savedPositionY,orientation);
+	//Changing the name
+	secondHalf.setAttribute("Name","secondHalf");
+	//Putting the attributes
+		//ParamsA
+		secondHalf.setAttribute("ParamsA",ParamsA);
+		//ModelData
+		newImp="";
+		for(i=0;i<3;i++)
+		{
+			imp=modelDataLines[i].split(" ")
+			for(j=0;j<imp.length;j++)
+			{
+				newImp+=(100-Distance_from_breaker_to_fault)*imp[j]/100+" ";
+			}
+			newImp+="\n";
+		}
+		secondHalf.setAttribute("ModelData",newImp+modelDataLines[3]+"\n"+modelDataLines[4]+"\n"+modelDataLines[5]);
+		
+		
+	//Find the pin of the line which is connected to the breaker
+	if(lineDev.pins[0].signal().name==brkDev.pins[0].signal().name || lineDev.pins[0].signal().name==brkDev.pins[1].signal().name)
+	{
+	signal1=lineDev.pins[0].signal();
+	signal2=lineDev.pins[1].signal();
+	}
+	else if(lineDev.pins[1].signal().name==brkDev.pins[0].signal().name || lineDev.pins[1].signal().name==brkDev.pins[1].signal().name)
+	{
+		signal1=lineDev.pins[1].signal();
+		signal2=lineDev.pins[0].signal();
+	}
+	else
+	{
+		report=report+"Warning: the breaker "+brkdev.name+" and the line "+linedev.name+" are not connected"
+		signal1=lineDev.pins[0].signal();
+		signal2=lineDev.pins[1].signal();
+	}
+	
+	//Connect differently respecting the direction of the line
+	signal1.connectByName(firstHalf.pins[0]);
+	signal2.connectByName(secondHalf.pins[1]);
+	middleSignal=firstHalf.pins[1].signal();
+	middleSignal.connectTo(secondHalf.pins[0]);
+}
+else
+{
+	//Finds the .pun file
+	PUNfileName=(lineDev.getAttribute('ParamsA').split("\n")[1]).split(',')[0];
+	PUNfileName=PUNfileName.replace("\n","");
+	PUNfile=SPFile();
+	PUNfile.fullName=cct.getAttribute("CctPath")+PUNfileName;
+	
+	if(!PUNfile.exists())
+	{
+		alert("Error : the data file (.pun) is not present in the directory. TRV analysis cannot continue");
+		halt();
+	}
+	
+	/********FIRST HALF********/
+	//Find the length of the line
+	PUNfile.openRead();
+	text=PUNfile.readText();
+	text2=text.split("-KM")[0];
+	text3=text2.split(" ");
+	text4=text3[text3.length-1];
+	length=parseFloat(text4);
+	
+	//Calculate the absolute distance with the relative distance
+	if(distance_unit=="%")
+	{
+		Distance_from_breaker_to_fault=Distance_from_breaker_to_fault*length/100;
+	}
+
+	//Changes the length of the first half
+	text=text.split(text4)[0]+Distance_from_breaker_to_fault+"-KM"+text.split("-KM")[1];
+	
+	firstHalfPUNfile=SPFile(PUNfile.fullName().replace(PUNfileName,"firstHalf.pun"));
+	firstHalfPUNfile.remove();
+	firstHalfPUNfile.create();
+	firstHalfPUNfile.writeText(text);
+	firstHalfPUNfile.close();
+	
+	/*****SECOND HALF*****/
+	//Find the length of the line
+	PUNfile.openRead();
+	text=PUNfile.readText();
+	text2=text.split("-KM")[0];
+	text3=text2.split(" ");
+	text4=text3[text3.length-1];
+	length=parseFloat(text4);
+	
+	//Calculate the absolute distance with the relative distance
+	if(distance_unit=="%")
+	{
+		Distance_from_breaker_to_fault=Distance_from_breaker_to_fault*length/100;
+	}
+
+	//Changes the length of the second half
+	text=text.split(text4)[0]+(length-Distance_from_breaker_to_fault)+"-KM"+text.split("-KM")[1];	//Changes the length of the second half
+	
+	secondHalfPUNfile=SPFile(PUNfile.fullName().replace(PUNfileName,"secondHalf.pun"));
+	secondHalfPUNfile.remove();
+	secondHalfPUNfile.create();
+	secondHalfPUNfile.writeText(text);
+	secondHalfPUNfile.close();
+	/***********************/
+	switch(lineDev.getAttribute("Name.Prefix"))
+	{
+	case "FDQ":
+	//*Creates the first half of the line
+	firstHalf=cct.addDevice(FDcable,savedPositionX,savedPositionY,orientation);
+	
+	//*Transfer the parameter of the line to the first part
+	ParamsA=lineDev.getAttribute('ParamsA');
+	
+	//*Change the file name
+	firstParamsA=ParamsA.replace(PUNfileName,firstHalfPUNfile.name());
+	firstHalf.setAttribute("ParamsA",firstParamsA);
+	
+	//*Change the name
+	firstHalf.setAttribute("Name","firstHalf");
+	
+	
+	//*Creates the second half of the line
+	secondHalf=cct.addDevice(FDcable,savedPositionX,savedPositionY,orientation);
+	//*Transfer the parameter of the line to the second part
+	ParamsA=lineDev.getAttribute('ParamsA');
+	
+	//*Change the file name
+	secondParamsA=ParamsA.replace(PUNfileName,secondHalfPUNfile.name());
+	secondHalf.setAttribute("ParamsA",secondParamsA);
+	
+	//*Change the name
+	secondHalf.setAttribute("Name","secondHalf");
+	break;
+	
+	case "FDLine":
+	//*Creates the first half of the line
+	firstHalf=cct.addDevice(FDcable,savedPositionX,savedPositionY,orientation);
+	
+	//*Transfer the parameter of the line to the first part
+	ParamsA=lineDev.getAttribute('ParamsA');
+	
+	//*Change the file name
+	firstParamsA=ParamsA.replace(PUNfileName,firstHalfPUNfile.name());
+	firstHalf.setAttribute("ParamsA",firstParamsA);
+	
+	//*Change the name
+	firstHalf.setAttribute("Name","firstHalf");
+	
+	//*Creates the second half of the line
+	secondHalf=cct.addDevice(FDcable,savedPositionX,savedPositionY,orientation);
+	//*Transfer the parameter of the line to the second part
+	ParamsA=lineDev.getAttribute('ParamsA');
+	
+	//*Change the file name
+	secondParamsA=ParamsA.replace(PUNfileName,secondHalfPUNfile.name());
+	secondHalf.setAttribute("ParamsA",secondParamsA);
+	
+	//*Change the name
+	secondHalf.setAttribute("Name","secondHalf");
+	break;
+	}
+	
+
+//Connecting both part of the line
+lineDevPins=lineDev.pins;
+	//Connecting the first half of the line
+	firstLinePins=firstHalf.pins;
+		//Save the visibility of the name of the first pin of the line
+	savedVisibilitySide1=lineDevPins[0].signal().getAttributeVis("Name");
+		//Make visible the first pin of the line
+	lineDevPins[0].signal().setAttributeVis("Name",true);
+	
+	
+	if(lineDev.pins[0].signal().name==brkDev.pins[0].signal().name || lineDev.pins[0].signal().name==brkDev.pins[1].signal().name)
+	{
+		//*Connect first side of the first part at the first side of the line
+		lineDevPins[0].signal().connectByName(firstLinePins[0]);
+		lineDevPins[1].signal().connectByName(firstLinePins[1]);
+		lineDevPins[2].signal().connectByName(firstLinePins[2]);
+		
+		//*Connect second side of the first part
+		middleSignal=firstLinePins[3].signal();
+		middleSignal.setAttributeVis("Name",1);
+		middleSignal.connectTo(firstLinePins[4]);
+		middleSignal.connectTo(firstLinePins[5]);
+		middleSignal.connectTo(firstLinePins[3]);
+	}
+	else
+	{
+		//*Connect first side of the first part to the second side of the line
+		lineDevPins[lineDevPins.length-1].signal().setAttributeVis("Name",true);
+		lineDevPins[3].signal().connectByName(firstLinePins[0]);
+		lineDevPins[4].signal().connectByName(firstLinePins[1]);
+		lineDevPins[5].signal().connectByName(firstLinePins[2]);
+		
+		//*Connect second side of the first part
+		middleSignal=firstLinePins[3].signal();
+		middleSignal.setAttributeVis("Name",1);
+		middleSignal.connectTo(firstLinePins[4]);
+		middleSignal.connectTo(firstLinePins[5]);
+		middleSignal.connectTo(firstLinePins[3]);
+	}
+	//Connect the second half of the line
+	secondLinePins=secondHalf.pins;
+	savedVisibilitySide2=lineDevPins[0].signal(lineDevPins.length-1).getAttributeVis("Name");
+	lineDevPins[lineDevPins.length-1].signal().setAttributeVis("Name",true);
+	if(lineDev.pins[0].signal().name==brkDev.pins[0].signal().name || lineDev.pins[0].signal().name==brkDev.pins[1].signal().name)
+	{
+		//*Connect second side of the second part to the second side of the line
+		lineDevPins[3].signal().connectByName(secondLinePins[3]);
+		lineDevPins[4].signal().connectByName(secondLinePins[4]);
+		lineDevPins[5].signal().connectByName(secondLinePins[5]);
+		
+		//*Connect first side of the second part to the middle signal
+		middleSignal.connectTo(secondLinePins[0]);
+		middleSignal.connectTo(secondLinePins[1]);
+		middleSignal.connectTo(secondLinePins[2]);
+	}
+	else
+	{
+		//*Connect second side of the second part to the first side of the line
+		lineDevPins[lineDevPins.length-1].signal().setAttributeVis("Name",true);
+		lineDevPins[0].signal().connectByName(secondLinePins[3]);
+		lineDevPins[1].signal().connectByName(secondLinePins[4]);
+		lineDevPins[2].signal().connectByName(secondLinePins[5]);
+		
+		//*Connect first side of the second part to the middle signal
+		secondLinePins[0].signal().connectByName(middleSignal);
+		secondLinePins[1].signal().connectByName(middleSignal);
+		secondLinePins[2].signal().connectByName(middleSignal);
+	}
+}
+
+//Creating the data of the ignition point
+	ignitionSignal=middleSignal;
+	ISpin=middleSignal.pins[0];
+	ISname=middleSignal.name;
+
+//* return the type object of the device "name" from libraryPath 
+	function loadLibrary(libraryPath,name)
+{
+	library = DWLibrary(libraryPath);
+	elementList = library.typeList;
+	for (i = 0; i< elementList.length ; i++)
+	{
+		if (elementList[i].name() == name) return elementList[i];
+	}
+}

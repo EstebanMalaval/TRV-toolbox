@@ -1,0 +1,925 @@
+// change: Henry GRAS 2015-06-26
+//				  Esteban MALAVAL 2016-06-07
+parseScriptFile('sw0_m.dwj');
+parseScriptFile('cgap_m.dwj');
+parseScriptFile('send_data_to_web.dwj');
+parseScriptFile('programmable_scope.js');
+parseScriptFile('device_services/check_if_excluded.js')
+parseScriptFile('n_create_ic_field.js')
+parseScriptFile('n_setmyout.js');
+parseScriptFile('setmyvaluenew.js');
+parseScriptFile('n_setp.js');
+parseScriptFile('extract_scopes_observables.js')  //in device services
+parseScriptFile('brk0/add_pins_to_drawing2.js');
+parseScriptFile('breaker_redraw_o.dwj')
+parseScriptFile('n_create_scope_field.js')
+parseScriptFile('device_services_.js')
+
+ground= loadLibrary("RLC Branches","Ground");
+
+//-OPEN method----------------------------------------------------------------------------------------------------------
+function brk0_open_o(){
+	var dev = this.dev;
+	cct=dev.circuit;
+	if (dev == null) halt();
+
+    //*Put back if excluded (Exclude=Ex), standard procedure, also gives documentation path
+    check_if_excluded(dev); 
+    
+     //-Observe
+	 ScopeObserveObject.Exist_Voltage_Observe= true;
+	 ScopeObserveObject.Exist_Current_Observe= true;
+	 ScopeObserveObject.Exist_Power_Observe  = true;
+	 ScopeObserveObject.Exist_Status_Observe = true;
+	 
+    
+    // statistical_option //is global in the code below
+    //*find the solution type to select the correct web, used on the web for
+    // turning data tabs on or off. In a steady-state solution, for example, scopes are not available.
+    // Also used to show information of this device for the statistical option
+    // find_simulation_type
+    simulation_type=parseScriptFile('find_simulation_type.js');
+    
+	//* Make up box title and send initialization message
+	title = "Properties for "+ dev.getAttribute('LibType')+ ' ' + dev.getAttribute("Name");
+	
+	//* Get the script directory
+	f = SPFile();
+	f.setAppPath("Info Scripts/");
+	//To be removed when everything is placed in Info script (commercial version)
+	f2 = SPFile();
+	f2.setAppPath("Toolboxes/");
+	
+	//-Create the web-------------------------------------------------------------------------------------------------------
+	box=SPHTMLDialog();
+	
+	//* Visibility fields array
+	par1=dev; par2=box;     visArray = parseScriptFile('getvisibilityfields_box.js');
+
+
+    //* Web pgaes (tabs) for this device
+	urls = SPArray(    f + "switches/sw0/val_3.htm",
+                       f + "switches/sw0/random3.htm",
+                       f2+ "TRV Toolbox/Script/brk0/RatedTRVenvelope.htm",
+                       f + "switches/sw0/scopes3.htm",
+                       f + "HTML/common/observe_3_vipf.htm",
+                       f + "HTML/shareTab/fields.htm",
+                       f2+ "TRV Toolbox/Script/brk0/help.htm");
+   
+	//* Put the data from the Odevice to the box
+	send_data_to_web_SW3ph(box, this.IdealSwitch)
+	send_data_to_web(box,this);
+		if(!(isNaN(this.TRV_K)))
+		{
+		TRVK=this.TRV_K/1000;
+		TRVK=parseInt(100*TRVK)/100;
+		TRVK=TRVK.toString();
+		TRVK=TRVK.replace(',','.');
+		box.setValue('TRV_K',TRVK);
+		}
+		else
+		{
+			box.setValue('TRV_K',     0);
+		}
+		box.setValue("TRV_breaker_class", this.TRV_breaker_class);
+	//				
+	//Call up the properties box
+	parseScriptFile('EMTPhtmlProperties.dwj');
+	EMTDialog=EMTdoDialog(urls, title,box, this.WindowXsize, this.WindowYsize,dev);
+	box=EMTDialog.box;
+	if(EMTDialog.Cancel){ return; }
+
+    //*get back web data----------------------------------------------------------------------------------------------------
+    //* adjust visibility state for value, name, partname and description fields, standard call
+    par1=dev; par2=box;  parseScriptFile('setvisibilityfields_box.js');
+      
+	get_data_from_web_SW3ph(box, this.IdealSwitch)
+	
+	get_data_from_web_TRV(box,this); 
+	
+	this.SCCchckbox=          box.getValue('Short-Circuit Current');
+	
+	
+			
+	//-Save data------------------------------------------------------------------------------------------------------------
+	
+	//balanced_check is used to set the balance checkbox "balance", but the value of this checkbox is stored in IdealSwitch.balanced_check
+	this.balanced_check = this.IdealSwitch.balanced_check
+	//Save data TRV
+	this.SaveDataTRV();
+	
+	save_params(dev, this.IdealSwitch)
+	if(this.SCCchckbox=='on')
+	{
+		box=SPHTMLDialog();
+		parseScriptFile('EMTPhtmlProperties.dwj');
+		urls=SPArray(f2+"TRV Toolbox/Script/HTML/typeFault.htm");
+		EMTDialog=EMTdoDialog(urls, title,box, this.WindowXsize, this.WindowYsize,dev);
+		box=EMTDialog.box;
+		if(EMTDialog.Cancel){ return; }
+		type_of_fault=box.getValue("type_of_fault");
+		distance_unit=box.getValue("distance_unit");
+		Distance_from_breaker_to_fault=box.getValue("Distance_from_breaker_to_fault");
+		
+		
+		this.TRV_K=ShortCircuitCurrent(dev,type_of_fault);
+		parseScriptFile('replaceLine2.dwj');
+		this.SaveDataTRV();
+		parseScriptFile('Toolboxes/TRV Toolbox/Script/brk_i.dwj');
+	}
+	this.SaveDataTRV();
+}
+
+//function that saves the rated TRV parameters, creates the model data and sets the params of the three control gaps
+function TRV_save_o(){
+	
+	
+	var dev=this.dev;
+	var Uc 
+    var U1  
+    var t1  
+    var t2 
+    var t3
+    var kpp
+    var kaf
+    var RRRV1 
+    var RRRV2
+    var tCloseA
+    var tCloseB
+    var tCloseC
+    var tOpenA
+    var tOpenB
+    var tOpenC
+    var ImarginA
+    var ImarginB
+    var ImarginC
+    var RidealSwitch
+    var Cstrayk
+    var Cstraym
+    var tcloseControlledGap
+    var closeInit_A
+    var closeInit_B
+    var closeInit_C
+    var enableTRV
+    var restrikeEnable
+    var scope = "?s"
+    var TRVa = '1,'+scope+','
+    var TRVb = '1,'+scope+','
+    var TRVc = '1,'+scope+','
+	 var TRV_tda = '1,'+scope+','
+    var TRV_tdb = '1,'+scope+','
+    var TRV_tdc = '1,'+scope+','
+
+        
+    //All the parameters are put in standard units (V, s, F)
+    Uc = this.TRV_Uc*1000	 
+    U1 = this.TRV_U1*1000
+	 up=this.up*1000
+    t1 = this.TRV_t1*1e-6
+    t2 = this.TRV_t2*1e-6
+    t3 = this.TRV_t3*1e-6
+	 td=this.td*1e-6
+	 tp=this.tp*1e-6
+    kpp = this.TRV_kpp
+    kaf = this.TRV_kaf
+    RRRV1=this.TRV_RRRV1*1000/1e-6	
+    RRRV2=this.TRV_RRRV2*1000/1e-6
+    Cstrayk = this.TRV_Cstrayk*1e-12	
+    Cstraym = this.TRV_Cstraym*1e-12
+    //Parameter for the dynamic exclusion
+    var includeCstray
+    if(this.TRV_capacitance == 'on'){ includeCstray = "'RLC'"}
+    else{ includeCstray = "'Exclude'"}
+  
+  
+  	//Put in closing time in second
+  	tCloseA = toSeconds(this.IdealSwitch.tclose_A, this.IdealSwitch.tclose_units)
+  	tCloseB = toSeconds(this.IdealSwitch.tclose_B, this.IdealSwitch.tclose_units)
+  	tCloseC = toSeconds(this.IdealSwitch.tclose_C, this.IdealSwitch.tclose_units)
+  	tOpenA = toSeconds(this.IdealSwitch.topen_A, this.IdealSwitch.topen_units)
+  	tOpenB = toSeconds(this.IdealSwitch.topen_B, this.IdealSwitch.topen_units)
+  	tOpenC = toSeconds(this.IdealSwitch.topen_C, this.IdealSwitch.topen_units)
+  	
+  	//Put the current in Amp
+  	ImarginA = toAmp(this.IdealSwitch.Imargin_A, this.IdealSwitch.Imargin_units)
+  	ImarginB = toAmp(this.IdealSwitch.Imargin_B, this.IdealSwitch.Imargin_units)
+  	ImarginC = toAmp(this.IdealSwitch.Imargin_C, this.IdealSwitch.Imargin_units)
+  	
+  	//Value attribute will be place in the attribute Value of the device to display some basic info.
+  	if(this.balanced_check == '1'){
+  		valueAttribute = this.IdealSwitch.tclose_A+''+this.IdealSwitch.tclose_units+'|'+this.IdealSwitch.topen_A+''+this.IdealSwitch.topen_units+'|'+this.IdealSwitch.Imargin_A+''+this.IdealSwitch.Imargin_units
+  	}
+  	else{
+  	  	valueAttribute = this.IdealSwitch.tclose_A+''+this.IdealSwitch.tclose_units+'|'+this.IdealSwitch.topen_A+''+this.IdealSwitch.topen_units+'|'+this.IdealSwitch.Imargin_A+''+this.IdealSwitch.Imargin_units
+  						+'\n'+this.IdealSwitch.tclose_B+''+this.IdealSwitch.tclose_units+'|'+this.IdealSwitch.topen_B+''+this.IdealSwitch.topen_units+'|'+this.IdealSwitch.Imargin_B+''+this.IdealSwitch.Imargin_units
+	  					+'\n'+this.IdealSwitch.tclose_C+''+this.IdealSwitch.tclose_units+'|'+this.IdealSwitch.topen_C+''+this.IdealSwitch.topen_units+'|'+this.IdealSwitch.Imargin_C+''+this.IdealSwitch.Imargin_units
+	}
+  	 //t3 is a standard notation but in the model, t2 is always used so a value has to be assigned
+    if (t2 == 0 && t3 != 0){
+    	t2 = t3
+    }
+    
+    if(Number(this.IdealSwitch.tclose_A) < 0) {
+		closeInit_A = '1'
+		}else{
+		closeInit_A = '0'
+	}
+	if(Number(this.IdealSwitch.tclose_B) < 0) {
+		closeInit_B = '1'
+		}else{
+		closeInit_B = '0'
+	}
+	if(Number(this.IdealSwitch.tclose_C) < 0) {
+		closeInit_C = '1'
+		}else{
+		closeInit_C = '0'
+	}
+	devSubCct = dev.subCircuit()  //First level of subcircuit
+    if(this.TRV_enable == 'on'){
+    	enableTRV = '1'
+	   	valueAttribute = valueAttribute +'\n'+'TRV'
+	    //Locate the controlled cap
+		//Transmit the scopes to the air gap
+		//ParamsA, Params B and Params C are transmitted to their respective control gaps by #..# variables
+		if(this.TRV_restrike_reignition	 == 'on'){
+		    restrikeEnable = '1'
+		    ParamA = '0,'+ImarginA+','+closeInit_A+','+this.IdealSwitch.Voltage_scope_A+','+this.IdealSwitch.Current_scope_A+','+this.IdealSwitch.Power_scope_A+','+this.IdealSwitch.Voltage_observe_A+','+this.IdealSwitch.Current_observe_A+','+','+this.IdealSwitch.Status_observe_A+','
+		   	ParamB = '0,'+ImarginB+','+closeInit_B+','+this.IdealSwitch.Voltage_scope_B+','+this.IdealSwitch.Current_scope_B+','+this.IdealSwitch.Power_scope_B+','+this.IdealSwitch.Voltage_observe_B+','+this.IdealSwitch.Current_observe_B+','+','+this.IdealSwitch.Status_observe_B+','
+		   	ParamC = '0,'+ImarginC+','+closeInit_C+','+this.IdealSwitch.Voltage_scope_C+','+this.IdealSwitch.Current_scope_C+','+this.IdealSwitch.Power_scope_C+','+this.IdealSwitch.Voltage_observe_C+','+this.IdealSwitch.Current_observe_C+','+','+this.IdealSwitch.Status_observe_C+','
+			valueAttribute = valueAttribute +'|Restrike'
+		}else{
+			//Case when TRV is enable but restrike is off
+			restrikeEnable = '0'
+		    ParamA = '0,'+ImarginA+','+closeInit_A+','+this.IdealSwitch.Voltage_scope_A+','+','+this.IdealSwitch.Current_scope_A+','+this.IdealSwitch.Power_scope_A+','+this.IdealSwitch.Voltage_observe_A+','+this.IdealSwitch.Current_observe_A+','+','+this.IdealSwitch.Status_observe_A+','
+			ParamB = '0,'+ImarginB+','+closeInit_B+','+this.IdealSwitch.Voltage_scope_B+','+','+this.IdealSwitch.Current_scope_B+','+this.IdealSwitch.Power_scope_B+','+this.IdealSwitch.Voltage_observe_B+','+this.IdealSwitch.Current_observe_B+','+','+this.IdealSwitch.Status_observe_B+','
+			ParamC = '0,'+ImarginC+','+closeInit_C+','+this.IdealSwitch.Voltage_scope_C+','+','+this.IdealSwitch.Current_scope_C+','+this.IdealSwitch.Power_scope_C+','+this.IdealSwitch.Voltage_observe_C+','+this.IdealSwitch.Current_observe_C+','+','+this.IdealSwitch.Status_observe_C+','
+		}
+	}else{
+		enableTRV = '0'
+		//Case when TRV is disable
+		restrikeEnable = '0'
+
+		ParamA = '0,'+ImarginA+','+closeInit_A+','+this.IdealSwitch.Voltage_scope_A+','+this.IdealSwitch.Current_scope_A+','+this.IdealSwitch.Power_scope_A+','+this.IdealSwitch.Voltage_observe_A+','+this.IdealSwitch.Current_observe_A+','+','+this.IdealSwitch.Status_observe_A+','
+		ParamB = '0,'+ImarginB+','+closeInit_B+','+this.IdealSwitch.Voltage_scope_B+','+this.IdealSwitch.Current_scope_B+','+this.IdealSwitch.Power_scope_B+','+this.IdealSwitch.Voltage_observe_B+','+this.IdealSwitch.Current_observe_B+','+','+this.IdealSwitch.Status_observe_B+','
+		ParamC = '0,'+ImarginC+','+closeInit_C+','+this.IdealSwitch.Voltage_scope_C+','+this.IdealSwitch.Current_scope_C+','+this.IdealSwitch.Power_scope_C+','+this.IdealSwitch.Voltage_observe_C+','+this.IdealSwitch.Current_observe_C+','+','+this.IdealSwitch.Status_observe_C+','
+		RRRV1 = '1e15'
+		RRRV2 = RRRV1
+		t1 = '1e-8'
+		t2 = t1
+		Uc = '1e15'
+		U1 = '1e15'
+		kpp = '0'
+		kaf = '0'
+		TRVa = '0,'
+		TRVb = '0,'
+		TRVc = '0,'	
+	}
+	
+	//Turn mean and deviation units for statistical simulation into seconds
+	var mean_A = toSeconds(this.IdealSwitch.mean_A, this.IdealSwitch.mean_units_A)
+	var mean_B = toSeconds(this.IdealSwitch.mean_B, this.IdealSwitch.mean_units_B)
+	var mean_C = toSeconds(this.IdealSwitch.mean_C, this.IdealSwitch.mean_units_C)
+	var dev_A = toSeconds(this.IdealSwitch.deviation_A, this.IdealSwitch.dev_units_A)
+	var dev_B = toSeconds(this.IdealSwitch.deviation_B, this.IdealSwitch.dev_units_B)
+	var dev_C = toSeconds(this.IdealSwitch.deviation_C, this.IdealSwitch.dev_units_C)
+
+	//
+	var RefA = findRef(this.dev, this.IdealSwitch.ref_sw_name_A)
+	var RefB = findRef(this.dev, this.IdealSwitch.ref_sw_name_B)
+	var RefC = findRef(this.dev, this.IdealSwitch.ref_sw_name_C)
+
+	//Value
+	dev.setAttribute('Value',valueAttribute); 
+		   	
+	//Model Data		
+	  dev.setAttribute('ModelData',	  't1 ='+t1
+									   +'\nt2 ='+t2
+									   +'\nt3 ='+t3
+									   +'\nkpp ='+kpp
+									   +'\nkaf ='+kaf
+									   +'\nUc ='+Uc
+									   +'\nU1 ='+U1
+									   +'\nRRRV ='+RRRV1
+									   +'\nRRRV2 ='+RRRV2
+									   +'\ntd ='+td
+									   +'\ntp ='+tp
+									   +'\nup ='+up
+									   +'\nrestrikeEnable ='+restrikeEnable
+									   +'\nenableTRV ='+enableTRV
+									   +'\nCstray ='+includeCstray									   
+									   +'\nCstrayk =' +Cstrayk
+									   +'\nCstraym =' +Cstraym
+									   +'\nImarginA ='+ImarginA
+									   +'\nImarginB ='+ImarginB
+									   +'\nImarginC ='+ImarginC
+									   +'\ncloseInit_A ='+closeInit_A
+									   +'\ncloseInit_B ='+closeInit_B
+									   +'\ncloseInit_C ='+closeInit_C
+									   +'\nParamA_control_gap ='+ParamA
+									   +'\nParamB_control_gap ='+ParamB
+									   +'\nParamC_control_gap ='+ParamC
+									   +'\ntCloseA ='+(tCloseA)  //Compensate a 1-time step delay from controls
+									   +'\ntCloseB ='+(tCloseB)  //Compensate a 1-time step delay from controls
+									   +'\ntCloseC ='+(tCloseC)  //Compensate a 1-time step delay from controls
+									   +'\ntOpenA ='+(tOpenA)  //Compensate a 1-time step delay from controls
+									   +'\ntOpenB ='+(tOpenB)  //Compensate a 1-time step delay from controls
+									   +'\ntOpenC ='+(tOpenC)  //Compensate a 1-time step delay from controls
+									   +'\nTRVa ='+TRVa
+									   +'\nTRVb ='+TRVb
+									   +'\nTRVc ='+TRVc
+									   +'\nrandomA ='+this.IdealSwitch.random_type_A
+									   +'\nrandomB ='+this.IdealSwitch.random_type_B
+									   +'\nrandomC ='+this.IdealSwitch.random_type_C
+									   +'\ndependA ='+this.IdealSwitch.depend_A
+									   +'\ndependB ='+this.IdealSwitch.depend_B
+									   +'\ndependC ='+this.IdealSwitch.depend_C
+									   +'\nrefA ='+RefA
+									   +'\nrefB ='+RefB
+									   +'\nrefC ='+RefC
+									   +'\napplyA ='+this.IdealSwitch.apply_at_type_A
+									   +'\napplyB ='+this.IdealSwitch.apply_at_type_B
+									   +'\napplyC ='+this.IdealSwitch.apply_at_type_C
+									   +'\nmeanA ='+(mean_A)  //Compensate a 1-time step delay from controls
+									   +'\nmeanB ='+(mean_B)  //Compensate a 1-time step delay from controls
+									   +'\nmeanC ='+(mean_C)  //Compensate a 1-time step delay from controls
+									   +'\ndeviationA ='+dev_A
+									   +'\ndeviationB ='+dev_B
+									   +'\ndeviationC ='+dev_C
+									   +'\nstepA ='+this.IdealSwitch.n_steps_A
+									   +'\nstepB ='+this.IdealSwitch.n_steps_B
+									   +'\nstepC ='+this.IdealSwitch.n_steps_C
+									   +'\ntimeA ='+'0,'+this.IdealSwitch.random_t_scope_A+','+this.IdealSwitch.actual_t_scope_A
+									   +'\ntimeB ='+'0,'+this.IdealSwitch.random_t_scope_B+','+this.IdealSwitch.actual_t_scope_B
+									   +'\ntimeC ='+'0,'+this.IdealSwitch.random_t_scope_C+','+this.IdealSwitch.actual_t_scope_C
+									   +'\nisSLF ='+this.isSLF
+									   +';')
+		
+	dev.setAttribute('ModelData1',this.SCCchckbox+","+this.td+","+this.tp+","+this.up+","+this.isSLF+","+this.TRV_breaker_class);			
+	//Description    
+	setDiscriptionAttribute(this)
+    
+	DrawObservablePins(this)
+	    
+	save_data_to_Attribute(this,'FormData')	    
+}
+
+//Turn ms or us into seconds
+function toSeconds(variable, unit){
+	if (unit == 'ms'){
+		variable = variable*0.001
+		variable = variable.toString()
+	}
+	else if (unit == 'us'){
+		variable = variable*0.000001
+		variable = variable.toString()
+	}
+
+	return variable
+}
+
+
+//Turn mA or kA into A
+function toAmp(variable, unit){
+	if (unit == 'mA'){
+		variable = variable*0.001
+		variable = variable.toString()
+	}
+	else if (unit == 'kA'){
+		variable = variable*1000
+		variable = variable.toString()
+	}
+
+	return variable
+}
+
+
+//-Object creator, works for the given device---------------------------------------------------------------------------
+function oDevice_brk0(dev){
+
+	//+Do not accept subcircuits
+    //*Recall previous data
+    var FormData=dev.getAttribute('FormData');
+    FormData=FormData.split(',');
+
+    var nlines =0 //Initialization. Variable that increases when going through FormData array
+    
+
+   	//*save the device handle
+   	this.dev = dev;
+   	this.IdealSwitch = new oDevice_sw0(dev) 
+	var balance = this.balanced_check
+	var nlines = 2  //Starts at two because oDevice_sw0 uses FormData as well
+   
+    //Balanced check is already included in this.IdealSwitch but has to be added in this has well because in is not stored in formData
+   	this.balanced_check				= FormData[nlines];   
+    nlines = nlines+1
+   	//Attributes of the TRV/prestrike elements 
+   	this.TRV_enable					= FormData[nlines];
+    nlines = nlines+1      
+    this.TRV_restrike_reignition	= FormData[nlines];
+    nlines = nlines+1
+    this.TRV_envelope				= FormData[nlines];
+    nlines = nlines+1
+    this.TRV_Rated_voltage			= FormData[nlines];
+    nlines = nlines+1
+    this.TRV_K						= FormData[nlines];
+    nlines = nlines+1
+    this.TRV_Rated_short_circuit	= FormData[nlines];
+    nlines = nlines+1
+    this.c			= FormData[nlines];
+    nlines = nlines+1
+    this.TRV_kpp					= FormData[nlines];
+    nlines = nlines+1
+    this.TRV_kaf					= FormData[nlines];
+    nlines = nlines+1
+    this.TRV_U1						= FormData[nlines];
+    nlines = nlines+1
+    this.TRV_t1						= FormData[nlines];
+    nlines = nlines+1
+    this.TRV_Uc						= FormData[nlines];
+    nlines = nlines+1
+    this.TRV_t2						= FormData[nlines];
+    nlines = nlines+1
+    this.TRV_t3						= FormData[nlines];
+    nlines = nlines+1
+    this.TRV_RRRV1					= FormData[nlines];
+    nlines = nlines+1
+    this.TRV_RRRV2					= FormData[nlines];
+    nlines = nlines+1
+    this.TRV_capacitance			= FormData[nlines];
+    nlines = nlines+1
+    this.Breaker_type				= FormData[nlines];
+    nlines = nlines+1
+    this.TRV_Cstrayk				= FormData[nlines];
+    nlines = nlines+1
+    this.TRV_Cstraym				= FormData[nlines];
+    nlines = nlines+1 
+    this.Bundle_pin_exists			= FormData[nlines];
+    nlines = nlines+1 
+	
+	this.SCCchckbox=dev.getAttribute('ModelData1').split(",")[0];
+	this.td=dev.getAttribute('ModelData1').split(",")[1];
+	this.tp=dev.getAttribute('ModelData1').split(",")[2];
+	this.up=dev.getAttribute('ModelData1').split(",")[3];
+	this.isSLF=dev.getAttribute('ModelData1').split(",")[4];
+	this.TRV_breaker_class=dev.getAttribute('ModelData1').split(",")[5];
+	//The save method
+   	this.SaveDataTRV = TRV_save_o;
+   
+  
+    //*Window size        
+    this.WindowXsize=550;
+    this.WindowYsize=470;
+
+   	
+   	//The doubleclick method  Open
+	this.open = brk0_open_o;   
+	
+	//*The draw method
+    this.redraw =breaker_redraw_o;
+}
+
+
+//send_data_to_web only for the switch
+function send_data_to_web_SW3ph(box, IdealSwitch, TRV_enable){
+		//*Start setting up data one by one
+        //*Do the first tab---------------------------------------------------------------
+        box.setValue('tclose_A',      IdealSwitch.tclose_A); //_Closing times for 3-phase version
+        box.setValue('tclose_B',      IdealSwitch.tclose_B);
+        box.setValue('tclose_C',      IdealSwitch.tclose_C);      
+		box.setValue('tclose_units',  IdealSwitch.tclose_units);
+        
+        box.setValue('topen_A',       IdealSwitch.topen_A);  //_Opening time for 3-phase version
+        box.setValue('topen_B',       IdealSwitch.topen_B);
+        box.setValue('topen_C',       IdealSwitch.topen_C);
+        box.setValue('topen_units',   IdealSwitch.topen_units);
+        
+
+        //When prestrike is on, The ideal switch is used only to generate the opening signal. In that case, the margins are set to 1e15 t make sure the switch opens
+        //But these value do not have to be send to the box
+		if(TRV_enable != 'on'){ 	
+	        box.setValue('Imargin_A',     IdealSwitch.Imargin_A); //_Current margin for 3-phase version
+	        box.setValue('Imargin_B',     IdealSwitch.Imargin_B);
+	        box.setValue('Imargin_C',     IdealSwitch.Imargin_C);	
+	        box.setValue('Imargin_units', IdealSwitch.Imargin_units);
+        }
+        //_balanced signal
+        box.setValue('balanced_check',		IdealSwitch.balanced_check);
+        //*Do the second tab------Random numbers, only when stat option is on------------
+        //A
+        box.setValue('random_type_A',     IdealSwitch.random_type_A);
+        box.setValue('depend_A',          IdealSwitch.depend_A);
+        box.setValue('ref_sw_name_A',     IdealSwitch.ref_sw_name_A);
+        box.setValue('apply_at_type_A',   IdealSwitch.apply_at_type_A);
+
+        box.setValue('mean_A',            IdealSwitch.mean_A);
+        box.setValue('mean_units_A',      IdealSwitch.mean_units_A);
+
+        box.setValue('deviation_A',       IdealSwitch.deviation_A);
+        box.setValue('dev_units_A',       IdealSwitch.dev_units_A);
+
+        box.setValue('n_steps_A',         IdealSwitch.n_steps_A);
+
+        //B
+        box.setValue('random_type_B',     IdealSwitch.random_type_B);
+        box.setValue('depend_B',          IdealSwitch.depend_B);
+        box.setValue('ref_sw_name_B',     IdealSwitch.ref_sw_name_B);
+        box.setValue('apply_at_type_B',   IdealSwitch.apply_at_type_B);
+
+        box.setValue('mean_B',            IdealSwitch.mean_B);
+        box.setValue('mean_units_B',      IdealSwitch.mean_units_B);
+
+        box.setValue('deviation_B',       IdealSwitch.deviation_B);
+        box.setValue('dev_units_B',       IdealSwitch.dev_units_B);
+
+        box.setValue('n_steps_B',         IdealSwitch.n_steps_B);
+
+        //C
+        box.setValue('random_type_C',     IdealSwitch.random_type_C);
+        box.setValue('depend_C',          IdealSwitch.depend_C);
+        box.setValue('ref_sw_name_C',     IdealSwitch.ref_sw_name_C);
+        box.setValue('apply_at_type_C',   IdealSwitch.apply_at_type_C);
+
+        box.setValue('mean_C',            IdealSwitch.mean_C);
+        box.setValue('mean_units_C',      IdealSwitch.mean_units_C);
+
+        box.setValue('deviation_C',       IdealSwitch.deviation_C);
+        box.setValue('dev_units_C',       IdealSwitch.dev_units_C);
+        
+        box.setValue('n_steps_C',         IdealSwitch.n_steps_C);
+
+        //*Do the third tab, scopes
+        box.setValue('Voltage_scope_A',     IdealSwitch.Voltage_scope_A);
+        box.setValue('Current_scope_A',     IdealSwitch.Current_scope_A);
+        box.setValue('Power_scope_A',       IdealSwitch.Power_scope_A);
+        box.setValue('random_t_scope_A',    IdealSwitch.random_t_scope_A);
+        box.setValue('actual_t_scope_A',    IdealSwitch.actual_t_scope_A);
+
+        box.setValue('Voltage_scope_B',     IdealSwitch.Voltage_scope_B);
+        box.setValue('Current_scope_B',     IdealSwitch.Current_scope_B);
+        box.setValue('Power_scope_B',       IdealSwitch.Power_scope_B);
+        box.setValue('random_t_scope_B',    IdealSwitch.random_t_scope_B);
+        box.setValue('actual_t_scope_B',    IdealSwitch.actual_t_scope_B);
+
+        box.setValue('Voltage_scope_C',     IdealSwitch.Voltage_scope_C);
+        box.setValue('Current_scope_C',     IdealSwitch.Current_scope_C);
+        box.setValue('Power_scope_C',       IdealSwitch.Power_scope_C);
+        box.setValue('random_t_scope_C',    IdealSwitch.random_t_scope_C);
+        box.setValue('actual_t_scope_C',    IdealSwitch.actual_t_scope_C);
+        
+        //*Do the tab on observe
+        box.setValue('Voltage_observe_A',    IdealSwitch.Voltage_observe_A);
+        box.setValue('Current_observe_A',    IdealSwitch.Current_observe_A);
+        box.setValue('Power_observe_A',      IdealSwitch.Power_observe_A);
+        box.setValue('Status_observe_A',     IdealSwitch.Status_observe_A);
+
+        box.setValue('Voltage_observe_B',    IdealSwitch.Voltage_observe_B);
+        box.setValue('Current_observe_B',    IdealSwitch.Current_observe_B);
+        box.setValue('Power_observe_B',      IdealSwitch.Power_observe_B);
+        box.setValue('Status_observe_B',     IdealSwitch.Status_observe_B);
+
+        box.setValue('Voltage_observe_C',    IdealSwitch.Voltage_observe_C);
+        box.setValue('Current_observe_C',    IdealSwitch.Current_observe_C);
+        box.setValue('Power_observe_C',      IdealSwitch.Power_observe_C);
+        box.setValue('Status_observe_C',     IdealSwitch.Status_observe_C);
+
+}
+
+//Send data to web only for TRV
+function get_data_from_web_TRV(box, TRV){
+	//*First tab data is now gathered back
+    TRV.TRV_enable				= box.getValue('TRV_enable');
+    TRV.TRV_restrike_reignition	= box.getValue('TRV_restrike_reignition');
+    TRV.TRV_envelope			= box.getValue('TRV_envelope');
+    TRV.TRV_Rated_voltage		= box.getValue('TRV_Rated_voltage');
+	 TRV.TRV_K					= box.getValue('TRV_K')*1000;
+    TRV.TRV_Rated_short_circuit	= box.getValue('TRV_Rated_short_circuit');
+    TRV.TRV_breaker_class		= box.getValue('TRV_breaker_class');
+    TRV.TRV_kpp					= box.getValue('TRV_kpp');
+    TRV.TRV_kaf					= box.getValue('TRV_kaf');
+    TRV.TRV_U1					= box.getValue('TRV_U1');
+    TRV.TRV_t1					= box.getValue('TRV_t1');
+    TRV.TRV_Uc					= box.getValue('TRV_Uc');
+    TRV.TRV_t2					= box.getValue('TRV_t2');
+    TRV.TRV_t3					= box.getValue('TRV_t3');
+    TRV.TRV_RRRV1				= box.getValue('TRV_RRRV1');
+    TRV.TRV_RRRV2				= box.getValue('TRV_RRRV2');
+	TRV.up					= box.getValue('up');
+    TRV.td					= box.getValue('td');
+    TRV.tp					= box.getValue('tp');
+    TRV.Breaker_type			= box.getValue('Breaker_type');
+    TRV.TRV_Cstrayk				= box.getValue('TRV_Cstrayk');
+    TRV.TRV_Cstraym				= box.getValue('TRV_Cstraym');
+    TRV.TRV_capacitance			= box.getValue('TRV_capacitance');
+    TRV.TRV_find_standard		= box.getValue('TRV_find_standard');
+    TRV.TRV_enable				= box.getValue('TRV_enable');
+                                
+}
+
+function get_data_from_web_SW3ph(box, IdealSwitch){
+	//*First tab data is now gathered back
+        IdealSwitch.tclose_A=            box.getValue('tclose_A');
+        IdealSwitch.tclose_B=            box.getValue('tclose_B');
+        IdealSwitch.tclose_C=            box.getValue('tclose_C');
+        IdealSwitch.tclose_units=        box.getValue('tclose_units');
+        
+        IdealSwitch.topen_A=             box.getValue('topen_A');
+        IdealSwitch.topen_B=             box.getValue('topen_B');
+        IdealSwitch.topen_C=             box.getValue('topen_C');
+        IdealSwitch.topen_units=         box.getValue('topen_units');
+        
+        IdealSwitch.Imargin_A=           box.getValue('Imargin_A');
+        IdealSwitch.Imargin_B=           box.getValue('Imargin_B');
+        IdealSwitch.Imargin_C=           box.getValue('Imargin_C');
+        IdealSwitch.Imargin_units=       box.getValue('Imargin_units');
+        
+        IdealSwitch.balanced_check=      (box.getValue('balanced_check'));
+
+        //*Second tab
+        //A
+        IdealSwitch.random_type_A=             box.getValue('random_type_A');
+        IdealSwitch.depend_A=                  box.getValue('depend_A');
+        IdealSwitch.ref_sw_name_A=             box.getValue('ref_sw_name_A');
+        IdealSwitch.apply_at_type_A=           box.getValue('apply_at_type_A');
+
+        IdealSwitch.mean_A=                    box.getValue('mean_A');
+        IdealSwitch.mean_units_A=              box.getValue('mean_units_A');
+
+        IdealSwitch.deviation_A=               box.getValue('deviation_A');
+        IdealSwitch.dev_units_A=               box.getValue('dev_units_A')
+
+        IdealSwitch.n_steps_A=                 box.getValue('n_steps_A');
+
+        //B
+        IdealSwitch.random_type_B=             box.getValue('random_type_B');
+        IdealSwitch.depend_B=                  box.getValue('depend_B');
+        IdealSwitch.ref_sw_name_B=             box.getValue('ref_sw_name_B');
+        IdealSwitch.apply_at_type_B=           box.getValue('apply_at_type_B');
+
+        IdealSwitch.mean_B=                    box.getValue('mean_B');
+        IdealSwitch.mean_units_B=              box.getValue('mean_units_B')
+
+        IdealSwitch.deviation_B=               box.getValue('deviation_B');
+        IdealSwitch.dev_units_B=               box.getValue('dev_units_B');
+
+        IdealSwitch.n_steps_B=                 box.getValue('n_steps_B');
+
+        //C
+        IdealSwitch.random_type_C=             box.getValue('random_type_C');
+        IdealSwitch.depend_C=                  box.getValue('depend_C');
+        IdealSwitch.ref_sw_name_C=             box.getValue('ref_sw_name_C');
+        IdealSwitch.apply_at_type_C=           box.getValue('apply_at_type_C');
+
+        IdealSwitch.mean_C=                    box.getValue('mean_C');
+        IdealSwitch.mean_units_C=              box.getValue('mean_units_C')
+        IdealSwitch.deviation_C=               box.getValue('deviation_C');
+        IdealSwitch.dev_units_C=               box.getValue('dev_units_C');
+
+        IdealSwitch.n_steps_C=                 box.getValue('n_steps_C');
+
+        //*Scopes--------------------------------------------------------
+        //A
+        IdealSwitch.Voltage_scope_A=           box.getValue('Voltage_scope_A');
+        IdealSwitch.Current_scope_A=           box.getValue('Current_scope_A');
+        IdealSwitch.Power_scope_A=             box.getValue('Power_scope_A');
+
+        //We accept to turn on the stat scopes even when no Stat case, EMTP will do what needed
+        IdealSwitch.random_t_scope_A= ''; //*Account for stat scopes only when stat switch
+        IdealSwitch.actual_t_scope_A= '';
+        if(IdealSwitch.random_type_A !='0' ){
+         IdealSwitch.random_t_scope_A=           box.getValue('random_t_scope_A');
+         IdealSwitch.actual_t_scope_A=           box.getValue('actual_t_scope_A');
+        }
+        //B
+        IdealSwitch.Voltage_scope_B=           box.getValue('Voltage_scope_B');
+        IdealSwitch.Current_scope_B=           box.getValue('Current_scope_B');
+        IdealSwitch.Power_scope_B=             box.getValue('Power_scope_B');
+
+        IdealSwitch.random_t_scope_B= '';
+        IdealSwitch.actual_t_scope_B= '';
+        if(IdealSwitch.random_type_B !='0' ){
+         IdealSwitch.random_t_scope_B=           box.getValue('random_t_scope_B');
+         IdealSwitch.actual_t_scope_B=           box.getValue('actual_t_scope_B');
+        }
+        //C
+        IdealSwitch.Voltage_scope_C=           box.getValue('Voltage_scope_C');
+        IdealSwitch.Current_scope_C=           box.getValue('Current_scope_C');
+        IdealSwitch.Power_scope_C=             box.getValue('Power_scope_C');
+
+        IdealSwitch.random_t_scope_C= '';
+        IdealSwitch.actual_t_scope_C= '';
+        if(IdealSwitch.random_type_C !='0' ){
+           IdealSwitch.random_t_scope_C=          box.getValue('random_t_scope_C');
+           IdealSwitch.actual_t_scope_C=          box.getValue('actual_t_scope_C');
+        }
+        //*Observe-------------------------------------------------------
+        IdealSwitch.Voltage_observe_A=         box.getValue('Voltage_observe_A');
+        IdealSwitch.Current_observe_A=         box.getValue('Current_observe_A');
+        IdealSwitch.Power_observe_A=           box.getValue('Power_observe_A');
+        IdealSwitch.Status_observe_A=          box.getValue('Status_observe_A');
+
+        IdealSwitch.Voltage_observe_B=         box.getValue('Voltage_observe_B');
+        IdealSwitch.Current_observe_B=         box.getValue('Current_observe_B');
+        IdealSwitch.Power_observe_B=           box.getValue('Power_observe_B');
+        IdealSwitch.Status_observe_B=          box.getValue('Status_observe_B');
+
+        IdealSwitch.Voltage_observe_C=         box.getValue('Voltage_observe_C');
+        IdealSwitch.Current_observe_C=         box.getValue('Current_observe_C');
+        IdealSwitch.Power_observe_C=           box.getValue('Power_observe_C');
+        IdealSwitch.Status_observe_C=          box.getValue('Status_observe_C');
+		
+		 
+
+}
+
+function save_params(dev, oBreaker){
+
+	dev.setAttribute('ParamsA', oBreaker.tclose_A+oBreaker.tclose_units+','+oBreaker.topen_A+oBreaker.topen_units+','+oBreaker.Imargin_A+oBreaker.Imargin_units+','
+				+oBreaker.random_type_A+','+oBreaker.depend_A+','+oBreaker.ref_sw_name_A+','+oBreaker.apply_at_type_A+','+oBreaker.mean_A+oBreaker.mean_units_A+','
+				+oBreaker.deviation_A+oBreaker.dev_units_A+','+oBreaker.n_steps_A+','+oBreaker.Voltage_scope_A+','+oBreaker.Current_scope_A+','+oBreaker.Power_scope_A+','+oBreaker.random_t_scope_A+','
+				+oBreaker.actual_t_scope_A+','+oBreaker.Voltage_observe_A+','+oBreaker.Current_observe_A+','+oBreaker.Power_observe_A+','+oBreaker.Status_observe_A+',')
+				
+	dev.setAttribute('ParamsB', oBreaker.tclose_B+oBreaker.tclose_units+','+oBreaker.topen_B+oBreaker.topen_units+','+oBreaker.Imargin_B+oBreaker.Imargin_units+','
+				+oBreaker.random_type_B+','+oBreaker.depend_B+','+oBreaker.ref_sw_name_B+','+oBreaker.apply_at_type_B+','+oBreaker.mean_B+oBreaker.mean_units_B+','
+				+oBreaker.deviation_B+oBreaker.dev_units_B+','+oBreaker.n_steps_B+','+oBreaker.Voltage_scope_B+','+oBreaker.Current_scope_B+','+oBreaker.Power_scope_B+','+oBreaker.random_t_scope_B+','
+				+oBreaker.actual_t_scope_B+','+oBreaker.Voltage_observe_B+','+oBreaker.Current_observe_B+','+oBreaker.Power_observe_B+','+oBreaker.Status_observe_B+',')
+
+	dev.setAttribute('ParamsC', oBreaker.tclose_C+oBreaker.tclose_units+','+oBreaker.topen_C+oBreaker.topen_units+','+oBreaker.Imargin_C+oBreaker.Imargin_units+','
+				+oBreaker.random_type_C+','+oBreaker.depend_C+','+oBreaker.ref_sw_name_C+','+oBreaker.apply_at_type_C+','+oBreaker.mean_C+oBreaker.mean_units_C+','
+				+oBreaker.deviation_C+oBreaker.dev_units_C+','+oBreaker.n_steps_C+','+oBreaker.Voltage_scope_C+','+oBreaker.Current_scope_C+','+oBreaker.Power_scope_C+','+oBreaker.random_t_scope_C+','
+				+oBreaker.actual_t_scope_C+','+oBreaker.Voltage_observe_C+','+oBreaker.Current_observe_C+','+oBreaker.Power_observe_C+','+oBreaker.Status_observe_C+',')
+}
+
+
+
+function setDiscriptionAttribute(oBreaker){
+	var descriptionAttribute = '?'
+	
+	//Scopes
+	var scopes =  oBreaker.IdealSwitch.Voltage_scope_A + oBreaker.IdealSwitch.Voltage_scope_B + oBreaker.IdealSwitch.Voltage_scope_C
+				+ oBreaker.IdealSwitch.Current_scope_A + oBreaker.IdealSwitch.Current_scope_B + oBreaker.IdealSwitch.Current_scope_C 
+	 	        + oBreaker.IdealSwitch.Power_scope_A + oBreaker.IdealSwitch.Power_scope_B + oBreaker.IdealSwitch.Power_scope_C 
+
+	scopes= MakeScopeDescriptionField(scopes); //+
+ 
+	 //Observes
+	var observables = oBreaker.IdealSwitch.Voltage_observe_A + oBreaker.IdealSwitch.Voltage_observe_B + oBreaker.IdealSwitch.Voltage_observe_C  
+				+ oBreaker.IdealSwitch.Current_observe_A + oBreaker.IdealSwitch.Current_observe_B + oBreaker.IdealSwitch.Current_observe_C
+				+ oBreaker.IdealSwitch.Power_observe_A + oBreaker.IdealSwitch.Power_observe_B + oBreaker.IdealSwitch.Power_observe_C
+				+ oBreaker.IdealSwitch.Status_observe_A + oBreaker.IdealSwitch.Status_observe_B + oBreaker.IdealSwitch.Status_observe_C;
+
+	observables = MakeObservableDescriptionField(observables); //+	
+	oBreaker.dev.setAttribute('Description', scopes+observables[0])
+}
+
+//Not finished yet.
+function DrawObservablePins(oBreaker){
+	var npins_tot
+	var observables = oBreaker.IdealSwitch.Voltage_observe_A + oBreaker.IdealSwitch.Voltage_observe_B + oBreaker.IdealSwitch.Voltage_observe_C  
+				+ oBreaker.IdealSwitch.Current_observe_A + oBreaker.IdealSwitch.Current_observe_B + oBreaker.IdealSwitch.Current_observe_C
+				+ oBreaker.IdealSwitch.Power_observe_A + oBreaker.IdealSwitch.Power_observe_B + oBreaker.IdealSwitch.Power_observe_C
+				+ oBreaker.IdealSwitch.Status_observe_A + oBreaker.IdealSwitch.Status_observe_B + oBreaker.IdealSwitch.Status_observe_C;
+
+	observables = MakeObservableDescriptionField(observables); //+	
+
+    //*Code for creating the observable bundle pin
+        oBreaker.redraw(observables[0]);
+		
+		
+    if(observables[0].length>0) {
+        oBreaker.Bundle_pin_exists=observables[1]; //must be the exact length including all repetitions
+    }else{
+        oBreaker.Bundle_pin_exists=0;
+    }
+
+
+}
+
+//Create an absolute path to find a master.
+//This has to be done because the statistical time generator in in the breaker subcircuit
+function findRef(dev, ref_sw_name_A){
+	var Ref
+	if(ref_sw_name_A.indexOf('/')==0){  //Top level reference
+		Ref = "'"+ref_sw_name_A+"'"
+	}
+	else if(ref_sw_name_A == '' || ref_sw_name_A == '0'){
+		Ref = "''"
+	}
+	else{  //Subcircuit reference
+		var cctName = currentCircuit()+'';
+        var designName = currentCircuit().design() + ''
+		var absolutePath = cctName.substring(designName.length+1, cctName.length)
+		Ref = "'"+absolutePath +'/'+ ref_sw_name_A+"'"
+	}
+	return Ref
+}
+
+//* Find the Short-Circuit Current
+function ShortCircuitCurrent(dev,type_of_fault,terminalBus,line)
+{
+	//*find the bus where the fault occurs (if the fault is a Short-Line fault, the value will be changed in replaceLine.dwj)
+	ignitionSignal=cct.signals("Name",terminalBus)[0];
+	
+	//Find a pin which is connected to the ignition Signal
+	ISpin=findPin(ignitionSignal,dev);
+	//Save the name of the signal
+	ISname=ISpin.signal.name;
+	//Create the two parts of the line
+	if(type_of_fault=="Short Line Fault")
+	{
+		lineDev=cct.devices("Name",line)[0]
+		parseScriptFile("replaceLine.dwj");
+	}
+	
+	//Add the fault
+	GR=cct.addDevice(ground);
+	GR.pins[0].signal.connectTo(ignitionSignal);
+	//Run EMTP to calculate the Fault Current
+	SCC=runEMTP(dev);
+	//Remove the fault
+	GR.remove();
+	//Restore the name of the signal where the fault was
+	ignitionSignal=ISpin.signal;
+	if(type_of_fault!="Short Line Fault")
+	{
+	ignitionSignal.setAttribute("Name",ISname);
+	}
+	//Convert the peak value in RMS value
+	SCC1=SCC/Math.sqrt(2);
+	var exit= new Array;
+	exit[0]=SCC1;
+	exit[1]=ignitionSignal;
+	return exit;
+	}
+// }
+
+//* Run a simulation to know the ShortCircuit Current
+function runEMTP(dev)
+{
+
+	//*Generate the netlist
+parseScriptFile('start_emtp/generate_netlist.dwj');
+netlistFile=SPFile();
+netlistFile.fullName(designpath+designfilename_noex+'.net');
+	//* Launch the simulation
+parseScriptFile('run_emtp.dwj');
+parseScriptFile('device_services/check_my_filename.dwj')
+parseScriptFile('make_file_name.dwj');
+run_emtp(netlistFile,false,'Netlist',false);
+
+//*Open the Steady-State Results file
+f.fullName(mydir+'/'+designfilename_noex+'ss.html' );
+text=f.readText();
+//*Extract Current Data
+text2a=text.split('</td><td>Ideal switch:'+dev.getAttribute('Name')+'/p1/swa</td></tr>')[0];
+text3a=text2a.split('</td><td>');
+SCCa=text3a[text3a.length-4];
+text2b=text.split('</td><td>Ideal switch:'+dev.getAttribute('Name')+'/p1/swb</td></tr>')[0];
+text3b=text2b.split('</td><td>');
+SCCb=text3b[text3b.length-4];
+text2c=text.split('</td><td>Ideal switch:'+dev.getAttribute('Name')+'/p1/swc</td></tr>')[0];
+text3c=text2c.split('</td><td>');
+SCCc=text3c[text3c.length-4];
+//*Choose the maximum Short-Circuit Current
+SCC=max(SCCa, max(SCCb,SCCc));
+f.close();
+return SCC;
+}
+
+//* return the type object of the device "name" from libraryPath 
+function loadLibrary(libraryPath,name)
+{
+	library = DWLibrary(libraryPath);
+	elementList = library.typeList;
+	for (i = 0; i< elementList.length ; i++)
+	{
+		if (elementList[i].name() == name) return elementList[i];
+	}
+}
+
+//* find the maximum of two element
+function max(elt1,elt2)
+{
+	if(elt1>elt2)
+	{
+		return elt1;
+	}
+	else
+	{
+		return elt2;
+	}
+}
+
+//*find the breaker pin that is connected to the ignition signal
+function findPin(ignitionSignal,brkDev)
+{
+	if(brkDev.pins[0].signal.name==ignitionSignal.name)
+	{
+		ISpin=brkDev.pins[0];
+	}
+	else if(brkDev.pins[1].signal.name==ignitionSignal.name)
+	{
+		ISpin=brkDev.pins[1];
+	}
+	return ISpin;
+}

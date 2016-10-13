@@ -1,0 +1,586 @@
+<html>
+<head>
+    <meta http-equiv="Content-Language" content="en-us">
+    <meta http-equiv="Content-Type" content="text/html_3; charset=windows-1252">
+    <link rel="STYLESHEET" type="text/css" href="../../../../Info Scripts/HTML/emtpstyle.css">
+    <script language="JavaScript" src="../../../../Info Scripts/HTML/javascripts/testvalue.js"></script>
+    <script language="JavaScript" src="../../../../Info Scripts/HTML/javascripts/hideshowlayer.js"></script>
+    <script language="JavaScript" src="../../../../Info Scripts/HTML/javascripts/testposintvalue.js"></script>
+    <script language="JavaScript" src="../../../../Info Scripts/HTML/javascripts/testdata.js"></script>
+    <script language="JavaScript" src="../../../../Info Scripts/HTML/javascripts/testpos0realvalue.js"></script>
+    <script language="JavaScript" src="../../../../Info Scripts/HTML/javascripts/notspecialopt.js"></script>
+    <script language="JavaScript" src="../../../../Info Scripts/HTML/javascripts/test_one_line_box.js"></script>
+    <script language="JavaScript" src="../../../../Info Scripts/HTML/javascripts/standardmasks.js"></script>
+    <script language="JavaScript" src="../../../../Info Scripts/HTML/javascripts/visual_config.js"></script>
+    <script language="JavaScript" src="../../../../Info Scripts/HTML/javascripts/plot_sample_data.js"></script>
+    <script language="JavaScript" src="../../../../Info Scripts/HTML/javascripts/standard_onload.js"></script>
+	<script language="JavaScript" SRC="../../../../HTML/javascripts/testposintvalue.js"></script>
+    <script language="JavaScript" src="StrayCapacitor.js"></script>
+    <title>Stray Capacitance</title>
+    <script language="JavaScript"></script>
+</head>
+<body class="mybodyblue" onload='standard_onload();'>
+    <h1 id="model_id1">Stray Capacitance</h1>   
+	<table class="tableofdata">	  
+		<tr>
+            <td class="tdrightWtip" id="TRV_Cstray1_id" title="Stray capacitance at the pin k (+)">C:</td>
+            <td id="C1" disabled class="units">
+                <input type="text" maxlength="22" name="C1_val" id="C1_val_id" class="emtpinputsmall">nF
+            </td>
+        </tr>
+	</table>
+	<table>
+		<tr>
+				<td>
+				<input type="checkbox" name="select_capacitance_checkbox" id="select_capacitance_checkbox_id" onclick="selectCapacitance()">Choose a capacitance value from Database</input>
+			</td>
+		</tr>
+		<tr>
+		</tr>
+	</table>
+    <table class="tableofdata" id="capacitance_id">
+        <tr id="Component Type">
+            <td colspan="4">Component type :
+                <select name="Component_type" id="Component_type_id" onchange="findComponent()">
+                    <option value="Transformer">Transformer</option>
+                    <option value="Current-Limiting Reactor">Current-Limiting Reactor</option>
+                    <option value="Generator">Generator</option>
+                    <option value="Motor">Motor</option>
+                    <option value="Breaker">Breaker</option>
+                    <option value="Bus">Bus</option>
+                    <option value="Current Transformer">Current Transformer</option>
+                    <option value="Potential Transformer">Potential Transformer</option>
+                </select>
+            </td>
+		</tr>
+		<tr>
+			<td>
+			Source :
+			<select name="select_source" id="select_source_id" onchange="findComponent()" >
+				<option value="choose_1" style="width:10px;">Allan, Greenwood, Chapter13, in "Electrical Transient in Power Systems", Wiley-Interscience, 1991</option>
+				<option value="choose_2" style="width:10px;">IEEE Std C37.011-2015</option>
+				<option value="choose_3" style="width:10px;">J.C. Das, in "Transient in Electrical Systems", Mc Graw Hill</option>
+			</select>
+			</td>
+		</tr>
+</table>
+	<table class="tableofdata" id="Transformer">
+		<tr>
+			<td class=tdrightWtip>Rated S</td>
+			<td>
+                <select name="S" id="S_id"  onchange="findComponent()"> 
+					<option value="450"> 450</option>
+					<option value="800"> 800 </option>
+					<option value="1350"> 1350 </option>
+					<option value="1750"> 1750 </option>
+				</select>
+			</td>
+			<td class="units">MVA</td>
+		</tr>
+		<tr>
+			<td class=tdrightWtip>Rated Voltage primary</td>
+            <td>
+				<select name="SP450" id="SP450_id"  onchange="findComponent()" style="display:none;"> kV
+					<option value="18-21"> 18-21</option>
+				</select>
+				<select name="SP800" id="SP800_id"  onchange="findComponent()" style="display:none;">  
+					<option value="21-24"> 21-24</option>
+				</select>
+				<select name="SP1350" id="SP1350_id"  onchange="findComponent()" style="display:none;"> 
+					<option value="24-27"> 24-27</option>
+				</select>
+				<select name="SP1750" id="SP1750_id"  onchange="findComponent()" style="display:none;">
+					<option value="26-33"> 26-33</option>
+				</select>
+			</td>
+			<td class="units">kVRMSLL</td>
+		</tr>
+		<tr>
+			<td class=tdrightWtip>Rated Voltage secondary</td>
+            <td>
+				<select name="SS450" id="SS450_id"  onchange="findComponent()" style="display:none;">  
+					<option value="245-420"> 245-420</option>
+				</select>
+				<select name="SS800" id="SS800_id"  onchange="findComponent()" style="display:none;"> 
+					<option value="345-420"> 345-420</option>
+				</select>
+				<select name="SS1350" id="SS1350_id"  onchange="findComponent()" style="display:none;"> 
+					<option value="345-800"> 345-800</option>
+				</select>
+				<select name="SS1750" id="SS1750_id"  onchange="findComponent()" style="display:none;"> 
+					<option value=">420"> >420</option>
+				</select>
+			</td>
+			<td class="units">kVRMSLL</td>
+		</tr>
+	</table>
+		<table class="tableofdata" id="TransformerB">
+		<tr>
+			<td class=tdrightWtip>Rated S</td>
+			<td>
+                <select name="SB" id="SB_id"  onchange="findComponent()"> 
+					<option value="1-10"> 1-10</option>
+					<option value="10-100"> 10-100 </option>
+					<option value="100-1000"> 100-1000 </option>
+				</select>
+			</td>
+			<td class="units">MVA</td>
+		</tr>
+		<tr>
+			<td class=tdrightWtip>Maximum system voltage</td>
+            <td>
+				<select name="SP110B" id="SP110B_id"  onchange="findComponent()" style="display:none;"> kV
+					<option value="15-121"> 15-121</option>
+				</select>
+
+				<select name="SP10100B" id="SP10100B_id"  onchange="findComponent()" style="display:none;">  
+					<option value="15-121"> 15-121</option>
+					<option value="121-550"> 121-550</option>
+				</select>
+
+				<select name="SP1001000B" id="SP1001000B_id"  onchange="findComponent()" style="display:none;"> 
+					<option value="121-550"> 121-550</option>
+				</select>
+		</td>
+		<td class="units">kVRMSLL</td>
+		</tr>
+	</table>
+	<table class="tableofdata" id="TransformerC">
+		<tr>
+			<td>Type </td>
+			<td>
+				<select name="type_of_transformerC" id="type_of_transformerC_id" onchange="findComponent()">
+					<option value="Core Type"> Core Type </option>
+					<option value="Shell Type"> Shell Type </option>
+					<option value="Autotransformer"> Autotransformer </option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td> S </td>
+			<td>
+				<select name="S_core_type" id="S_core_type_id" onchange="findComponent()">
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="5">5</option>
+					<option value="7">7</option>
+					<option value="10">10</option>
+					<option value="25">25</option>
+					<option value="50">50</option>
+					<option value="75">75</option>
+					<option value="100">100</option>
+				</select>
+				<select name="S_shellauto_type" id="S_shellauto_type_id" onchange="findComponent()">
+					<option value="25">25</option>
+					<option value="50">50</option>
+					<option value="75">75</option>
+					<option value="100">100</option>
+					<option value="200">200</option>
+					<option value="300">300</option>
+					<option value="400">400</option>
+					<option value="500">500</option>
+					<option value="600">600</option>
+					<option value="700">1000</option>
+				</select>
+			</td>
+			<td>
+				<td class="units">MVA</td>
+			</td>
+		</tr>
+	</table>
+	<table class="tableofdata" id="Transformer2">
+		<tr id="Transformer2">
+			<td>Select Capacitance
+				<select name="selectC" id="selectC_id"  onchange="findComponent()">  
+					<option value="C1"> C1</option>
+					<option value="C2"> C2 </option>
+					<option value="C12"> C12 </option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td><img id="transformer_picture_id" src="Picture_Tranfo_Capacitance.png" style="width:120px;"> </td>
+		</tr>
+			<tr>
+			<td  style="color:red"> 1 represents the lowest-Voltage winding </td>
+			</tr>
+			<tr>
+			<td style="color:red">  2 represents the highest-Voltage winding </td>
+			</tr>
+	</table>
+	<table class="tableofdata" id="Generator">
+		<tr>
+			<td>Rated S</td>
+			<td>
+                <select name="S_Generator" id="S_generator_id"  onchange="generatorCapacitance()">  
+					<option value="450"> 450</option>
+					<option value="800"> 800 </option>
+					<option value="1350"> 1350 </option>
+					<option value="1750"> 1750 </option>
+				</select>
+			</td>
+			<td class="units">MVA</td>
+		</tr>	 
+	</table>
+		<table class="tableofdata" id="GeneratorB">
+		<tr>
+		<td>Type of generator</td>
+		<td>
+		<select name="type_of_generator" id="type_of_generator_id"  onchange="generatorBCapacitance()">  
+					<option value="Steam-turbine"> Steam-turbine</option>
+					<option value="Hydro driven"> Hydro driven </option>
+		</select>
+		</td>
+		</tr>
+		<tr id="S_GeneratorB_steam_Line_id">
+			<td>Rated S</td>
+			<td>
+                <select name="S_GeneratorB_steam" id="S_GeneratorB_steam_id"  onchange="generatorBCapacitance()">  
+					<option value="15-70"> 15-70</option>
+					<option value="70-300"> 70-300 </option>
+					<option value=">300"> >300 </option>
+				</select>
+			</td>
+			<td class="units">MVA</td>
+		</tr>
+		<tr id="S_GeneratorB_hydro_Line_id">
+		<td>Rated S</td>
+			<td>
+                <select name="S_GeneratorB_hydro" id="S_GeneratorB_hydro_id"  onchange="generatorBCapacitance()">  
+					<option value="10-25"> 10-25</option>
+					<option value="25-100"> 25-100 </option>
+				</select>
+			</td>
+			<td class="units">MVA</td>
+		</tr>	 
+	</table> 
+	<table class="tableofdata" id="Motor">
+		<tr>
+			<td>Rated Voltage</td>
+			<td>
+				<select name="V_Motor" id="V_Motor_id"  onchange="motorCapacitance()">  
+					<option value="4.16"> 4.16</option>
+					<option value="6.6"> 6.6 </option>
+					<option value="13.8"> 13.8 </option>
+				</select></td>
+			<td class="units">kVRMSLL</td>
+		</tr>
+		<tr>
+			<td>Rated Power</td>
+			<td>
+				<select name="S_Motor_416" id="S_Motor_416_id"  style="display:none;" onchange="motorCapacitance()">  
+					<option value="3500"> 3500</option>
+					<option value="5000">  5000</option>
+					<option value="6000"> 6000 </option>
+				</select>
+				<select name="S_Motor_66" id="S_Motor_66_id"  style="display:none;" onchange="motorCapacitance()">  (HP)
+					<option value="3000"> 3000</option>
+				</select>
+				<select name="S_Motor_138" id="S_Motor_138_id"  style="display:none;" onchange="motorCapacitance()">  (HP)
+					<option value="3000"> 3000</option>
+					<option value="5000"> 5000</option>
+					<option value="13500"> 13500</option>
+				</select>
+			</td>
+			<td class="units">HP</td>
+		</tr>
+	</table> 
+	<table class="tableofdata" id="Breaker">		
+		<tr>
+			<td colspan=2>Select Breaker
+	            <select name="Breaker_type" id="Breaker_type_id" onchange="breakerCapacitance()">
+                    <option value="Break_1">Outdoor, dead-tank, air, oil, vacuum or SF6 breakers with paper bushings</option>
+                    <option value="Break_8">Outdoor, dead-tank, air, oil, vacuum or SF6 breakers with SF6 bushings</option>
+                    <option value="Break_9">Outdoor, dead-tank, air, oil, vacuum or SF6 breakers with solid resin bushings</option>
+                    <option value="Break_2">Outdoor, live-tank, air, oil, vacuum or SF6 breakers</option>
+                    <option value="Break_3">GIS circuit breakers</option>
+                    <option value="Break_4">GIS disconnect switches</option>
+                    <option value="Break_5">Outdoor SF6 cicuit switchers</option>
+                    <option value="Break_6">Outdoor SF6 circuit switchers with integral disconnect blade</option>
+                    <option value="Break_7">Outdoor disconnect switches</option>
+                </select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+			Maximum system voltage
+			<select name="Maximum_system_voltage" id="Maximum_system_voltage_id" onchange="breakerCapacitance()">
+				<option value="15–72.5 kV">15-72.5 kV</option>
+				<option value="72.5-800 kV">72.5-800 kV</option>
+			<td>
+			Status
+				<select name="Breaker_Status" id="Breaker_Status_id" onchange="breakerCapacitance()">
+					<option value="Closed">Closed</option>
+					<option value="Open">Open</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td id="number_of_SW_per_pole_case_id" colspan=3>
+			Number of interrupters per pole
+				<input name="number_of_SW_per_pole" id="number_of_SW_per_pole_id" value="1" onchange="breakerCapacitance()">
+			</td>
+		</tr>
+	</table> 
+	<table class="tableofdata" id="Bus">
+		<tr>
+			<td class=tdrightWtip>Length</td>
+			<td><input name="busLength" id="busLength_id" class="emtpinputsmall" onchange="busCapacitance()" onblur="testpos()" onclick="testpos()"></td>
+			<td class="units">m</td>
+			
+		</tr>
+		<tr>
+			<td class=tdrightWtip>Type</td>
+			<td>
+				<select name="typeBus" id="typeBus_id"  onchange="busCapacitance()"> 
+					<option value="none"></option>
+					<option value="Isolated Phase Bus Capacitance"> Isolated Phase Bus</option>
+					<option value="Segregated Phase Bus Capacitance"> Segregated Phase Bus</option>
+				</select>
+			</td>
+			<td id="IsolatedBusBlock_id" style="display:none;">Class 
+				<select name="IsolatedBus"  id="IsolatedBus_id" onchange="busCapacitance()"> 
+					<option value="15kVClass110kvBIL"> 15-kV Class 110-kv BIL</option>
+					<option value="23kVClass150kvBIL"> 23-kV Class 150-kv BIL</option>
+				</select>
+			</td>
+			<td id="IsolatedBusIBlock_id" class="units" style="display:none;">Ampere Rating
+				<select name="IsolatedBusI"  id="IsolatedBusI_id" onchange="busCapacitance()"> 
+					<option value="1200" class="emtpinputsmall"> 1200</option>
+					<option value="2000" class="emtpinputsmall"> 2000</option>
+					<option value="2500" class="emtpinputsmall"> 2500</option>
+					<option value="3000" class="emtpinputsmall"> 3000</option>
+					<option value="3500" class="emtpinputsmall"> 3500</option>
+					<option value="4000" class="emtpinputsmall"> 4000</option>
+					<option value="4500" class="emtpinputsmall"> 4500</option>
+					<option value="5000" class="emtpinputsmall"> 5000</option>
+					<option value="5500" class="emtpinputsmall"> 5500</option>
+					<option value="6000" class="emtpinputsmall"> 6000</option>
+					<option value="6500" class="emtpinputsmall"> 6500</option>
+					<option value="7000" class="emtpinputsmall"> 7000</option>
+					<option value="7500" class="emtpinputsmall"> 7500</option>
+					<option value="8000" class="emtpinputsmall"> 8000</option>
+					<option value="9000" class="emtpinputsmall"> 9000</option>
+					<option value="10000" class="emtpinputsmall"> 10000</option>
+					<option value="11000" class="emtpinputsmall"> 11000</option>
+					<option value="12000" class="emtpinputsmall"> 12000</option>
+				</select>A
+			</td>
+			<td id="SegregatedBusBlock_id" style="display:none;">Type
+				<select name="SegregatedBus"  id="SegregatedBus_id" onchange="busCapacitance()"> 
+					<option value="15kVClass110kvBIL"> 15-kV Class 110-kv BIL</option>
+				</select>
+			</td>
+			<td id="SegregatedBusIBlock_id" class="units" style="display:none;">Ampere Rating
+				<select name="SegregatedBusI" id="SegregatedBusI_id"  onchange="busCapacitance()"> 
+					<option value="1200"> 1200</option>
+					<option value="2000"> 2000</option>
+					<option value="3000"> 3000</option>
+					<option value="4000"> 4000</option>
+					<option value="5000"> 5000</option>
+					<option value="6000"> 6000</option>
+					<option value="7000"> 7000</option>
+					<option value="7500"> 7500</option>
+				</select>A
+			</td>
+		</tr>
+	</table> 
+	<table class="tableofdata" id="CT">
+		<tr>
+			<td>Insulation Class
+	            <select name="CT_V" id="CT_V_id" onchange="CTCapacitance()">
+                    <option value="none"></option>
+                    <option value="25">25</option>
+					<option value="34.5">34.5</option>
+					<option value="46">46</option>
+					<option value="69">69</option>
+					<option value="115">115</option>
+					<option value="161">161</option>
+					<option value="196">196</option>
+					<option value="230">230</option>
+                </select>
+			</td>
+			<td class="units">kVRMSLL</td>
+		</tr>
+	</table> 
+	<table class="tableofdata" id="CTB" style="display:none;">
+		<tr>
+			<td>Insulation Class
+	            <select name="CTB_V" id="CTB_V_id" onchange="CTBCapacitance()">
+                    <option value="none"></option>
+                    <option value="15-72.5">15-72.5</option>
+				<option value="72.5-800">72.5-800</option>
+                </select>
+			</td>
+			<td class="units">kVRMSLL</td>
+		</tr>
+	</table> 
+	<table class="tableofdata" id="PotentialTransformer">
+		<tr>
+			<td>Insulation Class
+				<select name="PotentialTransformer" id="PotentialTransformer_id" onchange="PTCapacitance()">kVRMSLL
+                    <option value="none"></option>
+					<option value="15">15</option>
+                    <option value="25">25</option>
+					<option value="34.5">34.5</option>
+					<option value="46">46</option>
+					<option value="69">69</option>
+					<option value="115">115</option>
+					<option value="138">138</option>
+					<option value="161">161</option>
+					<option value="196">196</option>
+					<option value="230">230</option>
+					<option value="345">345</option>
+				</select>
+			</td>
+			<td class="units">kVRMSLL</td>
+			<td id="LLLNBlock" style="display:none;">
+				<select name="LLLN" id="LLLN_id" onchange="PTCapacitance()">
+					<option value="Line-Line">Line-Line</option>
+					<option value="Line-Neutral">Line-Neutral</option>
+				</select>
+			</td>
+			<td id="LNBlock" style="display:none;" onchange="PTCapacitance()">
+				<select name="LN" id="LN_id">
+					<option value="Line-Neutral">Line-Neutral</option>
+				</select>
+			</td>
+			<td id="LLBlock" style="display:none;" onchange="PTCapacitance()">
+				<select name="LL" id="LL_id">
+					<option value="Line-Line" >Line-Line</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+	<table class="tableofdata" id="PotentialTransformerB">
+		<tr>
+			<td>Maximum system voltage </td>
+			<td>
+	            <select name="PotentialTransformerB_name" id="PotentialTransformerB_id" onchange="PTBCapacitance()">
+                    <option value="none"></option>
+                    <option value="15-72.5">15-72.5</option>
+				<option value="72.5-800">72.5-800</option>
+                </select>
+			</td>
+			<td class="units">kVRMSLL</td>
+		</tr>
+	</table> 
+	
+	<table class="tableofdata" id="BusB">
+		<tr>
+				<td class=tdrightWtip>Length</td>
+				<td colspan="2"><input name="busLengthB" id="busLengthB_id" class="emtpinputsmall" onchange="busBCapacitance()" onblur="testposB()" onclick="testposB()"></td>
+				<td class="units">m</td>
+		</tr>
+		<tr>
+			<td class=tdrightWtip>Insulation</td>
+			<td>
+				<select name="InsulationB" id="InsulationB_id" onchange="busBCapacitance()">
+					<option value="Air">Air</option>
+					<option value="Gas">Gas</option>
+				</select>
+			</td>
+		</tr>
+		<tr style="display:none;" id="AirBBusLine_id">
+			<td class=tdrightWtip>Type</td>
+			<td>
+				<select name="AirBBus" id="AirBBus_id"  onchange="busBCapacitance()"> 
+					<option value="Isolated Phase Bus Capacitance"> Isolated Phase Bus</option>
+					<option value="Segregated Phase Bus Capacitance"> Segregated Phase Bus</option>
+					<option value="Outdoor substation bus capacitance">Outdoor substation Bus</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td id="AirAR" class=tdrightWtip>Ampere rating</td>
+			<td id="IsolatedBCase_id" style="display:none;">
+				<select name="IsolatedB" id="IsolatedB_id">
+					<option value="1200-3500">1200-3500</option>
+					<option value="4000-6500" >4000-6500</option>
+					<option value="7000-12000" >7000-12000</option>
+				</select>
+			</td>
+			<td name="SegregatedBCase"id="SegregatedBCase_id" style="display:none;">
+				<select name="SegregatedB" id="SegregatedB_id">
+					<option value="1200-3500">1200-3500</option>
+					<option value="4000-6500" >4000-6500</option>
+				</select>
+			</td>
+			<td>
+				<select name="OutdoorB" id="OutdoorB_id" style="display:none;">
+					<option value="1200-3500">1200-3500</option>
+					<option value="4000-6500" >4000-6500</option>
+				</select>
+			</td>
+			<td id="AirUnit" >A</td>
+		</tr>
+		<tr id="GasBBusLine_id" style=class="units""display:none;">
+		<td class=tdrightWtip>Type</td>
+			<td>
+				<select name="GasBBus" id="GasBBus_id"  onchange="busBCapacitance()"> 
+					<option value="none"></option>
+					<option value="Isolated Phase Bus Capacitance"> Isolated Phase Bus</option>
+					<option value="Three-in-one Capacitance"> Three-in-one Capacitance</option>
+				</select>
+			</td>
+		</tr>
+		
+		<tr id="RatedMaximumVoltageBLine_id" style="display:none;">
+			<td class=tdrightWtip>Maximum system voltage</td>
+			<td>
+				<select name="RatedMaximumVoltageB" id="RatedMaximumVoltageB_id"  onchange="busBCapacitance()"> 
+					<option value="none"></option>
+					<option value="242 and below"> 242 and below</option>
+					<option value="362 and above"> 362 and above </option>
+				</select>
+			</td>
+			<td class="units">kVRMSLL</td>
+		</tr>
+	</table>
+	<table id="default_id" style="display:none;" class="tableofdata">
+			<tr> 
+				<td style="color:red;">this source does not contain data for this element </td>
+			</tr>
+	</table> 
+	<p></p>
+
+	<table class="tableofdata" id="minmax">	 
+		<tr>
+			<td colspan=4>
+				<strong>Range of values given by the source</strong>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Cmini
+			</td>
+			<td class="units">
+				<input name="C_mini" id="Cmini_id" class="emtpinputsmall" disabled>
+			</td>
+			<td class="units">
+				nF
+			</td>
+			<td>
+				<i> Minimal value proposed by this source of data for this component </i>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Cmaxi
+			</td>
+			<td>
+				<input name="C_maxi" id="Cmaxi_id" class="emtpinputsmall" disabled>
+			</td>
+			<td class="units">
+				nF
+			</td>
+			<td>
+				<i> Minimal value proposed by this source of data for this component </i>
+			</td>
+		</tr>
+    </table>   
+
+     <div id="errorbar" style="position: absolute; left:10; top:5;"></div>
+
+</body>
+</html>

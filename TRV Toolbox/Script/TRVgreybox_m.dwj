@@ -1,0 +1,679 @@
+//Last Change: Esteban MALAVAL 2016-06-07
+//*Used scripts
+parseScriptFile('device_services/check_if_excluded.js')
+parseScriptFile('n_setp.js');
+parseScriptFile('programmable_scope.js');
+parseScriptFile('set_check.js');
+parseScriptFile('n_create_ic_field.js')
+parseScriptFile('setmyvaluenew.js');
+parseScriptFile('extract_scopes_observables.js')  //in device services
+parseScriptFile('change_on_color.js');
+parseScriptFile('n_setmyout.js');
+parseScriptFile('sources/vsine/Vsine_LFdevFinder.js');
+parseScriptFile('sources/vsine/Vsine_LFdataLoad.js')
+parseScriptFile('get_tagged_line.js');
+
+parseScriptFile('device_fullname.js');
+parseScriptFile('extract_my_LF_data.js');
+parseScriptFile('oLFphasors.js');
+parseScriptFile('n_create_scope_field.js')
+
+parseScriptFile('device_services_.js');
+
+parseScriptFile('sim_options_m.dwj');
+
+parseScriptFile('brk_m.dwj');
+//-OPEN method----------------------------------------------------------------------------------------------------------
+function main_data_o(){
+	var dev = this.dev;
+	cct=dev.circuit;
+	if (dev == null) halt();
+	var d= new Date();
+	report= "TRV analysis "+d.getDate()+"/"+(d.getMonth()+1)+"/"+d.getFullYear();
+ //*Put back if excluded (Exclude=Ex), standard procedure, also gives documentation path
+	check_if_excluded(dev);
+	
+	// statistical_option //is global in the code below
+	//*find the solution type to select the correct web, used on the web for
+	// turning data tabs on or off. In a steady-state solution, for example, scopes are not available.
+	// Also used to show information of this device for the statistical option
+	// find_simulation_type
+	simulation_type=parseScriptFile('find_simulation_type.js');
+	
+	//* Make up box title and send initialization message
+	title = "Properties for "+ dev.getAttribute('LibType')+ ' ' + dev.getAttribute("Name");
+	
+	//* Get the script directory
+	f = SPFile();
+	f.setAppPath("Toolboxes/TRV Toolbox/Script/HTML/grey Box");
+	
+	//-Create the web-------------------------------------------------------------------------------------------------------
+	box=SPHTMLDialog();
+	
+	//* Visibility fields array
+	par1=dev; par2=box;     visArray = parseScriptFile('getvisibilityfields_box.js');
+
+
+	//* Web pgaes (tabs) for this device
+	urls = SPArray(    f + "/Main data.htm", f+"/Indication Transient Recovery Voltage.html");
+	box.setValue('breaker',this.breaker);
+	box.setValue('line',this.line);
+	// box.setValue('load_a_case_chckbox',this.load_a_case);
+	box.setValue("filepath",this.filepath);
+	box.setValue("Distance_from_breaker_to_fault",this.Distance_from_breaker_to_fault);
+	box.setValue("distance_unit",this.distance_unit);
+	
+	//* Stock some data in global values
+	setGlobalValue('breakerlist',findBreakers());
+	setGlobalValue('breaker',this.breaker);
+	setGlobalValue('lineList',findLineList());
+	setGlobalValue('line',this.line);
+	
+	//* Write the name of the studied breaker in the report
+	report=report+"\n Breaker : \n"+this.breaker;
+	
+	
+	//*Open The web---------------------------------------------------------------------------------------------------------
+	parseScriptFile('EMTPhtmlProperties.dwj');
+	EMTDialog=EMTdoDialog(urls, title,box, this.WindowXsize_3phase, this.WindowYsize_3phase,dev);
+	box=EMTDialog.box;
+	if(EMTDialog.Cancel){ return; }
+	
+	//* Save Data from the html window in the device
+	this.breaker=box.getValue("breaker");
+	this.line=box.getValue("line");
+	// this.load_a_case=box.getValue("load_a_case_chckbox");
+	this.filepath=box.getValue("filepath");
+	this.Distance_from_breaker_to_fault=box.getValue("Distance_from_breaker_to_fault");
+	this.distance_unit=box.getValue("distance_unit");
+	this.terminalBus=box.getValue("terminalBus");
+	this.SaveData();
+	
+	// If a case is loaded
+	// if(this.load_a_case=="on")
+	// {
+		// path=this.filepath.split("\\TRVmethod.txt")[0];
+		// splittedPath=path.split('\\');
+		// folder=splittedPath[splittedPath.length-1];
+		// designfilename_noex=folder.split("_")[1];
+		// breaker=this.breaker;
+		// load_a_case='on';
+	// }
+	// else
+	// {
+		//* Change the simulations options in order to do a Steady-State simulation
+		var oDeviceSO = new oDevice_(cct);
+		oDeviceSO.LoadFlow="0";
+		oDeviceSO.steadystate="1";
+		oDeviceSO.timedomain="0";
+		oDeviceSO.SaveData();
+		
+		//Checking if the breaker closes
+		brkDev=cct.devices("Name", this.breaker)[0];
+		var oDeviceBrk = new oDevice_brk0(brkDev);
+		switch(oDeviceBrk.IdealSwitch.topen_units)
+		{
+			case "ns":
+			coefTimeBrk=1E-9;
+			break;
+			
+			case "us":
+			coefTimeBrk=1E-6;
+			break;
+			
+			case "ms":
+			coefTimeBrk=1E-3;
+			break;
+			
+			case "":
+			coefTimeBrk=1;
+			break;
+		}
+		switch(oDeviceSO.tmaxu)
+		{
+			case "ns":
+			coefTime=1E-9;
+			break;
+			
+			case "us":
+			coefTime=1E-6;
+			break;
+			
+			case "ms":
+			coefTime=1E-3;
+			break;
+			
+			case "":
+			coefTime=1;
+			break;
+		}
+		if(oDeviceBrk.IdealSwitch.topen_A*coefTimeBrk>oDeviceSO.tmax*coefTime)
+		{
+			alert('the opening time occurs after the end of the simulation')
+			return;
+		}
+		
+	//-----------------------------------------------------//
+	//First Simulation: Three Phase Terminal Fault//
+	//----------------------------------------------------//
+		writeln("/******Beginning of Three-Phase Terminal Bus Fault Simulation******/");
+		//* Calculate the short-circuit current
+		writeln("    /******Beginning of fault Current Calculation******/");
+		exit=ShortCircuitCurrent(brkDev,this.type_of_fault,this.terminalBus);
+		writeln("    /******End of fault Current Calculation******/");
+		SCC=exit[0];
+		ignitionSignal=exit[1];
+		oDeviceBrk.TRV_K=SCC;
+		
+		//* Set the TRV parameter according to the Short-Circuit Current
+		find_rated_TRV_parameters1(oDeviceBrk);
+		oDeviceBrk.SaveDataTRV();
+		
+		//* Indicate that the fault is a Terminal Fault
+		isSLF=0;
+		standard="Terminal_fault_TRV";
+			
+		modelDataBreaker=cct.devices("Name",this.breaker)[0].getAttribute('ModelData');
+		modelDataBreaker=modelDataBreaker.split('isSLF')[0]+'isSLF='+isSLF+';';
+		cct.devices("Name",this.breaker)[0].setAttribute('ModelData',modelDataBreaker);
+		breaker=this.breaker;
+			
+		//-Save data------------------------------------------------------------------------------------------------------------
+		this.SaveData();
+		
+		//* Change the simulations options in order to do a Steady-State simulation
+		writeln("    /******Beginning of TRV Simulation******/");
+		oDeviceSO.steadystate="0";
+		oDeviceSO.timedomain="1";
+		oDeviceSO.SaveData();
+		
+
+ 		//* Launch the analysis
+		type_of_fault=this.type_of_fault;
+		parseScriptFile("launch_analysis.dwj");
+		// load_a_case='off';
+		writeln("    /******End of TRV Simulation******/");
+	// }
+	
+	//* Analyse the simulations files to collect the datas and create the report
+	writeln("    /******Beginning of File Generation******/");
+	parseScriptFile("results_analysis.dwj");
+	reportFile=SPFile(path+"/report.txt");
+	reportFile.name="report.txt";
+	reportFile.create();
+	reportFile.openReadWrite();
+	reportFile.writeText(report);
+	reportFile.close(); 
+	writeln("    /******End of File Generation******/");
+	
+	// Indicte whethert the TRV is valid or not
+	if(isOver==false && isLowerThantda && isLowerThantdb && isLowerThantdc)
+	{
+		firstSimulationCompliance=("Success! \nThe Three-Phase Terminal Fault TRV complies the requirements of the norm\nThe curve are shown in Scopeview in pages 1, 2 and 3\nThe report was saved in "+path+"/report.txt");
+	}
+	else
+	{
+		firstSimulationCompliance=("The Three-Phase Terminal Fault TRV does not comply the requirements of the norm\nThe curves are shown in Scopeview in pages 1, 2 and 3\nPlease look at "+path+"/report.txt for more information");
+	}
+	
+	//Indicate the first Simulation is finished//
+	firstSimulation=false;
+
+	//Store the path to the folder of the Terminal Bus TRV analysis		
+	path1=path;
+	writeln("/******End of Three-Phase Terminal Bus Fault Simulation******/");
+
+	//----------------------------------------//
+	//Second Simulation: Short-Line fault
+	//----------------------------------------//
+	
+	writeln("/******Beginning of Short-Line Fault Simulation******/");
+	this.type_of_fault="Short Line Fault";
+	
+	//* Identify the line where the fault is
+	Distance_from_breaker_to_fault=this.Distance_from_breaker_to_fault
+	distance_unit=this.distance_unit;
+	lineDev=cct.devices('Name',this.line)[0];
+
+	//* Change the simulations options in order to do a Steady-State simulation
+	oDeviceSO.LoadFlow="0";
+	oDeviceSO.steadystate="1";
+	oDeviceSO.timedomain="0";
+	oDeviceSO.SaveData();
+	
+	//* Calculate the short-circuit current
+	writeln("    /******Beginning of fault Current Calculation******/");
+	exit=ShortCircuitCurrent(brkDev,this.type_of_fault,this.terminalBus,this.line);
+	writeln("    /******End of fault Current Calculation******/");
+	SCC=exit[0];
+	ignitionSignal=exit[1];
+	oDeviceBrk.TRV_K=SCC;
+	
+	//* Set the TRV parameter according to the Short-Circuit Current
+	find_rated_TRV_parameters1(oDeviceBrk);
+	oDeviceBrk.SaveDataTRV();
+	
+	//* Indicate that the fault is a Short-Line Fault
+	setGlobalValue('lineList',findLineList());
+	isSLF=1;
+	standard="SLF_TRV_td";
+		
+	modelDataBreaker=cct.devices("Name",this.breaker)[0].getAttribute('ModelData');
+	modelDataBreaker=modelDataBreaker.split('isSLF')[0]+'isSLF='+isSLF+';';
+	cct.devices("Name",this.breaker)[0].setAttribute('ModelData',modelDataBreaker);
+	breaker=this.breaker;
+		
+	//* Save data
+	this.SaveData();
+	
+	//* Change the simulations options in order to do a Steady-State simulation
+	writeln("    /******Beginning of TRV Simulation******/");
+	oDeviceSO.steadystate="0";
+	oDeviceSO.timedomain="1";
+	oDeviceSO.SaveData();
+	
+	//* Launch the analysis
+	parseScriptFile("launch_analysis.dwj")
+	// load_a_case='off';
+	
+	//* If the fault is a short-line fault, remove the two parts of the line and connect the whole line
+	// if(this.load_a_case!="on")
+	// {
+		parseScriptFile("replaceLine2.dwj");
+	// }
+	//* Analyse the simulations files to collect the datas and create the report
+	parseScriptFile("results_analysis.dwj");
+	reportFile=SPFile(path+"/report.txt");
+	reportFile.name="report.txt";
+	reportFile.create();
+	reportFile.openReadWrite();
+	reportFile.writeText(report);
+	reportFile.close();
+	
+	writeln("    /******End of TRV Simulation******/");
+	writeln("/******End of Short-Line Fault Simulation******/");
+	
+	if(isOver==false && isLowerThantda && isLowerThantdb && isLowerThantdc)
+	{
+		secondSimulationCompliance="Success! \nThe Short-Line Fault TRV complies the requirements of the standard\nThe curve are shown in Scopeview in pages 4, 5 and 6\nThe report was saved in "+path+"/report.txt";
+	}
+	else
+	{
+		secondSimulationCompliance="The Short-Line Fault TRV does not comply the requirements of the standard\nThe curves are shown in Scopeview in pages 4, 5 and 6\nPlease look at "+path+"/report.txt for more information";
+	}
+	alert(firstSimulationCompliance+"\n \n"+secondSimulationCompliance);
+}
+
+//* Save Data
+function grey_box_save_o()
+{
+	var dev=this.dev;
+	dev.setAttribute("ModelData",this.breaker+","+this.Distance_from_breaker_to_fault+","+this.distance_unit+","+this.load_a_case+","+this.filepath+","+this.line);
+}
+
+function oDevice_TRV(dev)
+{
+	this.dev=dev;
+	modelData=dev.getAttribute("ModelData").split(",");
+	this.breaker=modelData[0];
+	this.Distance_from_breaker_to_fault=modelData[1];
+	this.distance_unit=modelData[2];
+	// this.load_a_case=modelData[3];
+	this.filepath=modelData[4];
+	this.line=modelData[5];
+	this.SaveData=grey_box_save_o;
+	this.open=main_data_o;
+	
+   //same for both 3-phase and one-phase versions
+   this.WindowXsize_1phase=300;
+   this.WindowYsize_1phase=400;
+   this.WindowXsize_3phase=550;
+   this.WindowYsize_3phase=400;
+}
+
+//* create a list of breaker's names
+function findBreakers()
+{
+	listOfBreakers=cct.devices("Name.Prefix","brk");
+	var breaker= new Array;
+	var pin0= new Array;
+	var pin1= new Array;
+	for(i=0;i<listOfBreakers.length;i++)
+	{
+		breaker[i]=listOfBreakers[i].getAttribute('Name');
+		pin0[i]=listOfBreakers[i].pins[0].signal.name;
+		pin1[i]=listOfBreakers[i].pins[1].signal.name;
+	}
+	return [breaker,pin0,pin1];
+}
+
+//* find the list of lines
+function findLineList()
+{
+	linesTLM=cct.devices("Name.Prefix","TLM");
+	linesFDQ=cct.devices("Name.Prefix","FDQ");
+	linesFDline=cct.devices("Name.Prefix","FDline");
+	linesWB=cct.devices("Name.Prefix","WBline");
+	linesPI=cct.devices("Name.Prefix","PI");
+	cpt=0;
+	lineList=new Array();
+	for(i=0;i<linesTLM.length;i++)
+	{
+		lineList.push(linesTLM[i].getAttribute("Name"));
+	}
+	for(i=0;i<linesFDQ.length;i++)
+	{
+		lineList.push(linesFDQ[i].getAttribute("Name"));
+	}
+	for(i=0;i<linesFDline.length;i++)
+	{
+		lineList.push(linesFDline[i].getAttribute("Name"));
+	}
+	for(i=0;i<linesWB.length;i++)
+	{
+		lineList.push(linesWB[i].getAttribute("Name"));
+	}
+	for(i=0;i<linesPI.length;i++)
+	{
+		lineList.push(linesPI[i].getAttribute("Name"));
+	}
+	return lineList;
+}
+
+//*find the parameter of the TRV of oDevice
+function find_rated_TRV_parameters1(oDevice){
+
+	var Tx = oDevice.TRV_K;
+	var Tt = oDevice.TRV_Rated_short_circuit;
+	var Percentage = Tx/Tt*100 			//Percentage of short-circuit current on rated short-circuit
+
+	if (Percentage>100){
+		Percentage=100
+}	
+	else if (Percentage<10){
+		Percentage=10
+} 	
+	Percentage = parseFloat(Percentage)
+	var Timet1 =0
+	var Timet2=0
+	var Timet3=0
+	var AmplitudeFactor=0
+	var VoltagePeakU1=0
+	var VoltagePeakUc=0
+	var PoleToClear=0
+	var RRRV1=0
+	var RRRV2=0
+	var breaker_class = oDevice.TRV_breaker_class;
+	var findParam
+        findParam = '1'
+        
+
+   if (findParam == '1'){
+	    //Find rated TRV parameters for cables (Class S1) IEC 62271-100 2010 and IEEE C37.011-2011
+	    if (breaker_class == 'Class_S1') {	
+		    var RatedVoltage = oDevice.TRV_Rated_voltage;
+		    var Kt3 //t3 ratio for cables
+		    var Kuc	//Uc ratio for cables 
+		    var RatedVoltagesS1                     = [3.6,     4.76,   7.2,    8.25,   12,     15,     17.5,   24,     25.8,   36,     38,     48.3,   52,     72.5]  //Table 1 IEC 62271-100 2010
+		    var Timet3S1         				    = [41,      44,     51,     52,     61,     66,     71,     87,     91,     109,    109,    125,    131,    165]  //Table 1 IEC 62271-100 2010
+		    var TRVPeakS1    				        = [6.2,     8.2,    12.3,   14.1,   20.6,   25.7,   30,     41.2,   44.2,   61.7,   65.2,   82.8,   89.2,   124]  //Table 1 IEC 62271-100 2010
+			 var TRVtdS1    				        = [6,     7,    8,   8,   9,   10,   11,     13,   14,   16,   16,   19,   20,   25]  //Table 1 IEC 62271-100 2010
+			 var TRVtpS1    				        = [20,     21,    25,   25,   29,   32,   34,     42,   44,   53,   53,	60,   63,   80]  //Table 1 IEC 62271-100 2010
+			 var TRVupS1    				        = [2.1,     2.7,    4.1,   4.7,   6.9,   8.6,   10.0,     13.7,   14.7,   20.6,   21.7,		27.6,   29.7,   41.4]  //Table 1 IEC 62271-100 2010
+		    var nlines=0
+		    while (RatedVoltage > RatedVoltagesS1[nlines] && nlines+1 < RatedVoltagesS1.length) {
+			    Timet3S1[nlines] = parseFloat(Timet3S1[nlines])
+			    RatedVoltagesS1[nlines] = parseFloat(RatedVoltagesS1[nlines])
+			    nlines = nlines + 1
+		    }
+	    if (Percentage>=10&&Percentage<=30){
+			    Kt3=0.22											//Figure 10 C37.011-2011
+		    Kuc=((1.14-1.21)/(30-10))*(Percentage-10)+1.21 		//Figure 10 C37.011-2011
+	    } else if (Percentage>30&&Percentage<=60){
+		    Kt3=((0.44-0.22)/(60-30))*(Percentage-30)+0.22 		//Figure 10 C37.011-2011
+		    Kuc=((1.07-1.14)/(60-30))*(Percentage-30)+1.14		//Figure 10 C37.011-2011
+	    } else if (Percentage>60&&Percentage<=100){
+		    Kt3=((1-0.44)/(100-60))*(Percentage-60)+0.44 		//Figure 10 C37.011-2011
+		    Kuc=((1-1.07)/(100-60))*(Percentage-60)+1.07		//Figure 10 C37.011-2011
+	    }
+	    AmplitudeFactor=1.4*Kuc		//Table 1 IEC 62271-100 2010
+	    AmplitudeFactor = roundTo(AmplitudeFactor,1)
+	    PoleToClear=1.5
+	    Timet3=(Kt3*Timet3S1[nlines])
+	    Timet3 = roundTo(Timet3,1);
+	    VoltagePeakUc=(TRVPeakS1[nlines]*Kuc);		//Equation 1 C37.011-2011
+	    RRRV2=VoltagePeakUc/Timet3
+	    RRRV2 = roundTo(RRRV2, 2)
+        RRRV1 = RRRV2
+		var td=Kt3*TRVtdS1[nlines]
+		var tp=Kt3*TRVtpS1[nlines]
+		var up=Kuc*TRVupS1[nlines]
+	    //VoltagePeakUc = Math.Ceil(VoltagePeakUc);
+	    //RRRV2= Math.Ceil(RRRV2);
+    }
+	    //Find rated TRV parameters for lines (Class S2) IEC 62271-100 2010 and IEEE C37.011-2011
+	    else if (breaker_class == 'Class_S2'){
+		    var RatedVoltage = oDevice.TRV_Rated_voltage;
+		    var Kt3 //t3 ratio for cables
+		    var Kuc	//Uc ratio for cables 
+		    var RatedVoltagesS2                     = [15.0,    17.5,   24.0,   25.8,   36.0,   38.0,   48.3,   52,     72.5]   //Table 2 IEC 62271-100 2010
+		    var Timet3S2          					= [31.0,    34.0,   43.0,   45.0,   57.0,   59.0,   70.0,   74.0,   93.0]     //Table 2 IEC 62271-100 2010
+		    var TRVPeakS2				            = [28.3,    33,     45.3,   48.7,   67.9,   71.7,   91.1,   98.1,   137]    //Table 2 IEC 62271-100 2010
+			var TRVtdS2    				        = [2,     2,    2,   2,   3,   3,   4,     4,   5]  //Table 2 IEC 62271-100 2010
+			 var TRVtpS2    				        = [12,     13,    16,   17,   22,   23,   27,     28,   36]  //Table 2 IEC 62271-100 2010
+			 var TRVupS2    				        = [9.4,	11.0,		15.1,		16.2,		22.6,		23.9,		30.4,		32.7,		45.6]  //Table 2 IEC 62271-100 2010
+		    var nlines=0
+	
+		    while (RatedVoltage > RatedVoltagesS2[nlines] && nlines+1 < RatedVoltagesS2.length) {
+			    nlines = nlines + 1
+		    }
+	    if (Percentage>=10&&Percentage<=30){
+		    Kt3=0.4												//Figure 10 IEEE Std C37.011-2011
+		    Kuc=((1.13-1.17)/(30-10))*(Percentage-10)+1.17 		//Figure 10 IEEE Std C37.011-2011
+	
+	    } 
+	    else if (Percentage>30&&Percentage<=60){
+		    Kt3=((0.67-0.4)/(60-30))*(Percentage-30)+0.4 		//Figure 10 IEEE Std C37.011-2011
+		    Kuc=((1.07-1.13)/(60-30))*(Percentage-30)+1.13		//Figure 10 IEEE Std C37.011-2011
+	    } 
+	    else if (Percentage>60&&Percentage<=100){
+		    Kt3=((1-0.67)/(100-60))*(Percentage-60)+0.67		//Figure 10 IEEE Std C37.011-2011
+		    Kuc=((1-1.07)/(100-60))*(Percentage-60)+1.07		//Figure 10 IEEE Std C37.011-2011
+	    }
+	    Kuc = parseFloat(Kuc)
+	    AmplitudeFactor=1.54*Kuc	//Table 6 of IEEE Std C37.06
+	    PoleToClear=1.5;
+	    Timet3=Kt3*Timet3S2[nlines]
+	    Timet3 = roundTo(Timet3, 1)
+	    VoltagePeakUc=TRVPeakS2[nlines]*Kuc;
+	    RRRV2 = VoltagePeakUc / Timet3
+	    RRRV1 = RRRV2
+		var td=Kt3*TRVtdS2[nlines]
+		var tp=Kt3*TRVtpS2[nlines]
+		var up=Kuc*TRVupS2[nlines]
+	    AmplitudeFactor = roundTo(AmplitudeFactor,2);
+
+
+	    }
+	    //Find rated TRV parameters for 100kV effectively earthed IEC 62271-100 2010 and IEEE C37.011-2011
+	    else if (breaker_class == '100KV_effectively earthed'){
+		    var RatedVoltage = oDevice.TRV_Rated_voltage;
+		    var Kt1
+		    var Kt2
+		    var Kt3
+		    var Kuc
+		    var Ku1
+		    var RatedVoltageU1
+		    var RatedVoltages100_800kV_earthed          = [100.0,     123.0,    145.0,    170.0,	245.0,	300.0,	362.0,	420.0,	550.0,	800.0]    //Table 3 and Table 5 IEC 62271-100 2010
+		    var Timet1100_800kV						    = [40.0,      49.0,     58.0,     68.0,		98.0,	119.0,	144.0,	167.0,	219.0,	318.0]     //Table 3 and Table 5 IEC 62271-100 2010
+		    var Timet2100_800kV					        = [160.0,     196.0,    232.0,    272.0,	392.0,	476.0,	576.0,	668.0,	876.0,	1272.0]    //Table 3 and Table 5 IEC 62271-100 2010
+		    var FirstVoltageRef100_800kV  				= [80.0,      98.0,     115.0,    135.0,	195.0,	239.0,	288.0,	334.0,	438.0,	637.0]    //Table 3 and Table 5 IEC 62271-100 2010
+		    var TRVPeak100Earthed						= [149.0,	  183.0,	215.0,	  253.0,	364.0,	446.0,	538.0,	624.0,	817.0,	1189.0]	//Table 3 and Table 5 IEC 62271-100 2010
+			var TRVtd100_800kV  				        = [2,     2,    2,   2,   2,   2,   2,     2,   2,		2]  //Table 3 IEC 62271-100 2010
+			 var TRVtp100_800kV    				        = [12,     13,    16,   17,   22,   23,   27,     28,   36]  //Table 3 IEC 62271-100 2010
+			 var TRVup100_800kV   				        = [9.4,	11.0,		15.1,		16.2,		22.6,		23.9,		30.4,		32.7,		45.6]  //Table 3 IEC 62271-100 2010
+		    var nlines=0
+	
+	
+		    while (RatedVoltage > RatedVoltages100_800kV_earthed[nlines] && nlines+1 < RatedVoltages100_800kV_earthed.length) {
+			    nlines = nlines + 1
+		    }
+		    if (Percentage>=10 && Percentage<=30){			//Short-circuit current between T10 and T30
+			    Kuc=((1.1-1.26)/(30-10))*(Percentage-10)+1.26
+			    Kt3 = ((0.21 - 0.17) / (30 - 10)) * (Percentage - 10) + 0.17
+			    AmplitudeFactor=1.4*Kuc
+			    PoleToClear=1.3	
+			    Timet3=Kt3*Timet2100_800kV[nlines]
+			    Timet3 = roundTo(Timet3, 1)
+			    VoltagePeakUc=TRVPeak100Earthed[nlines]*Kuc
+			    RRRV2=VoltagePeakUc/Timet3
+			    AmplitudeFactor = roundTo(AmplitudeFactor, 1);
+			    RRRV1 = RRRV2
+
+		    }
+		    else if (Percentage>30 && Percentage<=60){
+			    Ku1=((1-2.05)/(60-30))*(Percentage-30)+2.05
+			    Kuc=((1.07-1.1)/(60-30))*(Percentage-30)+1.1
+			    Kt1=((0.67-0.82)/(60-30))*(Percentage-30)+0.82
+			    Kt2 = ((1 - 0.21) / (60 - 30)) * (Percentage - 30) + 0.21
+			    AmplitudeFactor=1.4*Kuc
+			    PoleToClear=1.3
+			    Timet1 = Timet1100_800kV[nlines] * Kt1
+			    Timet2=Timet2100_800kV[nlines]*Kt2
+			    Timet1 = roundTo(Timet1,1);
+			    Timet2 = roundTo(Timet2,1);
+			    VoltagePeakU1=FirstVoltageRef100_800kV[nlines]*Ku1
+			    VoltagePeakUc = TRVPeak100Earthed[nlines] * Kuc
+			    RRRV1=VoltagePeakU1/Timet1
+			    RRRV2 = (VoltagePeakUc - VoltagePeakU1) / (Timet2 - Timet1)
+			    AmplitudeFactor=roundTo(AmplitudeFactor, 1);
+
+		    } 
+		    else if (Percentage>60&&Percentage<=100){
+			    Ku1=1
+			    Kuc=((1-1.07)/(100-60))*(Percentage-60)+1.07
+			    Kt1=((1-0.67)/(100-60))*(Percentage-60)+0.67
+			    Kt2=1
+			    AmplitudeFactor=1.4*Kuc
+			    PoleToClear=1.3
+			    Timet1=Timet1100_800kV[nlines]*Kt1
+			    Timet2=Timet2100_800kV[nlines]*Kt2
+			    VoltagePeakU1=FirstVoltageRef100_800kV[nlines]*Ku1
+			    VoltagePeakUc = TRVPeak100Earthed[nlines] * Kuc
+			    RRRV1=VoltagePeakU1/Timet1
+			    RRRV2 = (VoltagePeakUc - VoltagePeakU1) / (Timet2 - Timet1)
+		    }
+		    Timet1 = roundTo(Timet1,1);
+		    Timet2 = roundTo(Timet2,1);
+		    AmplitudeFactor = roundTo(AmplitudeFactor,1);
+		    RRRV1 = roundTo(RRRV1, 3);
+		    RRRV2 = roundTo(RRRV2, 3);
+			var td=TRVtd100_800kV[nlines]
+			var up=TRVup100_800kV[nlines]
+			var tp=roundTo(td+up/RRRV1,2);
+		
+	    }
+    //Find Rated TRV with 100kV non-effectively earthed IEC 62271-100 2010 and IEEE C37.011-2011
+    else if (breaker_class == '100KV_non-effectively earthed'){
+        var RatedVoltage = oDevice.TRV_Rated_voltage;
+	    var Kt1
+	    var Kt2
+	    var Kt3
+	    var Kuc
+	    var Ku1
+	    var RatedVoltages100_170kV_non_earthed                  = [100.0,     123.0,    145.0,	  170.0]    //Table 4 IEC 62271-100 2010
+	    var Timet1100_170kV_non_earthed					        = [46.0,      56.0,     67.0,     78.0]     //Table 4 IEC 62271-100 2010
+	    var FirstVoltageRef100_170kV_non_earthed				= [92.0,      113.0,    133.0,    156.0]    //Table 4 IEC 62271-100 2010
+        var Timet2100_170kV_non_earthed					        = [184.0,     224.0,    268.0,    312.0]    //Table 4 IEC 62271-100 2010
+	    var TRVPeak100_170kV_non_earthed            				        = [171.0,     211.0,    249.0,    291.0]    //Table 4 IEC 62271-100 2010
+			var TRVtd100_170kV_non_earthed 				        = [2,     2,   2,   2]  //Table 3 IEC 62271-100 2010
+			var TRVtp100_170kV_non_earthed    				        = [36,		25,		30,		30]  //Table 3 IEC 62271-100 2010
+			 var TRVup100_170kV_non_earthed   				        = [46,		56,		67,		78]  //Table 3 IEC 62271-100 2010
+	    var nlines = 0
+	
+	    while (RatedVoltage > RatedVoltages100_170kV_non_earthed[nlines] && nlines+1 < RatedVoltages100_170kV_non_earthed.length) {
+            nlines = nlines + 1
+	    }
+	    if (Percentage>=10&&Percentage<30){
+		    Kuc=((1.11-1.09)/(30-10))*(Percentage-10)+1.09;
+		    Kt3=((0.21-0.16)/(30-10))*(Percentage-10)+0.16;
+		    AmplitudeFactor=1.4*Kuc
+		    PoleToClear=1.5	
+		    Timet3=Kt3*Timet2100_170kV_non_earthed[nlines]
+		    Timet3 = roundTo(Timet3,1);
+		    VoltagePeakUc = TRVPeak100_170kV_non_earthed[nlines] * Kuc;
+		    RRRV2=roundTo(VoltagePeakUc/Timet3,2)
+		    AmplitudeFactor = roundTo(AmplitudeFactor,1);
+		    Timet3 = roundTo(Timet3, 1);
+		    RRRV1 = RRRV2
+	    }
+	    else if (Percentage>=30&&Percentage<60){
+		    Ku1=((1-2.11)/(60-30))*(Percentage-30)+2.11
+		    Kuc=((1.07-1.13)/(60-30))*(Percentage-30)+1.13
+		    Kt1=((0.67-0.84)/(60-30))*(Percentage-30)+0.84
+		    Kt2=((1-0.21)/(60-30))*(Percentage-30)+0.21
+		    AmplitudeFactor=1.4*Kuc
+		    PoleToClear=1.5
+		    Timet1=Timet1100_170kV_non_earthed[nlines]*Kt1
+		    Timet2=Timet2100_170kV_non_earthed[nlines]*Kt2
+		    Timet1 = roundTo(Timet1,1);
+		    Timet2 = roundTo(Timet2,1);
+		    VoltagePeakU1=FirstVoltageRef100_170kV_non_earthed[nlines]*Ku1
+		    VoltagePeakUc = TRVPeak100_170kV_non_earthed[nlines] * Kuc;
+		    RRRV1=VoltagePeakU1/Timet1
+		    RRRV2 = (VoltagePeakUc - VoltagePeakU1) / (Timet2 - Timet1)
+		    AmplitudeFactor = roundTo(AmplitudeFactor, 1);
+		    RRRV1 = roundTo(RRRV1, 3);
+		    RRRV2 = roundTo(RRRV2, 3);		
+	    }
+	    else if (Percentage>=60&&Percentage<=100){
+		    Ku1=1
+		    Kuc=((1-1.07)/(100-0))*(Percentage-60)+1.07
+		    Kt1=((1-0.67)/(100-60))*(Percentage-60)+0.67
+		    Kt2=1
+		    AmplitudeFactor=1.4*Kuc
+		    PoleToClear = 1.5
+		    Timet1=Timet1100_170kV_non_earthed[nlines]*Kt1
+		    Timet2=Timet2100_170kV_non_earthed[nlines]*Kt2
+		    Timet1 = roundTo(Timet1,1);
+		    Timet2 = roundTo(Timet2,1);
+		    VoltagePeakU1=FirstVoltageRef100_170kV_non_earthed[nlines]*Ku1
+		    VoltagePeakUc = TRVPeak100_170kV_non_earthed[nlines] * Kuc;
+		    RRRV1=VoltagePeakU1/Timet1
+		    RRRV2 = (VoltagePeakUc - VoltagePeakU1) / (Timet2 - Timet1)
+		    AmplitudeFactor = roundTo(AmplitudeFactor,1);
+		    RRRV1 = roundTo(RRRV1, 3);
+		    RRRV2 = roundTo(RRRV2, 3);			
+	    }
+		var td=TRVtd100_170kV_non_earthed[nlines]
+		var up=roundTo(TRVup100_170kV_non_earthed[nlines],2)
+		var tp=roundTo(td+up/RRRV1,2);
+    }
+	    VoltagePeakUc = roundTo(VoltagePeakUc,1)
+	    VoltagePeakU1 = roundTo(VoltagePeakU1,1)
+        oDevice.TRV_kpp = PoleToClear.toString()
+        oDevice.TRV_kaf = AmplitudeFactor.toString()
+        oDevice.TRV_Uc = VoltagePeakUc.toString()
+        oDevice.TRV_U1 = VoltagePeakU1.toString()
+        oDevice.TRV_t1 = Timet1.toString()
+        oDevice.TRV_t2 = Timet2.toString()
+        oDevice.TRV_t3 = Timet3.toString()
+        oDevice.TRV_RRRV1 = RRRV1.toString()
+        oDevice.TRV_RRRV2 = RRRV2.toString()
+		oDevice.td = td.toString()
+		oDevice.tp = tp.toString()
+		oDevice.up = up.toString()
+   }
+}
+
+//* Find the quotion of the Euclidian division of val by 10^-dec
+function roundTo(val, dec) 
+{    
+	if (!isNaN(val)) { 
+		var mult = Math.pow(10,dec);       
+		return ( Math.round(val*mult) / mult );   
+	}   
+	else {       
+		return val;    
+	}
+}

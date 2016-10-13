@@ -1,0 +1,91 @@
+<html>
+<head>
+    <meta http-equiv="Content-Language" content="en-us">
+    <meta http-equiv="Content-Type" content="text/html_3; charset=windows-1252">
+    <link rel="STYLESHEET" type="text/css" href="../../../../../Info Scripts/HTML/emtpstyle.css">
+    <script language="JavaScript" src="../../../../../Info Scripts/HTML/javascripts/testvalue.js"></script>
+    <script language="JavaScript" src="../../../../../Info Scripts/HTML/javascripts/hideshowlayer.js"></script>
+    <script language="JavaScript" src="../../../../../Info Scripts/HTML/javascripts/testposintvalue.js"></script>
+    <script language="JavaScript" src="../../../../../Info Scripts/HTML/javascripts/testdata.js"></script>
+    <script language="JavaScript" src="../../../../../Info Scripts/HTML/javascripts/testpos0realvalue.js"></script>
+    <script language="JavaScript" src="../../../../../Info Scripts/HTML/javascripts/notspecialopt.js"></script>
+    <script language="JavaScript" src="../../../../../Info Scripts/HTML/javascripts/test_one_line_box.js"></script>
+    <script language="JavaScript" src="../../../../../Info Scripts/HTML/javascripts/standardmasks.js"></script>
+    <script language="JavaScript" src="../../../../../Info Scripts/HTML/javascripts/visual_config.js"></script>
+    <script language="JavaScript" src="../../../../../Info Scripts/HTML/javascripts/plot_sample_data.js"></script>
+    <script language="JavaScript" src="../../../../../Info Scripts/HTML/javascripts/standard_onload.js"></script>
+	<script language="JavaScript" src="Main data.js"></script>	
+    <title>Main Data</title>
+    <script language="JavaScript"></script>
+</head>
+<body class="mybodyblue" onload='standard_onload();'>
+<h1 id="model_id1">
+        Main Data   
+    </h1>
+<!-- 	<table>
+			<tr>
+			<td>
+				<input type="checkbox" name="load_a_case_chckbox" id="load_a_case_chckbox_id" onclick="hideAndShow()">
+				Load a previously calculated TRV case
+			</td>
+		</tr>
+	</table> -->
+<!-- <table id="load_a_case_id" class="tableofdata">
+	<tr>
+		<td> Load a case</td>
+	</tr>
+	<tr>
+		<td>
+			<input name="filepath" id="filepath_id">
+			<input type="button" value="Select file" name="loadFile" onclick="folderselect(filepath,'txt')">
+		</td>
+	</tr>
+	<tr>
+		<td colspan=3>
+			Select the file called "TRV_method" in the folder of the case you want to analyse
+		</td>
+	</tr>
+</table> -->
+<table class="tableofdata" id="new_analysis_id">
+	<tr>
+		<td>
+		breaker
+		</td>
+		<td>
+			<select name="breaker" id="breaker_id" onchange="searchTerminal()">
+		</td>
+	</tr>
+	<tr>
+		<td>
+			Terminal Bus
+		</td>
+		<td>
+			<select name="terminalBus" id="terminalBus_id">
+		</td>
+	</tr>
+	<tr id="line_name_id">
+		<td>
+		line
+		</td>
+		<td>
+			<select name="line" id="line_id">
+		</td>
+	</tr>
+			<tr id="distance_line_id">
+			<td>
+				Distance from breaker to fault
+			</td>
+			<td>
+				<input name="Distance_from_breaker_to_fault" id="Distance_from_breaker_to_fault_id">
+			</td>
+			<td>
+				<select name="distance_unit" id="distance_unit_id" class="units">
+					<option name="percent" id="percent_id" value="%">%</option>
+					<option name="absolute" id="absolute_id" value="">length units</option>
+				</select>
+			</td>
+		</tr>
+</table>
+<ul  ID=statusbar></ul>
+</body>
+</html>

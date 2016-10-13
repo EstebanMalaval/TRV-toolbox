@@ -1,0 +1,553 @@
+//Last Change: Esteban MALAVAL 2016-06-07
+parseScriptFile('brk_m.dwj');
+
+//* Results Analysis
+//* Copy the instructions for the saving of Data and modify it in order to comply to the studied case
+method=SPFile("Toolboxes/TRV Toolbox/Script/TRVmethod.txt");
+method.copyTo(path);
+method.close();
+method2=SPFile(path+"/TRVmethod.txt");
+method2.openRead();
+text=method2.readText();
+text = text.split('path').join(path+"/"+designfilename_noex+"m.m");
+text = text.split('devname').join(breaker);
+method2.remove();
+method2.create();
+method2.writeText(text);
+method2.close();
+
+//* Copy the instructions for the plotting of Results and modify it in order to comply to the studied case
+if(firstSimulation)
+{
+template=SPFile("Toolboxes/TRV Toolbox/Script/default template.xml");
+template.copyTo(path);
+template2=SPFile(path+"/default template.xml");
+template2.openRead();
+text=template2.readText();
+text = text.split('path1').join(path);
+text = text.split('circname').join(cct.name.split('.')[0]);
+text = text.split('devName').join(breaker);
+template2.remove();
+template2.create();
+template2.writeText(text);
+template2.close();
+}
+else
+{
+	template2=SPFile(path1+"/default template.xml");
+	template2.openRead();
+	text=template2.readText();
+	text = text.split('path2').join(path);
+	template2.remove();
+	template2.create();
+	template2.writeText(text);
+	template2.close();
+	plotResults(path1+"/default template.xml")
+}
+
+//* plot and save results
+
+// if(load_a_case!='on')
+// {
+	saveResults(path);
+
+	//* Wait until all the data files are generated
+	voltagec_plot_file=SPFile(path+"/voltagec_plot.txt");
+	writeln("    /******Saving Data...******/");
+	i=0;
+	while(voltagec_plot_file.length==0)
+	{
+		i++;
+	}
+
+	//* Create the folder "other files"
+	folderCreation=SPFile(path+"/otherfiles/foldercreation.txt");
+	folderCreation.create();
+	folderCreation.remove();
+
+	//deplace all the files that are useful only for the explotation
+	comparaisona_plot_labels=SPFile(path+"/comparaisona_plot_labels.txt");
+	comparaisona_plot_labels.copyTo(path+"/otherfiles");
+	comparaisona_plot_labels.remove();
+
+	comparaisona_plot=SPFile(path+"/comparaisona_plot.txt");
+	comparaisona_plot.copyTo(path+"/otherfiles");
+	comparaisona_plot.remove();
+
+	comparaison_tda_plot=SPFile(path+"/comparaison_tda_plot.txt");
+	comparaison_tda_plot.copyTo(path+"/otherfiles");
+	comparaison_tda_plot.remove();
+
+	comparaison_tda_plot_labels=SPFile(path+"/comparaison_tda_plot_labels.txt");
+	comparaison_tda_plot_labels.copyTo(path+"/otherfiles");
+	comparaison_tda_plot_labels.remove();
+
+	comparaisonb_plot_labels=SPFile(path+"/comparaisonb_plot_labels.txt");
+	comparaisonb_plot_labels.copyTo(path+"/otherfiles");
+	comparaisonb_plot_labels.remove();
+
+	comparaisonb_plot=SPFile(path+"/comparaisonb_plot.txt");
+	comparaisonb_plot.copyTo(path+"/otherfiles");
+	comparaisonb_plot.remove();
+
+	comparaison_tdb_plot=SPFile(path+"/comparaison_tdb_plot.txt");
+	comparaison_tdb_plot.copyTo(path+"/otherfiles");
+	comparaison_tdb_plot.remove();
+
+	comparaison_tdb_plot_labels=SPFile(path+"/comparaison_tdb_plot_labels.txt");
+	comparaison_tdb_plot_labels.copyTo(path+"/otherfiles");
+	comparaison_tdb_plot_labels.remove();
+
+	comparaisonc_plot_labels=SPFile(path+"/comparaisonc_plot_labels.txt");
+	comparaisonc_plot_labels.copyTo(path+"/otherfiles");
+	comparaisonc_plot_labels.remove();
+
+	comparaisonc_plot=SPFile(path+"/comparaisonc_plot.txt");
+	comparaisonc_plot.copyTo(path+"/otherfiles");
+	comparaisonc_plot.remove();
+
+	comparaison_tdc_plot=SPFile(path+"/comparaison_tdc_plot.txt");
+	comparaison_tdc_plot.copyTo(path+"/otherfiles");
+	comparaison_tdc_plot.remove();
+
+	comparaison_tdc_plot_labels=SPFile(path+"/comparaison_tdc_plot_labels.txt");
+	comparaison_tdc_plot_labels.copyTo(path+"/otherfiles");
+	comparaison_tdc_plot_labels.remove();
+// }
+
+var oDevicebrk= new oDevice_brk0(cct.devices("Name",breaker)[0]);
+Uc=oDevicebrk.TRV_Uc;
+
+isOver=false;
+//* analysis of the TRV of phase a
+	//* look at the comparaison between the actuel voltage and the main TRV
+comparaisona=SPFile(path+"/otherfiles/comparaisona_plot.txt");
+if(!comparaisona)
+{
+	alert('The file "comparaisona_plot.txt" was not found.\nThe TRV analysis has been aborted.')
+	halt(); 
+}
+comparaisona.openRead();
+text=comparaisona.readText();
+comparaisona.close();
+
+resultaLines=text.split('\n');
+var comparaisona=[];
+var time=[];
+for(i=0;i<resultaLines.length;i++)
+{
+	listOfColumns=resultaLines[i].split(' ');
+	time[time.length]=parseFloat(listOfColumns[0]);
+	comparaisona[comparaisona.length]=parseFloat(listOfColumns[1]);
+}
+
+for(i=0;i<comparaisona.length;i++)
+{
+	if(comparaisona[i]==-1)
+	{
+		isOver=true;
+		report+="\nThe TRV of phase a exceeds the standard at"+Math.round(1000*100*time[i])/100+"ms";
+		break;
+	}
+}
+
+//*look at the voltage of phase a
+voltagea=SPFile(path+"/voltagea_plot.txt");
+if(!voltagea)
+{
+	alert('The file "voltagea_plot.txt" was not found.\nThe TRV analysis has been aborted.')
+	halt(); 
+}
+voltagea.openRead();
+text=voltagea.readText();
+voltagea.close();
+
+resultaLines=text.split('\n');
+var voltagea=[];
+var time=[];
+for(i=0;i<resultaLines.length;i++)
+{
+	listOfColumns=resultaLines[i].split(' ');
+	time[time.length]=parseFloat(listOfColumns[0]);
+	voltagea[voltagea.length]=parseFloat(listOfColumns[1]);
+}
+
+TRV_without_delay_timea=SPFile(path+"/TRV_without_delay_timea_plot.txt");
+if(!voltagea)
+{
+	alert('The file "TRV_without_delay_timea_plot.txt" was not found.\nThe TRV analysis has been aborted.')
+	halt(); 
+}
+TRV_without_delay_timea.openRead();
+text=TRV_without_delay_timea.readText();
+TRV_without_delay_timea.close();
+resultaLines=text.split('\n');
+margin=100;
+var TRV_without_delay_timea=[];
+var time=[];
+
+//* look at the margin between the actuel voltage and the main TRV
+for(i=0;i<resultaLines.length;i++)
+{
+	listOfColumns=resultaLines[i].split(' ');
+	time[time.length]=parseFloat(listOfColumns[0]);
+	TRV_without_delay_timea[TRV_without_delay_timea.length]=parseFloat(listOfColumns[1]);
+}
+
+if(isOver==false)
+{
+	for(i=0;i<voltagea.length;i++)
+	{
+		margini=100*(TRV_without_delay_timea[i]-Math.abs(voltagea[i]))/TRV_without_delay_timea[i];
+		if(margini<margin && !(TRV_without_delay_timea[i]==0))
+		{
+			margin=margini;
+			time_margina=time[i];
+		}
+	}
+	// report+="\nthe margin of phase a is "+Math.round(100*margin)/100+"%, reached at "+Math.round(100*1000*time_margina)/100+"ms";
+}
+	
+//* look at the delayed TRV curve
+isLowerThantda=false;
+comparaison_tda=SPFile(path+"/otherfiles/comparaison_tda_plot.txt");
+if(!comparaison_tda)
+{
+	alert('The file "comparaison_tda_plot.txt" was not found.\nThe TRV analysis has been aborted.')
+	halt(); 
+}
+comparaison_tda.openRead();
+text=comparaison_tda.readText();
+comparaison_tda.close();
+
+resultaLines=text.split('\n');
+var comparaison_tda=[];
+var time=[];
+for(i=0;i<resultaLines.length;i++)
+{
+	listOfColumns=resultaLines[i].split(' ');
+	time[time.length]=parseFloat(listOfColumns[0]);
+	comparaison_tda[comparaison_tda.length]=parseFloat(listOfColumns[1]);
+}
+for(i=0;i<comparaison_tda.length;i++)
+{
+	if(comparaison_tda[i]==1)
+	{
+		isLowerThantda=true;
+	}
+}
+
+//analysis of the TRV of phase b
+	//* look at the comparaison between the actuel voltage and the main TRV
+comparaisonb=SPFile(path+"/otherfiles/comparaisonb_plot.txt");
+if(!comparaisonb)
+{
+	alert('The file "comparaisonb_plot.txt" was not found.\nThe TRV analysis has been aborted.')
+	halt(); 
+}
+comparaisonb.openRead();
+text=comparaisonb.readText();
+comparaisonb.close();
+
+resultbLines=text.split('\n');
+var comparaisonb=[];
+var time=[];
+for(i=0;i<resultbLines.length;i++)
+{
+	listOfColumns=resultbLines[i].split(' ');
+	time[time.length]=parseFloat(listOfColumns[0]);
+	comparaisonb[comparaisonb.length]=parseFloat(listOfColumns[1]);
+}
+
+for(i=0;i<comparaisonb.length;i++)
+{
+	if(comparaisonb[i]==-1)
+	{
+		isOver=true;
+		report+="\nThe TRV of phase b exceeds the standard at "+Math.round(1000*100*time[i])/100+"ms";
+		break;
+	}
+}
+
+//*look at the voltage of phase b
+voltageb=SPFile(path+"/voltageb_plot.txt");
+if(!voltageb)
+{
+	alert('The file "voltageb_plot.txt" was not found.\nThe TRV analysis has been aborted.')
+	halt(); 
+}
+voltageb.openRead();
+text=voltageb.readText();
+voltageb.close();
+
+resultbLines=text.split('\n');
+margin=1;
+var voltageb=[];
+var time=[];
+for(i=0;i<resultbLines.length;i++)
+{
+	listOfColumns=resultbLines[i].split(' ');
+	time[time.length]=parseFloat(listOfColumns[0]);
+	voltageb[voltageb.length]=parseFloat(listOfColumns[1]);
+}
+
+TRV_without_delay_timeb=SPFile(path+"/TRV_without_delay_timeb_plot.txt");
+if(!TRV_without_delay_timeb)
+{
+	alert('The file "TRV_without_delay_timeb_plot.txt" was not found.\nThe TRV analysis has been aborted.')
+	halt(); 
+}
+TRV_without_delay_timeb.openRead();
+text=TRV_without_delay_timeb.readText();
+TRV_without_delay_timeb.close();
+
+resultbLines=text.split('\n');
+margin=100;
+var TRV_without_delay_timeb=[];
+var time=[];
+
+//* look at the margin between the actuel voltage and the main TRV
+for(i=0;i<resultbLines.length;i++)
+{
+	listOfColumns=resultbLines[i].split(' ');
+	time[time.length]=parseFloat(listOfColumns[0]);
+	TRV_without_delay_timeb[TRV_without_delay_timeb.length]=parseFloat(listOfColumns[1]);
+}
+
+if(isOver==false)
+{
+	for(i=0;i<voltageb.length;i++)
+	{
+		margini=100*(TRV_without_delay_timeb[i]-Math.abs(voltageb[i]))/TRV_without_delay_timeb[i];
+		if(margini<margin && !(TRV_without_delay_timeb[i]==0))
+		{
+			margin=margini;
+			time_marginb=time[i];
+		}
+	}
+	// report+="\nthe margin of phase b is "+Math.round(100*margin)/100+"%, reached at "+Math.round(100*1000*time_marginb)/100+"ms";
+}
+
+//* look at the delayed TRV curve
+isLowerThantdb=false;
+comparaison_tdb=SPFile(path+"/otherfiles/comparaison_tdb_plot.txt");
+if(!comparaison_tdb)
+{
+	alert('The file "comparaison_tdb_plot.txt" was not found.\nThe TRV analysis has been aborted.')
+	halt(); 
+}
+comparaison_tdb.openRead();
+text=comparaison_tdb.readText();
+comparaison_tdb.close();
+
+resultbLines=text.split('\n');
+var comparaison_tdb=[];
+var time=[];
+for(i=0;i<resultbLines.length;i++)
+{
+	listOfColumns=resultbLines[i].split(' ');
+	time[time.length]=parseFloat(listOfColumns[0]);
+	comparaison_tdb[comparaison_tdb.length]=parseFloat(listOfColumns[1]);
+}
+for(i=0;i<comparaison_tdb.length;i++)
+{
+	if(comparaison_tdb[i]==1)
+	{
+		isLowerThantdb=true;
+	}
+}
+
+//analysis of the TRV of phase c
+	//* look at the comparaison between the actuel voltage and the main TRV
+comparaisonc=SPFile(path+"/otherfiles/comparaisonc_plot.txt");
+if(!comparaisonc)
+{
+	alert('The file "comparaisonc_plot.txt" was not found.\nThe TRV analysis has been aborted.')
+	halt(); 
+}
+comparaisonc.openRead();
+text=comparaisonc.readText();
+comparaisonc.close();
+
+resultcLines=text.split('\n');
+var comparaisonc=[];
+var time=[];
+for(i=0;i<resultcLines.length;i++)
+{
+	listOfColumns=resultcLines[i].split(' ');
+	time[time.length]=parseFloat(listOfColumns[0]);
+	comparaisonc[comparaisonc.length]=parseFloat(listOfColumns[1]);
+}
+
+for(i=0;i<comparaisonc.length;i++)
+{
+	if(comparaisonc[i]==-1)
+	{
+		isOver=true;
+		report+="\nThe TRV of phase c exceeds the standard at "+Math.round(1000*100*time[i])/100+"ms";
+		break;
+	}
+}
+
+//*look at the voltage of phase c
+voltagec=SPFile(path+"/voltagec_plot.txt");
+if(!voltagec)
+{
+	alert('The file "voltagec_plot.txt" was not found.\nThe TRV analysis has been aborted.')
+	halt(); 
+}
+voltagec.openRead();
+text=voltagec.readText();
+voltagec.close();
+
+resultcLines=text.split('\n');
+margin=Uc;
+var voltagec=[];
+var time=[];
+
+//* look at the margin between the actuel voltage and the main TRV
+for(i=0;i<resultcLines.length;i++)
+{
+	listOfColumns=resultcLines[i].split(' ');
+	time[time.length]=parseFloat(listOfColumns[0]);
+	voltagec[voltagec.length]=parseFloat(listOfColumns[1]);
+}
+
+TRV_without_delay_timec=SPFile(path+"/TRV_without_delay_timec_plot.txt");
+if(!TRV_without_delay_timec)
+{
+	alert('The file "TRV_without_delay_timec_plot.txt" was not found.\nThe TRV analysis has been aborted.')
+	halt(); 
+}
+TRV_without_delay_timec.openRead();
+text=TRV_without_delay_timec.readText();
+TRV_without_delay_timec.close();
+
+resultcLines=text.split('\n');
+margin=100;
+var TRV_without_delay_timec=[];
+var time=[];
+for(i=0;i<resultcLines.length;i++)
+{
+	listOfColumns=resultcLines[i].split(' ');
+	time[time.length]=parseFloat(listOfColumns[0]);
+	TRV_without_delay_timec[TRV_without_delay_timec.length]=parseFloat(listOfColumns[1]);
+}
+
+if(isOver==false)
+{
+	for(i=0;i<voltagec.length;i++)
+	{
+		margini=100*(TRV_without_delay_timec[i]-Math.abs(voltagec[i]))/TRV_without_delay_timec[i];
+		if(margini<margin && !(TRV_without_delay_timec[i]==0))
+		{
+			margin=margini;
+			time_marginc=time[i];
+		}
+	}
+	// report+="\nthe margin of phase c is "+Math.round(100*margin)/100+"%, reached at "+Math.round(100*1000*time_marginc)/100+"ms";
+}
+
+//* look at the delayed TRV curve
+isLowerThantdc=false;
+comparaison_tdc=SPFile(path+"/otherfiles/comparaison_tdc_plot.txt");
+if(!comparaison_tdc)
+{
+	alert('The file "comparaison_tdc_plot.txt" was not found.\nThe TRV analysis has been aborted.')
+	halt(); 
+}
+comparaison_tdc.openRead();
+text=comparaison_tdc.readText();
+comparaison_tdc.close();
+
+resultcLines=text.split('\n');
+var comparaison_tdc=[];
+var time=[];
+for(i=0;i<resultcLines.length;i++)
+{
+	listOfColumns=resultcLines[i].split(' ');
+	time[time.length]=parseFloat(listOfColumns[0]);
+	comparaison_tdc[comparaison_tdc.length]=parseFloat(listOfColumns[1]);
+}
+for(i=0;i<comparaison_tdc.length;i++)
+{
+	if(comparaison_tdc[i]==1)
+	{
+		isLowerThantdc=true;
+	}
+}
+
+//*Write in the report that no problem was found
+if(isLowerThantda && isLowerThantdb && isLowerThantdc)
+{
+	if(isOver==false)
+	{
+		report+="\nThe TRV study did not find any overshoot of the rated TRV";
+	}
+}
+
+//* Write in the report if there was no crossing between the real curve and the delayed TRV
+if(isLowerThantda==false)
+{
+	report+="\nThe voltage curve a has no intersection with the delayed curve";
+}
+if(isLowerThantdb==false)
+{
+	report+="\nThe voltage curve b has no intersection with the delayed curve";
+}
+
+if(isLowerThantdc==false)
+{
+	report+="\nThe voltage curve c has no intersection with the delayed curve";
+}
+
+//* return the type object of the device "name" from libraryPath 
+function loadLibrary(libraryPath,name)
+{
+	library = DWLibrary(libraryPath);
+	elementList = library.typeList;
+	for (i = 0; i< elementList.length ; i++)
+	{
+		if (elementList[i].name() == name) return elementList[i];
+	}
+}
+
+//* Use MPLOT to create the results
+function saveResults()
+{
+		mpType=loadLibrary("Options","MPLOT");
+		dev=cct.addDevice(mpType); //find MPLOT on the screen
+        parseScriptFile('mplot_m.dwj');
+        //*Create the object
+       var oDevice = new oDevice_mplot(dev);
+// -----End Performing parametric changes-------------------------------------------------------------------------------
+// _Start MPLOT to show only selected results
+			oDevice.BaseCaseCheck='0';
+        oDevice.ExtraTags='0';
+        oDevice.ExtraFiles='1';
+        oDevice.Files=path+'/TRVmethod.txt'; //the relative path is done in MPLOT methods
+        oDevice.waitmode=0; //wait till MPLOT ends, attention in this example it means after closing data
+        oDevice.run(); //will call MPLOT and run, will save into a results.txt file
+	dev.remove();
+
+}
+
+//* Use ScopeView to plot the results
+function plotResults(xmlFile)
+{
+plotfile=xmlFile;
+
+myfile=SPFile(plotfile);
+if(!myfile)
+{
+	alert('The file '+myfile+' was not found.\nThe TRV analysis has been aborted.')
+	halt(); 
+}
+if( myfile.exists){
+        plotfile= '-x "'+plotfile+'"';
+        str=runExportToString('report scripts/scopeviewstart.rfm',null,plotfile);
+}else{
+        alert('There is no plot file for this design!');
+}
+myfile.close();
+}

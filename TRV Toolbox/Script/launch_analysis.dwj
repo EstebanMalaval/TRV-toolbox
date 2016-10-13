@@ -1,0 +1,58 @@
+//Last Change: Esteban MALAVAL 2016-09-07
+		//* Put the fault to the ground
+		ground= loadLibrary("RLC Branches","Ground");
+		GR=cct.addDevice(ground);
+		if(firstSimulation)
+		{
+			ISpin=ignitionSignal.pins[0];
+			ISname=ignitionSignal.name;
+		}
+		GR.pins[0].connectTo(ignitionSignal);
+		report=report+"\nFault placed at the ignition point";
+		report=report+"\nSimulation running";
+		
+		//*Run the simulation
+				//*Generate the netlist
+				parseScriptFile('start_emtp/generate_netlist.dwj');
+				netlistFile=SPFile();
+				netlistFile.fullName(designpath+designfilename_noex+'.net');
+				//* Launch the simulation
+				parseScriptFile('run_emtp.dwj');
+				parseScriptFile('device_services/check_my_filename.dwj')
+				parseScriptFile('make_file_name.dwj');
+				run_emtp(netlistFile,false,'Netlist',false);
+		
+		report=report+"\nEnded Simulation";
+	
+		//*Remove the Ground device
+		GR.remove();
+		ignitionSignal=ISpin.signal;
+		ignitionSignal.setAttribute("Name",ISname);
+
+		//*Copy the project folder
+		i=0;
+		newDir=SPFile(mydir.path+"/TRV_"+designfilename_noex+'_'+i);
+		while(newDir.exists)
+		{
+		i++;
+		newDir=SPFile(mydir.path+"/TRV_"+designfilename_noex+'_'+i);
+		}
+		path=mydir.path+"/TRV_"+designfilename_noex+'_'+i;
+		mydir.copyTo(path);
+	
+		//* Write the location of the output files
+	report=report+"\nResults saved in "+mydir.path+"/TRV_"+designfilename_noex+'_'+i;
+	report=report+"\nResults of phase a saved in voltagea_plot.txt";
+	report=report+"\nResults of phase b saved in voltageb_plot.txt";
+	report=report+"\nResults of phase c saved in voltagec_plot.txt";
+	
+//* return the type object of the device "name" from libraryPath 
+function loadLibrary(libraryPath,name)
+{
+	library = DWLibrary(libraryPath);
+	elementList = library.typeList;
+	for (i = 0; i< elementList.length ; i++)
+	{
+		if (elementList[i].name() == name) return elementList[i];
+	}
+}

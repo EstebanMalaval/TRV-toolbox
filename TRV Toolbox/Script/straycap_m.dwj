@@ -1,0 +1,1137 @@
+//	Last change: Esteban MALAVAL 2016-06-07
+//*Open method----------------------------------------------------------------------------------------------------------
+function C_stray_o(){
+    var dev= this.dev;
+    if (dev == null) halt();	// If nothing selected, bail out now
+    //*Put back if excluded, also standard procedures
+    parseScriptFile('check_if_excluded.js')
+    check_if_excluded(dev);
+
+	//-Scopes
+	ScopeObserveObject.Exist_Voltage_Scope=true;
+	ScopeObserveObject.Exist_Current_Scope=true;
+	ScopeObserveObject.Exist_Power_Scope  =true;
+    
+    //*Get the number of phases for this device by looking at the busses it is attached to.
+    var phases = dev.getEMTPPhases();
+
+    //* Make up box title
+    var title = "Properties for "+ dev.getAttribute('LibType')+ ' ' + dev.getAttribute("Name");
+
+    var f = SPFile();
+    f.setAppPath("Info Scripts/");
+	//To be removed when everything is placed in Info script (commercial version)
+	var f2 = SPFile();
+	f2.setAppPath("Toolboxes/");
+
+    //*Create the web object box
+    box = SPHTMLDialog();
+
+    //* Visibility fields array, this is the Attributes tab setting, common to all devices
+    par1=dev;  par2=box;   visArray = parseScriptFile('getvisibilityfields_box.js');
+
+    //----Set data to send to the data box----------------------------------------------------------------------------------
+    //* If the device is attached to a 3-phase bus, display the 3 phase box, otherwise
+    // show the single phase box.
+    // Component initialization is always performed on its 3-phase version
+    if (phases == 3 )
+    {
+		//_3-phase case
+		//*First tab
+		box.setValue('R_A',this.R_A)
+		box.setValue('R_B',this.R_B)
+		box.setValue('R_C',this.R_C)
+		box.setValue('R_units',this.R_units)
+
+		box.setValue('L_A',this.L_A)
+		box.setValue('L_B',this.L_B)
+		box.setValue('L_C',this.L_C)
+		box.setValue('L_units',this.L_units)
+
+		box.setValue('C_units',this.C_units)
+		box.setValue('balanced_check',  this.balanced_check);
+
+		//+The new options
+		box.setValue('SelectNominalFrequency',this.SelectNominalFrequency)
+		box.setValue('NominalFrequency',      this.NominalFrequency)
+		box.setValue('MakeRfunction_f',       this.MakeRfunction_f)
+		box.setValue('ParameterA',            this.ParameterA)
+		box.setValue('ParameterB',            this.ParameterB)
+       
+		//*Second tab
+		box.setValue('iL_A',this.iL_A)
+		box.setValue('iL_B',this.iL_B)
+		box.setValue('iL_C',this.iL_C)
+		box.setValue('iL_units',this.iL_units)
+
+		box.setValue('vC_A',this.vC_A)
+		box.setValue('vC_B',this.vC_B)
+		box.setValue('vC_C',this.vC_C)
+		box.setValue('vC_units',this.vC_units)
+	   
+			//Stray Capacitance
+			box.setValue('Component_type',this.componentType)
+			box.setValue('S',this.S)
+			box.setValue('SB',this.SB)
+			box.setValue('SP10100B',this.SP10100B)
+			box.setValue('type_of_transformerC',this.type_of_transformerC)
+			box.setValue('S_core_type',this.S_core_type)
+			box.setValue('S_shellauto_type',this.S_shellauto_type)
+			box.setValue('selectC',this.selectC)
+			box.setValue('S_Generator',this.S_Generator)
+			box.setValue('type_of_generator',this.type_of_generator)
+			box.setValue('S_GeneratorB_steam',this.S_GeneratorB_steam)
+			box.setValue('S_GeneratorB_hydro',this.S_GeneratorB_hydro)
+			box.setValue('V_Motor',this.V_Motor)
+			box.setValue('S_Motor_416',this.S_Motor_416)
+			box.setValue('S_Motor_66',this.S_Motor_66)
+			box.setValue('S_Motor_138',this.S_Motor_138)
+			box.setValue('Breaker_type',this.Breaker_type)
+			box.setValue('Maximum_system_voltage',this.Maximum_system_voltage)
+			box.setValue('Breaker_Status',this.Breaker_Status)
+			box.setValue('number_of_SW_per_pole',this.number_of_SW_per_pole)
+			box.setValue('busLength',this.busLength)
+			box.setValue('typeBus',this.typeBus)
+			box.setValue('IsolatedBus',this.IsolatedBus)
+			box.setValue('IsolatedBusI',this.IsolatedBusI)
+			box.setValue('SegregatedBus',this.SegregatedBus)
+			box.setValue('SegregatedBusI',this.SegregatedBusI)
+			box.setValue('CT_V',this.CT_V)
+			box.setValue('CTB_V',this.CTB_V)
+			box.setValue("PotentialTransformer",this.PotentialTransformer)
+			box.setValue('LLLN',this.LLLN)
+			box.setValue('LL',this.LL)
+			box.setValue('LN',this.LN)
+			box.setValue("PotentialTransformerB_name",this.PotentialTransformerB_name)
+			box.setValue('busLengthB',this.busLengthB)
+			box.setValue('InsulationB',this.InsulationB)
+			box.setValue('AirBBus',this.AirBBus)
+			box.setValue('IsolatedBCase',this.IsolatedB)
+			box.setValue('SegregatedB',this.SegregatedB)
+			box.setValue('IsolatedB',this.IsolatedBCase)
+			box.setValue('SegregatedBCase',this.SegregatedBCase)
+			box.setValue('OutdoorB',this.OutdoorB)
+			box.setValue('GasBBus',this.GasBBus)
+			box.setValue('RatedMaximumVoltageB',this.RatedMaximumVoltageB)
+			box.setValue("C1_val",this.C1_val)
+			box.setValue("select_source",this.select_source)
+			box.setValue("select_capacitance_checkbox",this.select_capacitance_checkbox)
+					
+
+        //*Now do the scopes
+        box.setValue('Voltage_scope_A',this.Voltage_scope_A)
+        box.setValue('Voltage_scope_B',this.Voltage_scope_B)
+        box.setValue('Voltage_scope_C',this.Voltage_scope_C)
+
+        box.setValue('Current_scope_A',this.Current_scope_A)
+        box.setValue('Current_scope_B',this.Current_scope_B)
+        box.setValue('Current_scope_C',this.Current_scope_C)
+
+        box.setValue('Power_scope_A',this.Power_scope_A)
+        box.setValue('Power_scope_B',this.Power_scope_B)
+        box.setValue('Power_scope_C',this.Power_scope_C)
+
+        //*Open The web---------------------------------------------------------------------------------------------------------
+	        urls = SPArray(f2 + "TRV Toolbox/Script/HTML/StrayCapacitor.htm",
+						    f + "branches/rlc/ic_3.htm",
+						    f + "HTML/common/scopes_3_vipf.htm",
+		                    f + "HTML/shareTab/fields.htm",
+		                    f2 + "TRV Toolbox/Script/HTML/Stray_Capacitance_help.html");
+
+        parseScriptFile('EMTPhtmlProperties.dwj');
+        EMTDialog=EMTdoDialog(urls, title,box, this.WindowXsize_3phase, this.WindowYsize_3phase,dev);
+        box=EMTDialog.box;
+        if(EMTDialog.Cancel){ return; }
+
+        //*get back web data----------------------------------------------------------------------------------------------------
+        //* adjust visibility state for value, name, partname and description fields
+        par1=dev; par2=box;  parseScriptFile('setvisibilityfields_box.js');
+
+		//*First tab
+		this.R_A=box.getValue('R_A')
+		this.R_B=box.getValue('R_B')
+		this.R_C=box.getValue('R_C')
+		this.R_units=box.getValue('R_units')
+
+		this.L_A=box.getValue('L_A')
+		this.L_B=box.getValue('L_B')
+		this.L_C=box.getValue('L_C')
+		this.L_units=box.getValue('L_units')
+
+		this.C_A=box.getValue('C1_val')
+		this.C_B=box.getValue('C1_val')
+		this.C_C=box.getValue('C1_val')
+		this.C_units='nF'
+
+		this.balanced_check=box.getValue('balanced_check')
+
+		//+The new options
+		this.SelectNominalFrequency=box.getValue('SelectNominalFrequency')
+		this.NominalFrequency      =box.getValue('NominalFrequency')
+		this.MakeRfunction_f       =box.getValue('MakeRfunction_f')
+		this.ParameterA            =box.getValue('ParameterA')
+		this.ParameterB            =box.getValue('ParameterB')
+
+
+		//*Second tab
+		this.iL_A=box.getValue('iL_A')
+		this.iL_B=box.getValue('iL_B')
+		this.iL_C=box.getValue('iL_C')
+		this.iL_units=box.getValue('iL_units')
+
+		this.vC_A=box.getValue('vC_A')
+		this.vC_B=box.getValue('vC_B')
+		this.vC_C=box.getValue('vC_C')
+		this.vC_units=box.getValue('vC_units')
+
+		//Stray Capacitance
+			this.componentType=box.getValue('Component_type')
+			this.S=box.getValue('S')
+				this.SB=box.getValue('SB')
+			this.SP10100B=box.getValue('SP10100B');
+			this.type_of_transformerC=box.getValue('type_of_transformerC')
+			this.S_core_type=box.getValue('S_core_type')
+			this.S_shellauto_type=box.getValue('S_shellauto_type')
+			this.selectC=box.getValue('selectC')
+			this.S_Generator=box.getValue('S_Generator');
+			this.type_of_generator=box.getValue('type_of_generator')
+			this.S_GeneratorB_steam=box.getValue('S_GeneratorB_steam')
+			this.S_GeneratorB_hydro=box.getValue('S_GeneratorB_hydro')
+			this.V_Motor=box.getValue('V_Motor');
+			this.S_Motor_416=box.getValue('S_Motor_416')
+			this.S_Motor_66=box.getValue('S_Motor_66')
+			this.S_Motor_138=box.getValue('S_Motor_138')
+			this.Breaker_type=box.getValue('Breaker_type')
+			this.Maximum_system_voltage=box.getValue('Maximum_system_voltage')
+			this.Breaker_Status=box.getValue('Breaker_Status')
+			this.number_of_SW_per_pole=box.getValue('number_of_SW_per_pole')
+			this.busLength=box.getValue('busLength')
+			this.typeBus=box.getValue('typeBus')
+			this.IsolatedBus=box.getValue('IsolatedBus')
+			this.IsolatedBusI=box.getValue('IsolatedBusI')
+			this.SegregatedBus=box.getValue('SegregatedBus')
+			this.SegregatedBusI=box.getValue('SegregatedBusI')
+			this.CT_V=box.getValue('CT_V')
+			this.CTB_V=box.getValue('CTB_V')
+			this.PotentialTransformer=box.getValue("PotentialTransformer")
+			this.LLLN=box.getValue('LLLN')
+			this.LL=box.getValue('LL')
+			this.LN=box.getValue('LN')
+			this.PotentialTransformerB_name=box.getValue("PotentialTransformerB_name")
+			this.busLengthB=box.getValue('busLengthB')
+			this.InsulationB=box.getValue('InsulationB')
+			this.AirBBus=box.getValue('AirBBus')
+			this.IsolatedB=box.getValue('IsolatedB')
+			this.SegregatedB=box.getValue('SegregatedB')
+			this.OutdoorB=box.getValue('OutdoorB')
+			this.GasBBus=box.getValue('GasBBus')
+			this.RatedMaximumVoltageB=box.getValue('RatedMaximumVoltageB')
+			this.C1_val=box.getValue("C1_val")
+			this.select_source=box.getValue("select_source")
+			this.select_capacitance_checkbox=box.getValue("select_capacitance_checkbox")
+
+        //*Now do the scopes
+        this.Voltage_scope_A=box.getValue('Voltage_scope_A')
+        this.Voltage_scope_B=box.getValue('Voltage_scope_B')
+        this.Voltage_scope_C=box.getValue('Voltage_scope_C')
+
+        this.Current_scope_A=box.getValue('Current_scope_A')
+        this.Current_scope_B=box.getValue('Current_scope_B')
+        this.Current_scope_C=box.getValue('Current_scope_C')
+
+        this.Power_scope_A=box.getValue('Power_scope_A')
+        this.Power_scope_B=box.getValue('Power_scope_B')
+        this.Power_scope_C=box.getValue('Power_scope_C')
+
+
+	      //*Test data here, short-circuit in any phase is unacceptable
+       this.TestRLCParam3();
+
+
+    }else{
+		//_1-phase case
+		//*First tab
+		box.setValue('R',this.R_A)
+		box.setValue('R_units',this.R_units)
+
+		box.setValue('L',this.L_A)
+		box.setValue('L_units',this.L_units)
+
+		box.setValue('C_units',this.C_units)
+
+		//+The new options
+		box.setValue('SelectNominalFrequency',this.SelectNominalFrequency)
+		box.setValue('NominalFrequency',      this.NominalFrequency)
+		box.setValue('MakeRfunction_f',       this.MakeRfunction_f)
+		box.setValue('ParameterA',            this.ParameterA)
+		box.setValue('ParameterB',            this.ParameterB)
+       
+		//*Second tab
+		box.setValue('iL',this.iL_A)
+		box.setValue('iL_units',this.iL_units)
+
+		box.setValue('vC',this.vC_A)
+		box.setValue('vC_units',this.vC_units)
+		//*Stray Capacitance
+			box.setValue('Component_type',this.componentType)
+			box.setValue('S',this.S)
+			box.setValue('SB',this.SB)
+			box.setValue('SP10100B',this.SP10100B)
+			box.setValue('type_of_transformerC',this.type_of_transformerC)
+			box.setValue('S_core_type',this.S_core_type)
+			box.setValue('S_shellauto_type',this.S_shellauto_type)
+			box.setValue('selectC',this.selectC)
+			box.setValue('S_Generator',this.S_Generator)
+			box.setValue('type_of_generator',this.type_of_generator)
+			box.setValue('S_GeneratorB_steam',this.S_GeneratorB_steam)
+			box.setValue('S_GeneratorB_hydro',this.S_GeneratorB_hydro)
+			box.setValue('V_Motor',this.V_Motor)
+			box.setValue('S_Motor_416',this.S_Motor_416)
+			box.setValue('S_Motor_66',this.S_Motor_66)
+			box.setValue('S_Motor_138',this.S_Motor_138)
+			box.setValue('Breaker_type',this.Breaker_type)
+			box.setValue('Maximum_system_voltage',this.Maximum_system_voltage)
+			box.setValue('Breaker_Status',this.Breaker_Status)
+			box.setValue('number_of_SW_per_pole',this.number_of_SW_per_pole)
+			box.setValue('busLength',this.busLength)
+			box.setValue('typeBus',this.typeBus)
+			box.setValue('IsolatedBus',this.IsolatedBus)
+			box.setValue('IsolatedBusI',this.IsolatedBusI)
+			box.setValue('SegregatedBus',this.SegregatedBus)
+			box.setValue('SegregatedBusI',this.SegregatedBusI)
+			box.setValue('CT_V',this.CT_V)
+			box.setValue('CTB_V',this.CTB_V)
+			box.setValue("PotentialTransformer",this.PotentialTransformer)
+			box.setValue('LLLN',this.LLLN)
+			box.setValue('LL',this.LL)
+			box.setValue('LN',this.LN)
+			box.setValue("PotentialTransformerB_name",this.PotentialTransformerB_name)
+			box.setValue('busLengthB',this.busLengthB)
+			box.setValue('InsulationB',this.InsulationB)
+			box.setValue('AirBBus',this.AirBBus)
+			box.setValue('IsolatedB',this.IsolatedB)
+			box.setValue('SegregatedB',this.SegregatedB)
+			box.setValue('OutdoorB',this.OutdoorB)
+			box.setValue('GasBBus',this.GasBBus)
+			box.setValue('RatedMaximumVoltageB',this.RatedMaximumVoltageB)
+			box.setValue("C1_val",this.C1_val)
+			box.setValue("select_source",this.select_source)
+			box.setValue("select_capacitance_checkbox",this.select_capacitance_checkbox)
+
+        //*Now do the scopes
+        box.setValue('Voltage_scope',this.Voltage_scope_A)
+        box.setValue('Current_scope',this.Current_scope_A)
+        box.setValue('Power_scope',  this.Power_scope_A)
+
+        //*Open The web---------------------------------------------------------------------------------------------------------
+	        urls = SPArray(f2 + "TRV Toolbox/Script/HTML/StrayCapacitor.htm",
+		                    f + "branches/rlc/ic_1.htm",
+		                    f + "HTML/common/scope_1_vipf.htm",
+		                    f + "HTML/shareTab/fields.htm",
+		                    f + "branches/rlc/help.htm");
+        
+        parseScriptFile('EMTPhtmlProperties.dwj');
+        EMTDialog=EMTdoDialog(urls, title,box, this.WindowXsize_1phase, this.WindowYsize_1phase,dev);
+        box=EMTDialog.box;
+        if(EMTDialog.Cancel){ return; }
+
+        //*get back web data----------------------------------------------------------------------------------------------------
+        //* adjust visibility state for value, name, partname and description fields
+        par1=dev; par2=box;  parseScriptFile('setvisibilityfields_box.js');
+
+		//*First tab
+		this.R_A=box.getValue('R')
+		this.R_units=box.getValue('R_units')
+
+		this.L_A=box.getValue('L')
+		this.L_units=box.getValue('L_units')
+
+		this.C_A=box.getValue('C1_val')
+		this.C_units='nF'
+
+		//+The new options
+		this.SelectNominalFrequency=box.getValue('SelectNominalFrequency')
+		this.NominalFrequency      =box.getValue('NominalFrequency')
+		this.MakeRfunction_f       =box.getValue('MakeRfunction_f')
+		this.ParameterA            =box.getValue('ParameterA')
+		this.ParameterB            =box.getValue('ParameterB')
+       
+
+		//*Second tab
+		this.iL_A=box.getValue('iL')
+		this.iL_units=box.getValue('iL_units')
+
+		this.vC_A=box.getValue('vC')
+		this.vC_units=box.getValue('vC_units')
+		
+			//*Stray Capacitance
+			this.componentType=box.getValue('Component_type')
+			this.S=box.getValue('S')
+			this.SB=box.getValue('SB')
+			this.SP10100B=box.getValue('SP10100B');
+			this.type_of_transformerC=box.getValue('type_of_transformerC')
+			this.S_core_type=box.getValue('S_core_type')
+			this.S_shellauto_type=box.getValue('S_shellauto_type')
+			this.selectC=box.getValue('selectC')
+			this.S_Generator=box.getValue('S_Generator');
+			this.type_of_generator=box.getValue('type_of_generator')
+			this.S_GeneratorB_steam=box.getValue('S_GeneratorB_steam')
+			this.S_GeneratorB_hydro=box.getValue('S_GeneratorB_hydro')
+			this.V_Motor=box.getValue('V_Motor');
+			this.S_Motor_416=box.getValue('S_Motor_416')
+			this.S_Motor_66=box.getValue('S_Motor_66')
+			this.S_Motor_138=box.getValue('S_Motor_138')
+			this.Breaker_type=box.getValue('Breaker_type')
+			this.Maximum_system_voltage=box.getValue('Maximum_system_voltage')
+			this.Breaker_Status=box.getvalue('Breaker_Status')
+			this.number_of_SW_per_pole=box.getValue('number_of_SW_per_pole')
+			this.busLength=box.getValue('busLength')
+			this.typeBus=box.getValue('typeBus')
+			this.IsolatedBus=box.getValue('IsolatedBus')
+			this.IsolatedBusI=box.getValue('IsolatedBusI')
+			this.SegregatedBus=box.getValue('SegregatedBus')
+			this.SegregatedBusI=box.getValue('SegregatedBusI')
+			this.CT_V=box.getValue('CT_V')
+			this.CTB_V=box.getValue('CTB_V')
+			this.PotentialTransformer=box.getValue("PotentialTransformer")
+			this.LLLN=box.getValue('LLLN')
+			this.LL=box.getValue('LL')
+			this.LN=box.getValue('LN')
+			this.PotentialTransformerB_name=box.getValue("PotentialTransformerB_name")
+			this.busLengthB=box.getValue('busLengthB')
+			this.InsulationB=box.getValue('InsulationB')
+			this.AirBBus=box.getValue('AirBBus')
+			this.IsolatedB=box.getValue('IsolatedB')
+			this.SegregatedB=box.getValue('SegregatedB')
+			this.OutdoorB=box.getValue('OutdoorB')
+			this.GasBBus=box.getValue('GasBBus')
+			this.RatedMaximumVoltageB=box.getValue('RatedMaximumVoltageB')
+			this.C1_val=box.getValue("C1_val")
+			this.select_source=box.getValue("select_source")
+			this.select_capacitance_checkbox=box.getValue("select_capacitance_checkbox")
+
+        //*Now do the scopes
+        this.Voltage_scope_A=box.getValue('Voltage_scope')
+        this.Current_scope_A=box.getValue('Current_scope')
+        this.Power_scope_A=  box.getValue('Power_scope')
+
+        //*Test short-circuit condition
+        this.TestRLCParam1();
+        
+    }
+
+
+	//-Save data------------------------------------------------------------------------------------------------------------
+	this.SaveData();
+
+	//--Name the sniffer, can be done only once-----------------------------------------------------------------------------
+	dev.setAttribute('Sniffer','rlc_probe.dwj,'+phases,-1)
+
+}
+
+//------------Save method-----------------------------------------------------------------------------------------------
+function C_stray_SaveData(){
+
+    var dev=this.dev;
+
+        //local functions
+        parseScriptFile('n_create_ic_field.js');
+        parseScriptFile('n_create_scope_field.js');
+        parseScriptFile('setmyvaluenew.js');
+
+        parseScriptFile('n_setp.js');
+        parseScriptFile('programmable_scope.js');
+        parseScriptFile('branches/rlc/setrlcparam.js')
+        parseScriptFile('n_setmyout.js');
+            
+
+    this.phases = dev.getEMTPPhases();
+
+    if( this.balanced_by_script ){
+        this.R_B=this.R_A;
+        this.R_C=this.R_A;
+
+        this.L_B=this.L_A;
+        this.L_C=this.L_A;
+
+        this.C_B=this.C_A;
+        this.C_C=this.C_A;
+    }
+
+
+    if( this.phases==3 ){ //-3-phase version
+
+
+         //*prepare Value field
+	        var ra = this.R_A;
+                var rb = this.R_B;
+                var rc = this.R_C;
+
+	        var la = this.L_A;
+                var lb = this.L_B;
+                var lc = this.L_C;
+
+	        var ca = this.C_A;
+                var cb = this.C_B;
+                var cc = this.C_C;
+	
+	        // If the values are the same on all three phases, just show a simple format
+                var attr
+	        if ((ra == rb) && (rb == rc) && (la == lb) && (lb == lc) && (ca == cb) && (cb == cc))
+	        { //balanced case
+		        attr = setmyvalue(ra,this.R_units,'|')+
+		               setmyvalue(la,this.L_units,'|')+
+		               setmyvalue(ca,this.C_units,'');
+                 attr=setValueField(attr); //designed for RLC, will show onlt what is needed, RLC symbols
+	        }	else	{ //unbalanced case
+		        attr = setmyvalue(ra,this.R_units,'|')+setmyvalue(la,this.L_units,'|')+setmyvalue(ca,this.C_units,'\n')+
+		               setmyvalue(rb,this.R_units,'|')+setmyvalue(lb,this.L_units,'|')+setmyvalue(cb,this.C_units,'\n')+
+		               setmyvalue(rc,this.R_units,'|')+setmyvalue(lc,this.L_units,'|')+setmyvalue(cc,this.C_units,'');
+                 attr=setValueField3(attr)
+	        }
+
+	        dev.setAttribute("Value", attr,-1); //for display
+
+        //*Initial conditions icon and scope icon
+        var icdata   ='';    //for initial conditions: !i...
+        var scopedata='';    //for scopedata: ?v...
+
+        icdata=show_ic_field(this.iL_A+this.iL_B+this.iL_C,icdata,'i')
+        icdata=show_ic_field(this.vC_A+this.vC_B+this.vC_C,icdata,'v')
+
+        var voltage_scope=this.Voltage_scope_A+this.Voltage_scope_B+this.Voltage_scope_C;
+        var current_scope=this.Current_scope_A+this.Current_scope_B+this.Current_scope_C;
+        var power_scope=this.Power_scope_A+this.Power_scope_B+this.Power_scope_C;
+
+        scopedata=voltage_scope+current_scope+power_scope;
+        scopedata= MakeScopeDescriptionField(scopedata); //+
+
+        scopedata=icdata+scopedata;
+
+		//stray capacitor Data
+		dev.setAttribute('FormData','1'+','
+		+this.componentType+','
+		+this.S+','
+		+this.SB+','
+		+this.SP10100B+','
+		+this.selectC+','
+		+this.S_Generator+','
+		+this.type_of_generator+','
+		+this.S_GeneratorB_steam+','
+		+this.S_GeneratorB_hydro+','
+		+this.V_Motor+','
+		+this.S_Motor_416+','
+		+this.S_Motor_66+','
+		+this.S_Motor_138+','
+		+this.Breaker_type+','
+		+this.Maximum_system_voltage+','
+		+this.Breaker_Status+','
+		+this.number_of_SW_per_pole+','
+		+this.busLength+','
+		+this.typeBus+','
+		+this.IsolatedBus+','
+		+this.IsolatedBusI+','
+		+this.SegregatedBus+','
+		+this.SegregatedBusI+','
+		+this.CT_V+','
+		+this.CTB_V+','
+		+this.PotentialTransformer+','
+		+this.LLLN+','
+		+this.LL+','
+		+this.LN+','
+		+this.PotentialTransformerB_name+','
+		+this.busLengthB+','
+		+this.InsulationB+','
+		+this.AirBBus+','
+		+this.IsolatedB+','
+		+this.SegregatedB+','
+		+this.OutdoorB+','
+		+this.GasBBus+','
+		+this.RatedMaximumVoltageB+','
+		+this.C1_val+','
+		+this.select_source+','
+		+this.type_of_transformerC+','
+		+this.S_core_type+','
+		+this.S_shellauto_type+','
+		+this.select_capacitance_checkbox);
+    
+    }else{ //-1-phase version
+      //propagate data, no need to copy the units since unique
+      this.R_B=this.R_A;
+      this.R_C=this.R_A;
+
+      this.L_B=this.L_A;
+      this.L_C=this.L_A;
+
+      this.C_B=this.C_A;
+      this.C_C=this.C_A;
+
+      this.iL_B=this.iL_A;
+      this.iL_C=this.iL_A;
+
+      this.vC_B=this.vC_A;
+      this.vC_C=this.vC_A;
+      
+        //*Set the value field
+     	  var r = this.R_A; var l = this.L_A; var c = this.C_A;
+	       var attr = setmyvalue(r,this.R_units,'|') +	setmyvalue(l,this.L_units,'|')+
+		                 setmyvalue(c,this.C_units,'');
+        attr=setValueField(attr);
+       	dev.setAttribute("Value", attr,-1);
+
+        //*Set scope data
+        var icdata='';
+        var scopedata='';
+
+        icdata=show_ic_field(this.iL_A,icdata,'i')
+        icdata=show_ic_field(this.vC_A,icdata,'v')
+
+        //copy phase A selection to all phases, the standard approach
+        voltage_scope=this.Voltage_scope_A;
+        this.Voltage_scope_B=this.Voltage_scope_A;  this.Voltage_scope_C=this.Voltage_scope_A;
+
+        current_scope=this.Current_scope_A;
+        this.Current_scope_B=this.Current_scope_A;
+        this.Current_scope_C=this.Current_scope_A;
+
+        power_scope  =this.Power_scope_A;
+        this.Power_scope_B=this.Power_scope_A;
+        this.Power_scope_C=this.Power_scope_A;
+
+        scopedata=voltage_scope+current_scope+power_scope;
+        scopedata= MakeScopeDescriptionField(scopedata); //+
+
+        scopedata=icdata+scopedata;
+		dev.setAttribute('FormData','1'+','
+		+this.componentType+','
+		+this.S+','
+		+this.SB+','
+		+this.SP10100B+','
+		+this.selectC+','
+		+this.S_Generator+','
+		+this.type_of_generator+','
+		+this.S_GeneratorB_steam+','
+		+this.S_GeneratorB_hydro+','
+		+this.V_Motor+','
+		+this.S_Motor_416+','
+		+this.S_Motor_66+','
+		+this.S_Motor_138+','
+		+this.Breaker_type+','
+		+this.Maximum_system_voltage+','
+		+this.Breaker_Status+','
+		+this.number_of_SW_per_pole+','
+		+this.busLength+','
+		+this.typeBus+','
+		+this.IsolatedBus+','
+		+this.IsolatedBusI+','
+		+this.SegregatedBus+','
+		+this.SegregatedBusI+','
+		+this.CT_V+','
+		+this.CTB_V+','
+		+this.PotentialTransformer+','
+		+this.LLLN+','
+		+this.LL+','
+		+this.LN+','
+		+this.PotentialTransformerB_name+','
+		+this.busLengthB+','
+		+this.InsulationB+','
+		+this.AirBBus+','
+		+this.IsolatedB+','
+		+this.SegregatedB+','
+		+this.OutdoorB+','
+		+this.GasBBus+','
+		+this.RatedMaximumVoltageB+','
+		+this.C1_val+','
+		+this.select_source+','
+		+this.type_of_transformerC+','
+		+this.S_core_type+','
+		+this.S_shellauto_type+','
+		+this.select_capacitance_checkbox);
+
+
+    } //end of phase test
+
+
+    //+Show Description attribute
+    ShowDescriptionField(scopedata, dev)
+    
+	//* Write the new values back to the ParamsX attribute fields in netlist format
+
+	SetRLCParam(dev, "ParamsA", this.R_A, this.R_units,
+                             this.L_A, this.L_units,
+                             this.C_A, this.C_units,
+				                         this.iL_A,this.iL_units,
+                             this.vC_A,this.vC_units,
+                             this.SelectNominalFrequency,
+                             this.NominalFrequency,
+                             this.MakeRfunction_f,
+                             this.ParameterA,
+                             this.ParameterB,
+                             this.Voltage_scope_A,this.Current_scope_A,this.Power_scope_A,
+                             'A');
+
+	SetRLCParam(dev, "ParamsB", this.R_B, this.R_units,
+                             this.L_B, this.L_units,
+                             this.C_B, this.C_units,
+				                         this.iL_B,this.iL_units,
+                             this.vC_B,this.vC_units,
+                             this.SelectNominalFrequency,
+                             this.NominalFrequency,
+                             this.MakeRfunction_f,
+                             this.ParameterA,
+                             this.ParameterB,
+                             this.Voltage_scope_B,this.Current_scope_B,this.Power_scope_B,
+                             'B');
+	SetRLCParam(dev, "ParamsC", this.R_C, this.R_units,
+                             this.L_C, this.L_units,
+                             this.C_C, this.C_units,
+				                         this.iL_C,this.iL_units,
+                             this.vC_C,this.vC_units,
+                             this.SelectNominalFrequency,
+                             this.NominalFrequency,
+                             this.MakeRfunction_f,
+                             this.ParameterA,
+                             this.ParameterB,
+                             this.Voltage_scope_C,this.Current_scope_C,this.Power_scope_C,
+                             'C');
+
+  //*formData save
+ /*  if(this.SaveFormData){
+      var bal = this.balanced_check
+      if (bal=="1") {
+        attr="1,";
+      }else{
+        attr='0,';
+      }
+      dev.setAttribute('FormData',attr);
+  } */
+
+}
+
+//*Object creator, works for the given device---------------------------------------------------------------------------
+// Takes data from FormData attribute
+function oDevice_C_stray(dev){
+    parseScriptFile('split_value_units.js');
+    parseScriptFile('extract_scopes_observables.js')  //in device services
+    parseScriptFile('IniGlobalDataFromDevice.dwj');
+    IniGlobalDataFromDevice(dev)
+
+    //_Units are common
+    this.R_units='';
+    this.L_units='';
+    this.C_units='';
+
+    this.iL_units='';
+    this.vC_units='';
+
+    //_Phase A
+    var p;
+    //R,L,C,iL,vC are mandatory field, could be empty when first time usage
+    p = dev.getAttribute('ParamsA');
+    if (p.length>0){
+        z=p.match(/,/g);
+        if(z.length<4) p=",,,,";
+    }else{
+        p=",,,,"; //the min number of commas will give the correct size for a
+    }
+
+	var a = SPArray(); 	a.splitParams(p);
+	    // a is now a column vector
+	    //               0    1   2 3  4  5  6  7 8 9
+	    //the field is 100M,10uH,1F,1A,2V,SF,F,Rf,A,B,?v,?i,?p
+        //               1    2   3 4  5
+        // a[0] will contain 100M or 100 if default units
+        // a[1] will contain 10uH
+        // a[2] is C
+        // a[3] is IC for current
+        // a[4] is IC for voltage
+        // 
+        // SF--> SelectNominalFrequency checkbox
+        // F --> NominalFrequency
+        // Rf--> MakeRfunction_f
+        // A --> ParameterA
+        // B --> ParameterB
+
+	//needs to have at least 5 parameters set to any value, could be ""
+	if (a.length < 5) {
+	    alert('****This device is not initialized, cannot continue');
+        halt();
+	}
+
+    for(i=0;i<5;i++){
+        if(a[i].length==0) a[i]=0;
+	}
+    //*Resistor
+	var_w_u= split_value_units(a[0],'')
+	this.R_A     =var_w_u[0];
+	if(var_w_u[1].length>0) this.R_units=var_w_u[1]; //take it only if not zero, keep old value otherwise
+
+	//*L
+	var_w_u= split_value_units(a[1],'')
+	this.L_A     =var_w_u[0];
+	if(var_w_u[1].length>0) this.L_units=var_w_u[1];
+
+	//*C
+	var_w_u= split_value_units(a[2],'')
+	this.C_A     =var_w_u[0];
+	if(var_w_u[1].length>0) this.C_units=var_w_u[1];
+
+	//*IC for L
+	var_w_u= split_value_units(a[3],'')
+	this.iL_A     =var_w_u[0];
+	if(var_w_u[1].length>0)this.iL_units=var_w_u[1];
+	//*IC for C
+	var_w_u= split_value_units(a[4],'')
+	this.vC_A     =var_w_u[0];
+	if(var_w_u[1].length>0)this.vC_units=var_w_u[1];
+
+	//+This type of data is common to all phases, we can extract only from phase A
+	// for 3-phase case or 1-phase case
+	if(a.length > 9 ){
+	   //means new format
+	   this.SelectNominalFrequency  =a[5]
+	   this.NominalFrequency		=a[6]
+	   this.MakeRfunction_f	 		=a[7]
+	   this.ParameterA	      		=a[8]
+	   this.ParameterB	      		=a[9]
+	}else{
+	   this.SelectNominalFrequency='' //checkbox
+	   this.NominalFrequency=oGlobalData.DefaultFrequency;
+	   this.MakeRfunction_f =''
+	   this.ParameterA='0'
+	   this.ParameterB='0'
+
+	}
+
+	this.Voltage_scope_A=extract_scopes_observables(p,'?v');
+	this.Current_scope_A=extract_scopes_observables(p,'?i');
+	this.Power_scope_A  =extract_scopes_observables(p,'?p');
+
+
+	//_Phase B
+	p = dev.getAttribute('ParamsB');
+	if (p.length>0){
+		z=p.match(/,/g);
+		if(z.length<4) p=",,,,";
+    }else{
+        p=",,,,"; //the min number of commas will give the correct size for a
+    }
+
+	var a = SPArray(); 	a.splitParams(p);
+	    // a is now a column vector
+	    //               0    1   2 3  4  5    6    7     there are at least 3 parameters from 0 to 2
+	    //the field is 100M,10uH,1F,1A,2V,?v,?i,?p
+        // a[0] will contain 100M or 100 if default units
+		// a[1] will contain 10uH
+
+	    //needs to have at least 5 parameters set to any value, could be ""
+	if (a.length < 5) {
+	    alert('This device is not initialized, cannot continue');
+        halt();
+	}
+
+    for(i=0;i<5;i++){
+        if(a[i].length==0) a[i]=0;
+    }
+	//*R
+	var_w_u= split_value_units(a[0],'')
+	this.R_B     =var_w_u[0];
+	if(var_w_u[1].length>0) this.R_units=var_w_u[1];
+
+	//*L
+	var_w_u= split_value_units(a[1],'')
+	this.L_B     =var_w_u[0];
+	if(var_w_u[1].length>0) this.L_units=var_w_u[1];
+
+	//*C
+	var_w_u= split_value_units(a[2],'')
+	this.C_B     =var_w_u[0];
+	if(var_w_u[1].length>0) this.C_units=var_w_u[1];
+
+	//*IC L
+	var_w_u= split_value_units(a[3],'')
+	this.iL_B     =var_w_u[0];
+	if(var_w_u[1].length>0)this.iL_units=var_w_u[1];
+
+	//*IC C
+	var_w_u= split_value_units(a[4],'')
+	this.vC_B     =var_w_u[0];
+	if(var_w_u[1].length>0) this.vC_units=var_w_u[1];
+	
+	this.Voltage_scope_B=extract_scopes_observables(p,'?v');
+	this.Current_scope_B=extract_scopes_observables(p,'?i');
+	this.Power_scope_B  =extract_scopes_observables(p,'?p');
+
+	//_Phase C
+	p = dev.getAttribute('ParamsC');
+    if (p.length>0){
+        z=p.match(/,/g);
+        if(z.length<4) p=",,,,";
+    }else{
+        p=",,,,"; //the min number of commas will give the correct size for a
+    }
+
+	var a = SPArray(); 	a.splitParams(p);
+	    // a is now a column vector
+	    //               0    1   2 3  4  5    6    7     there are at least 3 parameters from 0 to 2
+	    //the field is 100M,10uH,1F,1A,2V,?v,?i,?p
+        // a[0] will contain 100M or 100 if default units
+        // a[1] will contain 10uH
+
+	//needs to have at least 5 parameters set to any value, could be ""
+	if (a.length < 5) {
+	    alert('This device is not initialized, cannot continue');
+        halt();
+	}
+
+    for(i=0;i<5;i++){
+        if(a[i].length==0) a[i]=0;
+    }
+    //*R
+	var_w_u= split_value_units(a[0],'')
+	this.R_C     =var_w_u[0];
+	if(var_w_u[1].length>0) this.R_units=var_w_u[1];
+	//*L
+	var_w_u= split_value_units(a[1],'')
+	this.L_C     =var_w_u[0];
+	if(var_w_u[1].length>0) this.L_units=var_w_u[1];
+	//*C
+	var_w_u= split_value_units(a[2],'')
+	this.C_C     =var_w_u[0];
+	if(var_w_u[1].length>0) this.C_units=var_w_u[1];
+	//*IC L
+	var_w_u= split_value_units(a[3],'')
+	this.iL_C     =var_w_u[0];
+	if(var_w_u[1].length>0)this.iL_units=var_w_u[1];
+	//*IC V
+	var_w_u= split_value_units(a[4],'')
+	this.vC_C     =var_w_u[0];
+	if(var_w_u[1].length>0) this.vC_units=var_w_u[1];
+	
+	this.Voltage_scope_C=extract_scopes_observables(p,'?v');
+	this.Current_scope_C=extract_scopes_observables(p,'?i');
+	this.Power_scope_C  =extract_scopes_observables(p,'?p');
+
+    //+Special option: used only for scripting, will copy phase A data to B and C, no matter what
+    this.balanced_by_script=false;  //always set to 0
+
+    //_Get the number of phases if asked by user
+    this.phases = dev.getEMTPPhases();
+        
+	//*Extra methods
+	//The save method
+	this.SaveData=C_stray_SaveData;
+
+	//The doubleclick method  Open
+	this.open= C_stray_o;
+
+	//*save the device handle
+	this.dev = dev;
+
+	//*Optional Form Data save
+	this.SaveFormData=true;
+
+	//*Stray Capacitor
+	//_Get the Stray Capacitor properties
+    formData=dev.getAttribute('FormData');
+    if(formData.length>0){
+        formData=formData.replace(/ON/g, '1');
+        formData=formData.replace(/OFF/g,'0');
+        formData=formData.split(',');
+        this.balanced_check=formData[0];
+			this.componentType=formData[1];
+			this.S=formData[2];
+			this.SB=formData[3];
+			this.SP10100B=formData[4];
+			this.selectC=formData[5];
+			this.S_Generator=formData[6];
+			this.type_of_generator=formData[7];
+			this.S_GeneratorB_steam=formData[8];
+			this.S_GeneratorB_hydro=formData[9];
+			this.V_Motor=formData[10];
+			this.S_Motor_416=formData[11];
+			this.S_Motor_66=formData[12];
+			this.S_Motor_138=formData[13];
+			this.Breaker_type=formData[14];
+			this.Maximum_system_voltage=formData[15];
+			this.Breaker_Status=formData[16];
+			this.number_of_SW_per_pole=formData[17];
+			this.busLength=formData[18];
+			this.typeBus=formData[19];
+			this.IsolatedBus=formData[20];
+			this.IsolatedBusI=formData[21];
+			this.SegregatedBus=formData[22];
+			this.SegregatedBusI=formData[23];
+			this.CT_V=formData[24];
+			this.CTB_V=formData[25];
+			this.PotentialTransformer=formData[26];
+			this.LLLN=formData[27];
+			this.LL=formData[28];
+			this.LN=formData[29];
+			this.PotentialTransformerB_name=formData[30];
+			this.busLengthB=formData[31];
+			this.InsulationB=formData[32];
+			this.AirBBus=formData[33];
+			this.IsolatedB=formData[34];
+			this.SegregatedB=formData[35];
+			this.OutdoorB=formData[36];
+			this.GasBBus=formData[37];
+			this.RatedMaximumVoltageB=formData[38];
+			this.C1_val=formData[39];
+			this.select_source=formData[40];
+			this.type_of_transformerC=formData[41];
+			this.S_core_type=formData[42];
+			this.S_shellauto_type=formData[43];
+			this.select_capacitance_checkbox=formData[44];
+    }else{
+        this.balanced_check='1';
+		// this.componentType=;
+		// this.S=;
+		// this.selectC=;
+		// this.S_Generator=;
+		// this.V_Motor=;
+		// this.S_Motor_416=;
+		// this.S_Motor_66=;
+		// this.S_Motor_138=;
+		// this.Breaker_type=;
+		// this.busLength=;
+		// this.typeBus=;
+		// this.IsolatedBus=;
+		// this.IsolatedBusI=;
+		// this.SegregatedBus=;
+		// this.SegregatedBusI=;
+		// this.CT_V=;
+		// this.PotentialTransformer=;
+		// this.LLLN=;
+		// this.LL=;
+		// this.LN=;
+		// this.C1_val=;
+    }
+	
+	//*local methods
+	this.TestRLCParam1=TestRLCParam1
+	this.TestRLCParam3=TestRLCParam3
+
+   //*Window size
+   //same for both 3-phase and one-phase versions
+   this.WindowXsize_1phase=450;
+   this.WindowYsize_1phase=500;
+   this.WindowXsize_3phase=450;
+   this.WindowYsize_3phase=500;
+}
+
+
+//-Service functions for this device------------------------------------------------------------------------------------
+//*Set visible field data for 3-phase version
+function setValueField3(attr){
+    var attr=attr.split('\n'); //_3-phase version
+    var attrall=setValueField(attr[0])+'\n'+
+         setValueField(attr[1])+'\n'+
+         setValueField(attr[2]  )
+    return attrall
+}
+
+//*Set visible attribute for 1-phase version
+function setValueField(attr){
+        var attr=attr.split('|');
+
+        model=getGlobalValue("model_version");
+        switch(model){
+               case('RLC'):
+                  attr=attr[0]+','+attr[1]+','+attr[2];
+               break;
+
+               case('R'):
+                  attr=attr[0];
+               break;
+
+               case('L'):
+                  attr=attr[1]
+               break;
+
+               case('C'):
+                  attr=attr[2]
+               break;
+
+               case('RL'):
+                  attr=attr[0]+','+attr[1];
+               break;
+
+               case('LC'):
+                  attr=attr[1]+','+attr[2];
+               break;
+        }
+        return attr
+}
+
+//*Called before saving data, 1-phase version
+// This test is to find out if there is a short-circuit in the device
+// It is legal to have a short-circuit since it will be replaced by a closed switch
+function TestRLCParam1(){ //1-phase version
+	//*Testing of data applied here
+        //dev.setAttribute('ModelDataError',''); //to reset notify errors that the user has made in this device
+        var R=this.R_A;
+        var L=this.L_A;
+        var C=this.C_A;
+
+        if(isNaN(R)) return;
+        if(isNaN(L)) return;
+        if(isNaN(C)) return;
+
+        R=parseFloat(R);
+        L=parseFloat(L);
+        C=parseFloat(C);
+
+        if( (R+L+C)== 0 ){
+           alert('Warning: short-circuit in '+  dev.getAttribute("Name")  )
+           //dev.setAttribute('ModelDataError','1');
+        }
+
+}
+
+//*Called before saving data, 3-phase version
+// This test is to find out if there is a short-circuit in the device
+// It is legal to have a short-circuit since it will be replaced by a closed switch
+function TestRLCParam3(){ //3-phase version
+	//*Testing of data applied here
+        //dev.setAttribute('ModelDataError',''); //to reset notify errors that the user has made in this device
+
+        //*Phase a
+        var R=this.R_A;
+        var L=this.L_A;
+        var C=this.C_A;
+
+        if( !isNaN(R) & !isNaN(L) & !isNaN(C)   ){
+            R=parseFloat(R)+parseFloat(L)+parseFloat(C);
+            if(   R  == 0 ){
+               alert('Warning: short-circuit in phase a of '+  dev.getAttribute("Name")  )
+               //dev.setAttribute('ModelDataError','1');
+            }
+        }
+
+        //*Phase b
+        var R=this.R_B;
+        var L=this.L_B;
+        var C=this.C_B;
+
+        if( !isNaN(R) & !isNaN(L) & !isNaN(C)   ){
+            R=parseFloat(R)+parseFloat(L)+parseFloat(C);
+            if(   R  == 0 ){
+               alert('Warning: short-circuit in phase b of '+  dev.getAttribute("Name")  )
+               //dev.setAttribute('ModelDataError','1');
+            }
+        }
+
+        //*Phase c
+        var R=this.R_C;
+        var L=this.L_C;
+        var C=this.C_C;
+
+        if( !isNaN(R) & !isNaN(L) & !isNaN(C)   ){
+            R=parseFloat(R)+parseFloat(L)+parseFloat(C);
+            if( R == 0 ){
+               alert('Warning: short-circuit in phase c of '+  dev.getAttribute("Name")  )
+               //dev.setAttribute('ModelDataError','1');
+            }
+        }
+}

@@ -1,0 +1,67 @@
+//	change: Esteban MALAVAL 2016-06-07
+
+//* C_stray device
+setGlobalValue("model_version", 'C');
+
+//*Get this object
+dev = defaultObject();	// Get the currently selected device
+
+//*Parse all methods for this device
+parseScriptFile('straycap_m.dwj');
+
+//*Crate the object
+var oDevice = new oDevice_C_stray(dev);
+
+//*Call to open the data forms of this object
+oDevice.open();  //will call the save method when OK is clicked
+
+//See documentation in the generic RLC version
+
+//oDevice.C1_val													Capacitance value
+//oDevice.select_source									Source of data
+//oDevice.select_capacitance_checkbox	Indicate if the 
+//oDevice.componentType								Type of component this stray capacitance is attached to
+//Transformer
+	//oDevice.S														MVA power of the transformer for the 1st source
+	//oDevice.SB														MVA power of the transformer for the 2nd source
+	//oDevice.SP10100B										Voltage for 10-100MVA Transformer for the 2nd source
+	//oDevice.type_of_transformerC				Type of transformer for the 3rd source
+	//oDevice.S_core_type									MVA power of Core type transformer for the 1st source
+	//oDevice.S_shellauto_type						MVA power of Shell-type transformer and autotransformer for the 1st source
+	//oDevice.selectC											Selection of capacitance (primary, secondary or between them)
+//Generator
+	//oDevice.S_Generator									MVA power of the generator for the 1st source
+	//oDevice.type_of_generator						Type of generator (steam or hydro) for the 2nd source
+	//oDevice.S_GeneratorB_steam				MVA power of steam generator for 2nd source
+	//oDevice.S_GeneratorB_hydro					MVA power of hydro generator for 2nd source
+//Motor
+	//oDevice.V_Motor											Motor voltage of motor fot the 1st source
+	//oDevice.S_Motor_416								MVA power for 4.16MVA-motors for the 1st source
+	//oDevice.S_Motor_66									MVA power for 6.6MVA-motors for the 1st source
+	//oDevice.S_Motor_138								MVA power for 138MVA-motors for the 1st source
+//Breaker
+	//oDevice.Breaker_type								Type of breaker for the second source
+	//oDevice.Maximum_system_voltage		System Voltage for breakers for 2nd source
+	//oDevice.Breaker_Status							Status od the breaker (open or closed) for 2nd source
+	//oDevice.number_of_SW_per_pole		Number of switches per pole for the 2nd source
+//Bus
+	//oDevice.busLength										Length of the bus for the 1st source
+	//oDevice.busLengthB									Length of the bus for the 2nd source
+	//oDevice.IsolatedBus									Maximum system voltage of the Isolated bus for the 1st source
+	//oDevice.IsolatedBusI									Rated Current of Isolated Bus for the 1st source
+	//oDevice.SegregatedBus							Maximum system voltage of the Segregatedbus for the 1st source
+	//oDevice.SegregatedBusI							Rated Current of Segregated Bus for the 1st source
+	//oDevice.InsulationB									Insulation of Bus for 2nd source
+	//oDevice.AirBBus											Type of Air-insulated Bus
+	//oDevice.IsolatedB										Ampere Rating of the Air-Insulated isolated Phase Bus
+	//oDevice.SegregatedB									Ampere Rating of the Air-Insulated segregated Phase Bus
+	//oDevice.OutdoorB										Ampere Rating of the Air-Insulated outdoor	substation Bus
+	//oDevice.GasBBus											Type of Gas-insulated Bus
+	//oDevice.RatedMaximumVoltageB			Rated Maximum Voltage of the Gas-insulated Bus
+//Current Transformer	
+	//oDevice.CT_V												Insulation class of the Current Transformer for the 1st source
+	//oDevice.CTB_V												Insulation class of the Current Transformer for the 2nd source
+//Potential Transformer
+	//oDevice.PotentialTransformer				Insulation class of the Potential Transformer for the 1st source
+	//oDevice.LLLN													Choose if the voltage is Line-Line or Line-Neutral
+	

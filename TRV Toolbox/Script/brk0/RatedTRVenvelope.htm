@@ -1,0 +1,301 @@
+<html>
+<head>
+    <meta http-equiv="Content-Language" content="en-us">
+    <meta http-equiv="Content-Type" content="text/html_3; charset=windows-1252">
+    <link rel="STYLESHEET" type="text/css" href="../../../../Info Scripts/HTML/emtpstyle.css">
+    <script language="JavaScript" src="../../../../Info Scripts/HTML/javascripts/testvalue.js"></script>
+    <script language="JavaScript" src="../../../../Info Scripts/HTML/javascripts/hideshowlayer.js"></script>
+    <script language="JavaScript" src="../../../../Info Scripts/HTML/javascripts/testposintvalue.js"></script>
+    <script language="JavaScript" src="../../../../Info Scripts/HTML/javascripts/testdata.js"></script>
+    <script language="JavaScript" src="../../../../Info Scripts/HTML/javascripts/testpos0realvalue.js"></script>
+    <script language="JavaScript" src="../../../../Info Scripts/HTML/javascripts/notspecialopt.js"></script>
+    <script language="JavaScript" src="../../../../Info Scripts/HTML/javascripts/test_one_line_box.js"></script>
+    <script language="JavaScript" src="../../../../Info Scripts/HTML/javascripts/standardmasks.js"></script>
+    <script language="JavaScript" src="../../../../Info Scripts/HTML/javascripts/visual_config.js"></script>
+    <script language="JavaScript" src="../../../../Info Scripts/HTML/javascripts/plot_sample_data.js"></script>
+    <script language="JavaScript" src="../../../../Info Scripts/HTML/javascripts/standard_onload.js"></script>
+    <script language="JavaScript" src="RatedTRVenvelope.js"></script>
+    <title>Rated TRV</title>
+    <script language="JavaScript"></script>
+</head>
+<body class="mybodyblue" onload='standard_onload();'>
+    <h1 id="model_id1">
+        Rated transient recovery voltage envelope     
+    </h1>
+    <table>
+        <tr>
+            <td class="tdmid">
+                <input type="checkbox" name="TRV_enable" id="TRV_enable_id" onclick="displayAll_DIST();">
+                Draw rating TRV
+            </td>
+        </tr>
+    </table>
+
+    <img id="trv_4_parameter_id" src="trv_4_parameter.png" style="width:360px;">
+    <img id="trv_2_parameter_id" src="trv_2_parameter.png" style="width:360px;">
+
+        <table id="table1_id">
+            <tr>
+                <td class="tdmid" colspan="2">
+                    <input type="checkbox" name="TRV_restrike_reignition" id="TRV_restrike_reignition_id">
+                    Enable restrikes/prestrikes and re-ignitions
+                </td>
+            </tr>
+            <tr>
+                <td class="tdrightWtip" title='Type of TRV.'>
+                    Envelope:
+                </td>
+                <td>
+                    <select name="TRV_envelope" id="TRV_envelope_id" class="units" onclick="display_TRV_parameters()">
+                        <option value="Standard IEC 62271-100">Standard IEC 62271-100 (2012)</option>
+                        <option value="Customized">User-defined</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+        <table class="tableofdata" id="TRV_id1">
+            <tr>
+                <td class="tdrightWtip" title="Rated voltage of the circuit breaker.">
+                    Ur:
+                </td>
+                <td class="units">
+                    <select name="TRV_Rated_voltage" id="TRV_Rated_voltage_id" class="units" onchange="find_rated_TRV_parameters1()">
+                        <option value="3.6">3.6</option>
+                        <option value="4.76">4.76</option>
+                        <option value="7.2">7.2</option>
+                        <option value="8.25">8.25</option>
+                        <option value="12">12</option>
+                        <option value="15">15</option>
+                        <option value="17.5">17.5</option>
+                        <option value="24">24</option>
+                        <option value="25.8">25.8</option>
+                        <option value="36">36</option>
+                        <option value="38">38</option>
+                        <option value="48.3">48.3</option>
+                        <option value="52">52</option>
+                        <option value="72.5">72.5</option>
+                        <option value="100">100</option>
+                        <option value="123">123</option>
+                        <option value="145">145</option>
+                        <option value="170">170</option>
+                        <option value="245">245</option>
+                        <option value="300">300</option>
+                        <option value="362">362</option>
+                        <option value="420">420</option>
+                        <option value="550">550</option>
+                        <option value="800">800</option>
+                    </select>
+                    kV RMSLL
+                </td>
+                <td class="tdrightWtip">
+                    Short-circuit current:
+                </td>
+                <td class="units">
+                    <input type="text" maxlength="22" name="TRV_K" id="TRV_K_id" class="emtpinputsmall" title="Current in kA RMS that goes through the breaker before opening. Can be determined by simulating the event without opening the switch or in steady state and looking at the current through the breaker. Used to interpolate the parameter from T10, T30, T60 and T100."
+                           onchange="testrealinrangevalueBreaker(TRV_K, '0', '0', '5'); find_rated_TRV_parameters1()"> kA RMS
+                </td>
+				</tr>
+				<tr>
+				<td>
+				</td>
+				<td>
+				</td>
+				<td>
+				</td>
+				<td>
+					<input type="checkbox" name="Short-Circuit Current" title="Clicking on this box and 'OK' will close the html windows, open a new windom to parameter the fault and short-circuit the breaker to ground and run a simulation to find the short-circuit current" onclick="SCCWarningMessage()"> Calculate Short-Circuit current while closing this box
+				</td>
+            </tr>
+            <tr>
+				<td>
+					Type of Fault
+				</td>
+				<td>
+					<select name="type_of_fault" id="type_of_fault_id">
+						<option value="Three-Phase Terminal Fault">Three-Phase Terminal Fault</option>
+						<option value="Short Line Fault">Short Line Fault</option>
+					</select>
+				</td>
+                <td class="tdrightWtip" title='Class of the circuit breaker.'>
+                    Class:
+                </td>
+                <td>
+                    <select name="TRV_breaker_class" id="TRV_breaker_class_id" class="units" onclick="display_picture()"
+                            onchange="setOptionRatedVolateList(document.getElementById('TRV_breaker_class').value, document.getElementById('TRV_Rated_voltage_id'), 'TRV_Rated_voltage'); find_rated_TRV_parameters1()">
+                        <option value="Class_S1">Class S1</option>
+                        <option value="Class_S2">Class S2</option>
+                        <option value="100KV_effectively earthed">>100KV effectively earthed</option>
+                        <option value="100KV_non-effectively earthed">>100KV non-effectively earthed</option>
+                    </select>
+                </td>
+                <td class="tdrightWtip" title="Rated short-circuit current of the circuit breaker.">
+                    Rated short-circuit current:
+                </td>
+                <td class="units">
+                    <input type="text" maxlength="22" name="TRV_Rated_short_circuit" id="TRV_Rated_short_circuit_id" class="emtpinputsmall"
+                           onchange="testpos0realvalue(TRV_Rated_short_circuit, '0'); find_rated_TRV_parameters1();">  kA RMS
+                </td>
+            </tr>
+			<tr>
+        </table>
+        <table class="tableofdata" id="TRV_id2">
+            <tr>
+                <td class="tdrightWtip" title='Class of the circuit breaker.'>
+                    TRV shape:
+                </td>
+                <td colspan="3">
+                    <select name="TRV_nSegments" id="TRV_nParameters_id" class="units" onchange="enable_times_inputs()">
+                        <option value="2-parameter">2-parameter</option>
+                        <option value="4-parameter">4-parameter</option>
+                    </select>
+                </td>
+           </tr>
+            <tr style = 'display: none;'>
+                <td class="tdrightWtip" title="First-pole-to-clear factor.">
+                    kpp:
+                </td>
+                <td>
+                    <input type="text" maxlength="22" name="TRV_kpp" id="TRV_kpp_id" disabled class="emtpinputsmall"
+                           onchange="testpos0realvalue(TRV_kpp, '0'); compute_TRV_parameters();"> p.u.
+                </td>
+                <td class="tdrightWtip" title="Amplitude factor.">
+                    kaf:
+                </td>
+                <td>
+                    <input type="text" maxlength="22" name="TRV_kaf" id="TRV_kaf_id" disabled class="emtpinputsmall"
+                           onchange="testpos0realvalue(TRV_kaf, '0'); compute_TRV_parameters();"> p.u.
+                </td>
+            </tr>
+            <tr>
+                <td class="tdrightWtip" title="First reference voltage">
+                    U<sub>1</sub>:
+                </td>
+                <td class="units">
+                    <input type="text" maxlength="22" name="TRV_U1" id="TRV_U1_id" class="emtpinputsmall"
+                           onchange="testpos0realvalue(TRV_U1, '0'); compute_TRV_parameters();">  kV
+                </td>
+                <td class="tdrightWtip" title="TRV peak value">
+                     U<sub>c</sub>:
+                </td>
+                <td class="units">
+                    <input type="text" maxlength="22" name="TRV_Uc" id="TRV_Uc_id" class="emtpinputsmall"
+                           onchange="testpos0realvalue(TRV_Uc, '0'); compute_TRV_parameters();">  kV
+                </td>
+            </tr>
+            <tr>
+                <td class="tdrightWtip">
+                    Time t<sub>3</sub>:
+                </td>
+                <td class="units">
+                    <input type="text" maxlength="22" name="TRV_t3" id="TRV_t3_id" class="emtpinputsmall"
+                           onchange="testpos0realvalue(TRV_t3, '0'); compute_TRV_parameters1();"> &mu;s
+                </td>
+            </tr>
+            <tr>
+                <td class="tdrightWtip">
+                    Time t<sub>1</sub>:
+                </td>
+                <td class="units">
+                    <input type="text" maxlength="22" name="TRV_t1" id="TRV_t1_id" class="emtpinputsmall"
+                           onchange="testpos0realvalue(TRV_t1, '0'); compute_TRV_parameters1();"> &mu;s
+                </td>
+                <td class="tdrightWtip">
+                    Time t<sub>2</sub>:
+                </td>
+                <td class="units">
+                    <input type="text" maxlength="22" name="TRV_t2" id="TRV_t2_id" class="emtpinputsmall"
+                           onchange="testpos0realvalue(TRV_t2, '0'); compute_TRV_parameters1();"> &mu;s
+                </td>
+            </tr>
+            <tr>
+                <td class="tdrightWtip" title="Rate of Rise of Recovery Voltage based on U1 and t1.">
+                    RRRV1:
+                </td>
+                <td class="units">
+                    <input type="text" maxlength="22" name="TRV_RRRV1" id="TRV_RRRV1_id" class="emtpinputsmall"
+                           onchange="testpos0realvalue(TRV_RRRV1, '0');"> kV/&mu;s
+                </td>
+                <td class="tdrightWtip" title="Rate of Rise of Recovery Voltage based on Uc and t3 (or t2).">
+                    RRRV2:
+                </td>
+                <td class="units">
+                    <input type="text" maxlength="22" name="TRV_RRRV2" id="TRV_RRRV2_id" class="emtpinputsmall"
+                           onchange="testpos0realvalue(TRV_RRRV2, '0');"> kV/&mu;s
+                </td>
+            </tr>
+			<tr>
+                <td class="tdrightWtip" title="times of beginning of the reflected wave from source">
+                    t<sub>d</sub>:
+                </td>
+                <td class="units">
+                    <input type="text" maxlength="22" name="td" id="td_id" class="emtpinputsmall"
+                           onchange="testpos0realvalue(td, '0');"> &mu;s
+                </td>
+                <td class="tdrightWtip" title="times of end of the reflected wave from source">
+                    t':
+                </td>
+                <td class="units">
+                    <input type="text" maxlength="22" name="tp" id="tp_id" class="emtpinputsmall"
+                           onchange="testpos0realvalue(tp, '0');"> &mu;s
+                </td>
+            </tr>
+			<tr>
+                <td class="tdrightWtip" title="final voltage value of reflected wave from source">
+                    U':
+                </td>
+                <td class="units">
+                    <input type="text" maxlength="22" name="up" id="up_id" class="emtpinputsmall"
+                           onchange="testpos0realvalue(up, '0');"> kV
+                </td>
+            </tr>
+        </table>
+    <table>
+        <tr>
+            <td class="tdright">
+                <input type="checkbox" name="TRV_capacitance" id="TRV_capacitance_id" onclick="capacitanceEnabled()">
+            </td>
+            <td>
+                Include stray capacitances
+            </td>
+        </tr>
+    </table>
+    <table class="tableofdata" id="breaker_capacitance_id">
+        <tr id="Breaker_line_id">
+            <td colspan="4">
+                Breaker type :
+                <select name="Breaker_type" id="Breaker_type_id" class="units" onchange="findCapacitance()">
+                    <option value="none"></option>
+                    <option value="Break_1">Outdoor, dead-tank, air, oil, vacuum or SF6 breakers with paper bushings</option>
+                    <option value="Break_8">Outdoor, dead-tank, air, oil, vacuum or SF6 breakers with SF6 bushings</option>
+                    <option value="Break_9">Outdoor, dead-tank, air, oil, vacuum or SF6 breakers with solid resin bushings</option>
+                    <option value="Break_2">Outdoor, live-tank, air, oil, vacuum or SF6 breakers</option>
+                    <option value="Break_3">GIS circuit breakers</option>
+                    <option value="Break_4">GIS disconnect switches</option>
+                    <option value="Break_5">Outdoor SF6 cicuit switchers</option>
+                    <option value="Break_6">Outdoor SF6 circuit switchers with integral disconnect blade</option>
+                    <option value="Break_7">Outdoor disconnect switches</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="tdrightWtip" id="TRV_Cstray1_id" title="Stray capacitance at the pin k (+)">
+                Stray capacitance +:
+            </td>
+            <td id="Cstrayk" class="units">
+                <input type="text" maxlength="22" name="TRV_Cstrayk" id="TRV_Cstrayk_id" class="emtpinputsmall"
+                       onchange="testpos0realvalue(TRV_Cstrayk, '0');">  pF
+            </td>
+            <td class="tdrightWtip" id="TRV_Cstray2_id" title="Stray capacitance at the pin m ">
+                Stray capacitance -:
+            </td>
+            <td id="Cstraym" class="units">
+                <input type="text" maxlength="22" name="TRV_Cstraym" id="TRV_Cstraym_id" class="emtpinputsmall"
+                       onchange="testpos0realvalue(TRV_Cstraym, '0');">  pF
+            </td>
+        </tr>
+    </table>
+
+        <div id="errorbar" style="position: absolute; left:10; top:5;"></div>
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+//Last Change: Esteban MALAVAL 2016-09-09
+
+//Remove the parts of the line
+firstHalf=cct.devices("Name","firstHalf")[0];
+secondHalf=cct.devices("Name","secondHalf")[0];
+firstHalf.remove();
+secondHalf.remove();
+
+//Remove the files generates for the parts
+if(lineDev.getAttribute("Name.Prefix")=="WBline")
+{
+	SPFile(cct.getAttribute("CctPath")+"firstPart.cyz").remove();
+	SPFile(cct.getAttribute("CctPath")+"ycfit_firstPart.dat").remove();
+	SPFile(cct.getAttribute("CctPath")+"wbfit_firstPart.log").remove();
+	SPFile(cct.getAttribute("CctPath")+"wbfit_firstPart.dat").remove();
+	SPFile(cct.getAttribute("CctPath")+"hfit_firstPart.dat").remove();
+	
+	SPFile(cct.getAttribute("CctPath")+"secondPart.cyz").remove();
+	SPFile(cct.getAttribute("CctPath")+"ycfit_secondPart.dat").remove();
+	SPFile(cct.getAttribute("CctPath")+"wbfit_secondPart.log").remove();
+	SPFile(cct.getAttribute("CctPath")+"wbfit_secondPart.dat").remove();
+	SPFile(cct.getAttribute("CctPath")+"hfit_secondPart.dat").remove();
+}
+
+if(lineDev.getAttribute("Name.Prefix")=="FDQ")
+{
+	SPFile(cct.getAttribute("CctPath")+"firstHalf.pun").remove();
+	SPFile(cct.getAttribute("CctPath")+"secondHalf.pun").remove();
+}
+//Include the line
+lineDev.setAttribute('Exclude','');

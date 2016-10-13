@@ -1,0 +1,2471 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<template version="xml-scopeview-template version=&quot;4.2&quot;">
+    <acqParams>
+        <startingTime>0.0</startingTime>
+        <timeLength>0.0999</timeLength>
+        <samplingRate>20000.0</samplingRate>
+        <numData>-1</numData>
+        <synchronized>false</synchronized>
+        <maneuvered>false</maneuvered>
+        <numAcq>1</numAcq>
+        <continuous>false</continuous>
+    </acqParams>
+    <dataSources>
+        <dataSource id="-1599653652" className="ca.ireq.sim.source.SimEmtpDataSource">
+            <location>{file=path1\circnamem.m}{format=PC}</location>
+        </dataSource>
+        <dataSource id="1970385663" className="ca.ireq.sim.source.SimEmtpDataSource">
+            <location>{file=path2\circnamem.m}{format=PC}</location>
+        </dataSource>
+    </dataSources>
+    <dataSourceMacros/>
+    <signals>
+        <signal>
+            <identifier>devName_TRV_without_delay_timeb</identifier>
+            <name>devName/TRV_without_delay_timeb</name>
+            <description>TRV envelop (main part)</description>
+            <category>control</category>
+            <type>Analog</type>
+            <dataSourceId>-1599653652</dataSourceId>
+        </signal>
+        <signal>
+            <identifier>devName_TRV_tdb</identifier>
+            <name>devName/TRV_tdb</name>
+            <description>TRV envelop (delayed part)</description>
+            <category>control</category>
+            <type>Analog</type>
+            <dataSourceId>-1599653652</dataSourceId>
+        </signal>
+        <signal>
+            <identifier>devName_DEV3_b</identifier>
+            <name>devName/DEV3/b</name>
+            <description>V_devName_b</description>
+            <category>vb</category>
+            <type>Analog</type>
+            <dataSourceId>-1599653652</dataSourceId>
+        </signal>
+        <signal>
+            <identifier>devName_minus_TRV_tdb_1</identifier>
+            <name>devName/minus_TRV_tdb</name>
+            <description>-TRV envelop (delayed part)</description>
+            <category>control</category>
+            <type>Analog</type>
+            <dataSourceId>1970385663</dataSourceId>
+        </signal>
+        <signal>
+            <identifier>devName_minus_TRV_without_delay_timec_1</identifier>
+            <name>devName/minus_TRV_without_delay_timec</name>
+            <description>-TRV envelop (main part)</description>
+            <category>control</category>
+            <type>Analog</type>
+            <dataSourceId>1970385663</dataSourceId>
+        </signal>
+        <signal>
+            <identifier>devName_minus_TRV_tdc</identifier>
+            <name>devName/minus_TRV_tdc</name>
+            <description>-TRV envelop (delayed part)</description>
+            <category>control</category>
+            <type>Analog</type>
+            <dataSourceId>-1599653652</dataSourceId>
+        </signal>
+        <signal>
+            <identifier>devName_TRV_tda_1</identifier>
+            <name>devName/TRV_tda</name>
+            <description>TRV envelop (delayed part)</description>
+            <category>control</category>
+            <type>Analog</type>
+            <dataSourceId>1970385663</dataSourceId>
+        </signal>
+        <signal>
+            <identifier>devName_TRV_without_delay_timea_1</identifier>
+            <name>devName/TRV_without_delay_timea</name>
+            <description>TRV envelop (main part)</description>
+            <category>control</category>
+            <type>Analog</type>
+            <dataSourceId>1970385663</dataSourceId>
+        </signal>
+        <signal>
+            <identifier>devName_DEV3_b_1</identifier>
+            <name>devName/DEV3/b</name>
+            <description>V_devName_b</description>
+            <category>vb</category>
+            <type>Analog</type>
+            <dataSourceId>1970385663</dataSourceId>
+        </signal>
+        <signal>
+            <identifier>devName_TRV_without_delay_timea</identifier>
+            <name>devName/TRV_without_delay_timea</name>
+            <description>TRV envelop (main part)</description>
+            <category>control</category>
+            <type>Analog</type>
+            <dataSourceId>-1599653652</dataSourceId>
+        </signal>
+        <signal>
+            <identifier>devName_DEV3_c_1</identifier>
+            <name>devName/DEV3/c</name>
+            <description>V_devName_c</description>
+            <category>vb</category>
+            <type>Analog</type>
+            <dataSourceId>1970385663</dataSourceId>
+        </signal>
+        <signal>
+            <identifier>devName_minus_TRV_tdc_1</identifier>
+            <name>devName/minus_TRV_tdc</name>
+            <description>-TRV envelop (delayed part)</description>
+            <category>control</category>
+            <type>Analog</type>
+            <dataSourceId>1970385663</dataSourceId>
+        </signal>
+        <signal>
+            <identifier>devName_minus_TRV_without_delay_timec</identifier>
+            <name>devName/minus_TRV_without_delay_timec</name>
+            <description>-TRV envelop (main part)</description>
+            <category>control</category>
+            <type>Analog</type>
+            <dataSourceId>-1599653652</dataSourceId>
+        </signal>
+        <signal>
+            <identifier>devName_DEV3_a</identifier>
+            <name>devName/DEV3/a</name>
+            <description>V_devName_a</description>
+            <category>vb</category>
+            <type>Analog</type>
+            <dataSourceId>-1599653652</dataSourceId>
+        </signal>
+        <signal>
+            <identifier>devName_TRV_tdc</identifier>
+            <name>devName/TRV_tdc</name>
+            <description>TRV envelop (delayed part)</description>
+            <category>control</category>
+            <type>Analog</type>
+            <dataSourceId>-1599653652</dataSourceId>
+        </signal>
+        <signal>
+            <identifier>devName_minus_TRV_tdb</identifier>
+            <name>devName/minus_TRV_tdb</name>
+            <description>-TRV envelop (delayed part)</description>
+            <category>control</category>
+            <type>Analog</type>
+            <dataSourceId>-1599653652</dataSourceId>
+        </signal>
+        <signal>
+            <identifier>devName_TRV_without_delay_timeb_1</identifier>
+            <name>devName/TRV_without_delay_timeb</name>
+            <description>TRV envelop (main part)</description>
+            <category>control</category>
+            <type>Analog</type>
+            <dataSourceId>1970385663</dataSourceId>
+        </signal>
+        <signal>
+            <identifier>devName_minus_TRV_without_delay_timeb</identifier>
+            <name>devName/minus_TRV_without_delay_timeb</name>
+            <description>-TRV envelop (main part)</description>
+            <category>control</category>
+            <type>Analog</type>
+            <dataSourceId>-1599653652</dataSourceId>
+        </signal>
+        <signal>
+            <identifier>devName_minus_TRV_tda</identifier>
+            <name>devName/minus_TRV_tda</name>
+            <description>-TRV envelop (delayed part)</description>
+            <category>control</category>
+            <type>Analog</type>
+            <dataSourceId>-1599653652</dataSourceId>
+        </signal>
+        <signal>
+            <identifier>devName_TRV_tdc_1</identifier>
+            <name>devName/TRV_tdc</name>
+            <description>TRV envelop (delayed part)</description>
+            <category>control</category>
+            <type>Analog</type>
+            <dataSourceId>1970385663</dataSourceId>
+        </signal>
+        <signal>
+            <identifier>devName_minus_TRV_without_delay_timea_1</identifier>
+            <name>devName/minus_TRV_without_delay_timea</name>
+            <description>-TRV envelop (main part)</description>
+            <category>control</category>
+            <type>Analog</type>
+            <dataSourceId>1970385663</dataSourceId>
+        </signal>
+        <signal>
+            <identifier>devName_TRV_without_delay_timec_1</identifier>
+            <name>devName/TRV_without_delay_timec</name>
+            <description>TRV envelop (main part)</description>
+            <category>control</category>
+            <type>Analog</type>
+            <dataSourceId>1970385663</dataSourceId>
+        </signal>
+        <signal>
+            <identifier>devName_minus_TRV_without_delay_timea</identifier>
+            <name>devName/minus_TRV_without_delay_timea</name>
+            <description>-TRV envelop (main part)</description>
+            <category>control</category>
+            <type>Analog</type>
+            <dataSourceId>-1599653652</dataSourceId>
+        </signal>
+        <signal>
+            <identifier>devName_TRV_without_delay_timec</identifier>
+            <name>devName/TRV_without_delay_timec</name>
+            <description>TRV envelop (main part)</description>
+            <category>control</category>
+            <type>Analog</type>
+            <dataSourceId>-1599653652</dataSourceId>
+        </signal>
+        <signal>
+            <identifier>devName_DEV3_c</identifier>
+            <name>devName/DEV3/c</name>
+            <description>V_devName_c</description>
+            <category>vb</category>
+            <type>Analog</type>
+            <dataSourceId>-1599653652</dataSourceId>
+        </signal>
+        <signal>
+            <identifier>devName_TRV_tda</identifier>
+            <name>devName/TRV_tda</name>
+            <description>TRV envelop (delayed part)</description>
+            <category>control</category>
+            <type>Analog</type>
+            <dataSourceId>-1599653652</dataSourceId>
+        </signal>
+        <signal>
+            <identifier>devName_minus_TRV_tda_1</identifier>
+            <name>devName/minus_TRV_tda</name>
+            <description>-TRV envelop (delayed part)</description>
+            <category>control</category>
+            <type>Analog</type>
+            <dataSourceId>1970385663</dataSourceId>
+        </signal>
+        <signal>
+            <identifier>devName_TRV_tdb_1</identifier>
+            <name>devName/TRV_tdb</name>
+            <description>TRV envelop (delayed part)</description>
+            <category>control</category>
+            <type>Analog</type>
+            <dataSourceId>1970385663</dataSourceId>
+        </signal>
+        <signal>
+            <identifier>devName_minus_TRV_without_delay_timeb_1</identifier>
+            <name>devName/minus_TRV_without_delay_timeb</name>
+            <description>-TRV envelop (main part)</description>
+            <category>control</category>
+            <type>Analog</type>
+            <dataSourceId>1970385663</dataSourceId>
+        </signal>
+        <signal>
+            <identifier>devName_DEV3_a_1</identifier>
+            <name>devName/DEV3/a</name>
+            <description>V_devName_a</description>
+            <category>vb</category>
+            <type>Analog</type>
+            <dataSourceId>1970385663</dataSourceId>
+        </signal>
+    </signals>
+    <expressions>
+        <expression>
+            <exp>devName_TRV_tda</exp>
+            <desc>devName/TRV_tda@control</desc>
+            <displayed>true</displayed>
+            <pageNumber>1</pageNumber>
+            <graphId>20904612</graphId>
+        </expression>
+        <expression>
+            <exp>devName_TRV_without_delay_timea</exp>
+            <desc>devName/TRV_without_delay_timea@control</desc>
+            <displayed>true</displayed>
+            <pageNumber>1</pageNumber>
+            <graphId>33529920</graphId>
+        </expression>
+        <expression>
+            <exp>devName_minus_TRV_tda</exp>
+            <desc>devName/minus_TRV_tda@control</desc>
+            <displayed>true</displayed>
+            <pageNumber>1</pageNumber>
+            <graphId>7899687</graphId>
+        </expression>
+        <expression>
+            <exp>devName_minus_TRV_without_delay_timea</exp>
+            <desc>devName/minus_TRV_without_delay_timea@control</desc>
+            <displayed>true</displayed>
+            <pageNumber>1</pageNumber>
+            <graphId>27487359</graphId>
+        </expression>
+        <expression>
+            <exp>devName_DEV3_a</exp>
+            <desc>devName/DEV3/a@vb</desc>
+            <displayed>true</displayed>
+            <pageNumber>1</pageNumber>
+            <graphId>24528437</graphId>
+        </expression>
+        <expression>
+            <exp>devName_DEV3_b</exp>
+            <desc>devName/DEV3/b@vb</desc>
+            <displayed>true</displayed>
+            <pageNumber>2</pageNumber>
+            <graphId>27723579</graphId>
+        </expression>
+        <expression>
+            <exp>devName_TRV_tdb</exp>
+            <desc>devName/TRV_tdb@control</desc>
+            <displayed>true</displayed>
+            <pageNumber>2</pageNumber>
+            <graphId>18777562</graphId>
+        </expression>
+        <expression>
+            <exp>devName_TRV_without_delay_timeb</exp>
+            <desc>devName/TRV_without_delay_timeb@control</desc>
+            <displayed>true</displayed>
+            <pageNumber>2</pageNumber>
+            <graphId>18668114</graphId>
+        </expression>
+        <expression>
+            <exp>devName_minus_TRV_tdb</exp>
+            <desc>devName/minus_TRV_tdb@control</desc>
+            <displayed>true</displayed>
+            <pageNumber>2</pageNumber>
+            <graphId>942250</graphId>
+        </expression>
+        <expression>
+            <exp>devName_minus_TRV_without_delay_timeb</exp>
+            <desc>devName/minus_TRV_without_delay_timeb@control</desc>
+            <displayed>true</displayed>
+            <pageNumber>2</pageNumber>
+            <graphId>23279823</graphId>
+        </expression>
+        <expression>
+            <exp>devName_DEV3_c</exp>
+            <desc>devName/DEV3/c@vb</desc>
+            <displayed>true</displayed>
+            <pageNumber>3</pageNumber>
+            <graphId>16538284</graphId>
+        </expression>
+        <expression>
+            <exp>devName_TRV_tdc</exp>
+            <desc>devName/TRV_tdc@control</desc>
+            <displayed>true</displayed>
+            <pageNumber>3</pageNumber>
+            <graphId>21875883</graphId>
+        </expression>
+        <expression>
+            <exp>devName_TRV_without_delay_timec</exp>
+            <desc>devName/TRV_without_delay_timec@control</desc>
+            <displayed>true</displayed>
+            <pageNumber>3</pageNumber>
+            <graphId>16378584</graphId>
+        </expression>
+        <expression>
+            <exp>devName_minus_TRV_tdc</exp>
+            <desc>devName/minus_TRV_tdc@control</desc>
+            <displayed>true</displayed>
+            <pageNumber>3</pageNumber>
+            <graphId>7996744</graphId>
+        </expression>
+        <expression>
+            <exp>devName_minus_TRV_without_delay_timec</exp>
+            <desc>devName/minus_TRV_without_delay_timec@control</desc>
+            <displayed>true</displayed>
+            <pageNumber>3</pageNumber>
+            <graphId>2168849</graphId>
+        </expression>
+        <expression>
+            <exp>devName_TRV_tda_1</exp>
+            <desc>devName/TRV_tda@control</desc>
+            <displayed>true</displayed>
+            <pageNumber>4</pageNumber>
+            <graphId>25732266</graphId>
+        </expression>
+        <expression>
+            <exp>devName_TRV_without_delay_timea_1</exp>
+            <desc>devName/TRV_without_delay_timea@control</desc>
+            <displayed>true</displayed>
+            <pageNumber>4</pageNumber>
+            <graphId>12071401</graphId>
+        </expression>
+        <expression>
+            <exp>devName_minus_TRV_tda_1</exp>
+            <desc>devName/minus_TRV_tda@control</desc>
+            <displayed>true</displayed>
+            <pageNumber>4</pageNumber>
+            <graphId>5121971</graphId>
+        </expression>
+        <expression>
+            <exp>devName_minus_TRV_without_delay_timea_1</exp>
+            <desc>devName/minus_TRV_without_delay_timea@control</desc>
+            <displayed>true</displayed>
+            <pageNumber>4</pageNumber>
+            <graphId>10699195</graphId>
+        </expression>
+        <expression>
+            <exp>devName_DEV3_a_1</exp>
+            <desc>devName/DEV3/a@vb</desc>
+            <displayed>true</displayed>
+            <pageNumber>4</pageNumber>
+            <graphId>13504241</graphId>
+        </expression>
+        <expression>
+            <exp>devName_TRV_tdb_1</exp>
+            <desc>devName/TRV_tdb@control</desc>
+            <displayed>true</displayed>
+            <pageNumber>5</pageNumber>
+            <graphId>19025528</graphId>
+        </expression>
+        <expression>
+            <exp>devName_TRV_without_delay_timeb_1</exp>
+            <desc>devName/TRV_without_delay_timeb@control</desc>
+            <displayed>true</displayed>
+            <pageNumber>5</pageNumber>
+            <graphId>10262288</graphId>
+        </expression>
+        <expression>
+            <exp>devName_minus_TRV_tdb_1</exp>
+            <desc>devName/minus_TRV_tdb@control</desc>
+            <displayed>true</displayed>
+            <pageNumber>5</pageNumber>
+            <graphId>10005729</graphId>
+        </expression>
+        <expression>
+            <exp>devName_minus_TRV_without_delay_timeb_1</exp>
+            <desc>devName/minus_TRV_without_delay_timeb@control</desc>
+            <displayed>true</displayed>
+            <pageNumber>5</pageNumber>
+            <graphId>2198021</graphId>
+        </expression>
+        <expression>
+            <exp>devName_DEV3_b_1</exp>
+            <desc>devName/DEV3/b@vb</desc>
+            <displayed>true</displayed>
+            <pageNumber>5</pageNumber>
+            <graphId>29969527</graphId>
+        </expression>
+        <expression>
+            <exp>devName_TRV_tdc_1</exp>
+            <desc>devName/TRV_tdc@control</desc>
+            <displayed>true</displayed>
+            <pageNumber>6</pageNumber>
+            <graphId>24080841</graphId>
+        </expression>
+        <expression>
+            <exp>devName_TRV_without_delay_timec_1</exp>
+            <desc>devName/TRV_without_delay_timec@control</desc>
+            <displayed>true</displayed>
+            <pageNumber>6</pageNumber>
+            <graphId>10040417</graphId>
+        </expression>
+        <expression>
+            <exp>devName_minus_TRV_tdc_1</exp>
+            <desc>devName/minus_TRV_tdc@control</desc>
+            <displayed>true</displayed>
+            <pageNumber>6</pageNumber>
+            <graphId>2684949</graphId>
+        </expression>
+        <expression>
+            <exp>devName_minus_TRV_without_delay_timec_1</exp>
+            <desc>devName/minus_TRV_without_delay_timec@control</desc>
+            <displayed>true</displayed>
+            <pageNumber>6</pageNumber>
+            <graphId>29204819</graphId>
+        </expression>
+        <expression>
+            <exp>devName_DEV3_c_1</exp>
+            <desc>devName/DEV3/c@vb</desc>
+            <displayed>true</displayed>
+            <pageNumber>6</pageNumber>
+            <graphId>30439828</graphId>
+        </expression>
+    </expressions>
+    <pages>
+        <page>
+            <name>1</name>
+            <header>
+                <visible>false</visible>
+                <text></text>
+                <font>Dialog-BOLD-12</font>
+            </header>
+            <footer>
+                <visible>false</visible>
+                <text></text>
+                <font>Dialog-BOLD-11</font>
+            </footer>
+            <legend>
+                <visible>true</visible>
+                <text>[EMT1] circnamem - Mon Sep 05 16:18:20 CEST 2016 - C:\Users\ema\Documents\TRV_circname_187</text>
+                <font>Dialog-PLAIN-10</font>
+            </legend>
+            <numColumns>1</numColumns>
+            <autoLayout>true</autoLayout>
+            <graphs>
+                <graph id="18306926" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                    <type>Plot</type>
+                    <header>
+                        <visible>false</visible>
+                        <text></text>
+                        <font>Dialog-PLAIN-10</font>
+                    </header>
+                    <footer>
+                        <visible>false</visible>
+                        <text></text>
+                        <font>Dialog-PLAIN-10</font>
+                    </footer>
+                    <legend>
+                        <visible>true</visible>
+                        <font>Dialog-PLAIN-10</font>
+                    </legend>
+                    <xAxis>
+                        <precision>2</precision>
+                        <precisionIsDefault>true</precisionIsDefault>
+                        <font>Dialog-PLAIN-10</font>
+                        <title>Time (s)</title>
+                        <titleFont>Dialog-PLAIN-10</titleFont>
+                        <titleVisible>true</titleVisible>
+                        <engineerFormat>false</engineerFormat>
+                        <modifier>1.0</modifier>
+                        <log>false</log>
+                        <gridVisible>true</gridVisible>
+                    </xAxis>
+                    <yAxis>
+                        <precision>0</precision>
+                        <precisionIsDefault>true</precisionIsDefault>
+                        <font>Dialog-PLAIN-10</font>
+                        <title></title>
+                        <titleFont>Dialog-PLAIN-10</titleFont>
+                        <titleVisible>true</titleVisible>
+                        <engineerFormat>false</engineerFormat>
+                        <modifier>1.0</modifier>
+                        <log>false</log>
+                        <gridVisible>true</gridVisible>
+                    </yAxis>
+                    <chartColor/>
+                    <notes/>
+                    <lines>
+                        <line/>
+                        <line/>
+                        <line/>
+                        <line/>
+                        <line/>
+                    </lines>
+                    <symbols>
+                        <symbol/>
+                        <symbol/>
+                        <symbol/>
+                        <symbol/>
+                        <symbol/>
+                    </symbols>
+                    <superposedGraphs>
+                        <graph id="20904612" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                            <type>Plot</type>
+                            <header>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </header>
+                            <footer>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </footer>
+                            <legend>
+<visible>true</visible>
+<font>Dialog-PLAIN-10</font>
+                            </legend>
+                            <xAxis>
+<precision>2</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Time (s)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </xAxis>
+                            <yAxis>
+<precision>0</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title></title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </yAxis>
+                            <chartColor/>
+                            <notes/>
+                            <lines>
+<line/>
+                            </lines>
+                            <symbols>
+<symbol/>
+                            </symbols>
+                            <attributes></attributes>
+                        </graph>
+                        <graph id="33529920" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                            <type>Plot</type>
+                            <header>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </header>
+                            <footer>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </footer>
+                            <legend>
+<visible>true</visible>
+<font>Dialog-PLAIN-10</font>
+                            </legend>
+                            <xAxis>
+<precision>2</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Time (s)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </xAxis>
+                            <yAxis>
+<precision>0</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title></title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </yAxis>
+                            <chartColor/>
+                            <notes/>
+                            <lines>
+<line/>
+                            </lines>
+                            <symbols>
+<symbol/>
+                            </symbols>
+                            <attributes></attributes>
+                        </graph>
+                        <graph id="7899687" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                            <type>Plot</type>
+                            <header>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </header>
+                            <footer>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </footer>
+                            <legend>
+<visible>true</visible>
+<font>Dialog-PLAIN-10</font>
+                            </legend>
+                            <xAxis>
+<precision>2</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Time (s)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </xAxis>
+                            <yAxis>
+<precision>0</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title></title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </yAxis>
+                            <chartColor/>
+                            <notes/>
+                            <lines>
+<line/>
+                            </lines>
+                            <symbols>
+<symbol/>
+                            </symbols>
+                            <attributes></attributes>
+                        </graph>
+                        <graph id="27487359" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                            <type>Plot</type>
+                            <header>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </header>
+                            <footer>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </footer>
+                            <legend>
+<visible>true</visible>
+<font>Dialog-PLAIN-10</font>
+                            </legend>
+                            <xAxis>
+<precision>2</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Time (s)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </xAxis>
+                            <yAxis>
+<precision>0</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title></title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </yAxis>
+                            <chartColor/>
+                            <notes/>
+                            <lines>
+<line/>
+                            </lines>
+                            <symbols>
+<symbol/>
+                            </symbols>
+                            <attributes></attributes>
+                        </graph>
+                        <graph id="24528437" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                            <type>Plot</type>
+                            <header>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </header>
+                            <footer>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </footer>
+                            <legend>
+<visible>true</visible>
+<font>Dialog-PLAIN-10</font>
+                            </legend>
+                            <xAxis>
+<precision>2</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Time (s)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </xAxis>
+                            <yAxis>
+<precision>0</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Voltage (V)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </yAxis>
+                            <chartColor/>
+                            <notes/>
+                            <lines>
+<line/>
+                            </lines>
+                            <symbols>
+<symbol/>
+                            </symbols>
+                            <attributes></attributes>
+                        </graph>
+                    </superposedGraphs>
+                    <attributes></attributes>
+                </graph>
+            </graphs>
+        </page>
+        <page>
+            <name>2</name>
+            <header>
+                <visible>false</visible>
+                <text></text>
+                <font>Dialog-BOLD-12</font>
+            </header>
+            <footer>
+                <visible>false</visible>
+                <text></text>
+                <font>Dialog-BOLD-11</font>
+            </footer>
+            <legend>
+                <visible>true</visible>
+                <text>[EMT1] circnamem - Mon Sep 05 16:18:20 CEST 2016 - C:\Users\ema\Documents\TRV_circname_187</text>
+                <font>Dialog-PLAIN-10</font>
+            </legend>
+            <numColumns>1</numColumns>
+            <autoLayout>true</autoLayout>
+            <graphs>
+                <graph id="17143745" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                    <type>Plot</type>
+                    <header>
+                        <visible>false</visible>
+                        <text></text>
+                        <font>Dialog-PLAIN-10</font>
+                    </header>
+                    <footer>
+                        <visible>false</visible>
+                        <text></text>
+                        <font>Dialog-PLAIN-10</font>
+                    </footer>
+                    <legend>
+                        <visible>true</visible>
+                        <font>Dialog-PLAIN-10</font>
+                    </legend>
+                    <xAxis>
+                        <precision>2</precision>
+                        <precisionIsDefault>true</precisionIsDefault>
+                        <font>Dialog-PLAIN-10</font>
+                        <title>Time (s)</title>
+                        <titleFont>Dialog-PLAIN-10</titleFont>
+                        <titleVisible>true</titleVisible>
+                        <engineerFormat>false</engineerFormat>
+                        <modifier>1.0</modifier>
+                        <log>false</log>
+                        <gridVisible>true</gridVisible>
+                    </xAxis>
+                    <yAxis>
+                        <precision>0</precision>
+                        <precisionIsDefault>true</precisionIsDefault>
+                        <font>Dialog-PLAIN-10</font>
+                        <title></title>
+                        <titleFont>Dialog-PLAIN-10</titleFont>
+                        <titleVisible>true</titleVisible>
+                        <engineerFormat>false</engineerFormat>
+                        <modifier>1.0</modifier>
+                        <log>false</log>
+                        <gridVisible>true</gridVisible>
+                    </yAxis>
+                    <chartColor/>
+                    <notes/>
+                    <lines>
+                        <line/>
+                        <line/>
+                        <line/>
+                        <line/>
+                        <line/>
+                    </lines>
+                    <symbols>
+                        <symbol/>
+                        <symbol/>
+                        <symbol/>
+                        <symbol/>
+                        <symbol/>
+                    </symbols>
+                    <superposedGraphs>
+                        <graph id="18777562" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                            <type>Plot</type>
+                            <header>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </header>
+                            <footer>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </footer>
+                            <legend>
+<visible>true</visible>
+<font>Dialog-PLAIN-10</font>
+                            </legend>
+                            <xAxis>
+<precision>2</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Time (s)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </xAxis>
+                            <yAxis>
+<precision>0</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title></title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </yAxis>
+                            <chartColor/>
+                            <notes/>
+                            <lines>
+<line/>
+                            </lines>
+                            <symbols>
+<symbol/>
+                            </symbols>
+                            <attributes></attributes>
+                        </graph>
+                        <graph id="27723579" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                            <type>Plot</type>
+                            <header>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </header>
+                            <footer>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </footer>
+                            <legend>
+<visible>true</visible>
+<font>Dialog-PLAIN-10</font>
+                            </legend>
+                            <xAxis>
+<precision>2</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Time (s)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </xAxis>
+                            <yAxis>
+<precision>0</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Voltage (V)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </yAxis>
+                            <chartColor/>
+                            <notes/>
+                            <lines>
+<line/>
+                            </lines>
+                            <symbols>
+<symbol/>
+                            </symbols>
+                            <attributes></attributes>
+                        </graph>
+                        <graph id="18668114" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                            <type>Plot</type>
+                            <header>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </header>
+                            <footer>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </footer>
+                            <legend>
+<visible>true</visible>
+<font>Dialog-PLAIN-10</font>
+                            </legend>
+                            <xAxis>
+<precision>2</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Time (s)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </xAxis>
+                            <yAxis>
+<precision>0</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title></title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </yAxis>
+                            <chartColor/>
+                            <notes/>
+                            <lines>
+<line/>
+                            </lines>
+                            <symbols>
+<symbol/>
+                            </symbols>
+                            <attributes></attributes>
+                        </graph>
+                        <graph id="942250" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                            <type>Plot</type>
+                            <header>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </header>
+                            <footer>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </footer>
+                            <legend>
+<visible>true</visible>
+<font>Dialog-PLAIN-10</font>
+                            </legend>
+                            <xAxis>
+<precision>2</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Time (s)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </xAxis>
+                            <yAxis>
+<precision>0</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title></title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </yAxis>
+                            <chartColor/>
+                            <notes/>
+                            <lines>
+<line/>
+                            </lines>
+                            <symbols>
+<symbol/>
+                            </symbols>
+                            <attributes></attributes>
+                        </graph>
+                        <graph id="23279823" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                            <type>Plot</type>
+                            <header>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </header>
+                            <footer>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </footer>
+                            <legend>
+<visible>true</visible>
+<font>Dialog-PLAIN-10</font>
+                            </legend>
+                            <xAxis>
+<precision>2</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Time (s)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </xAxis>
+                            <yAxis>
+<precision>0</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title></title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </yAxis>
+                            <chartColor/>
+                            <notes/>
+                            <lines>
+<line/>
+                            </lines>
+                            <symbols>
+<symbol/>
+                            </symbols>
+                            <attributes></attributes>
+                        </graph>
+                    </superposedGraphs>
+                    <attributes></attributes>
+                </graph>
+            </graphs>
+        </page>
+        <page>
+            <name>3</name>
+            <header>
+                <visible>false</visible>
+                <text></text>
+                <font>Dialog-BOLD-12</font>
+            </header>
+            <footer>
+                <visible>false</visible>
+                <text></text>
+                <font>Dialog-BOLD-11</font>
+            </footer>
+            <legend>
+                <visible>true</visible>
+                <text>[EMT1] circnamem - Mon Sep 05 16:18:20 CEST 2016 - C:\Users\ema\Documents\TRV_circname_187</text>
+                <font>Dialog-PLAIN-10</font>
+            </legend>
+            <numColumns>1</numColumns>
+            <autoLayout>true</autoLayout>
+            <graphs>
+                <graph id="16436068" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                    <type>Plot</type>
+                    <header>
+                        <visible>false</visible>
+                        <text></text>
+                        <font>Dialog-PLAIN-10</font>
+                    </header>
+                    <footer>
+                        <visible>false</visible>
+                        <text></text>
+                        <font>Dialog-PLAIN-10</font>
+                    </footer>
+                    <legend>
+                        <visible>true</visible>
+                        <font>Dialog-PLAIN-10</font>
+                    </legend>
+                    <xAxis>
+                        <precision>2</precision>
+                        <precisionIsDefault>true</precisionIsDefault>
+                        <font>Dialog-PLAIN-10</font>
+                        <title>Time (s)</title>
+                        <titleFont>Dialog-PLAIN-10</titleFont>
+                        <titleVisible>true</titleVisible>
+                        <engineerFormat>false</engineerFormat>
+                        <modifier>1.0</modifier>
+                        <log>false</log>
+                        <gridVisible>true</gridVisible>
+                    </xAxis>
+                    <yAxis>
+                        <precision>0</precision>
+                        <precisionIsDefault>true</precisionIsDefault>
+                        <font>Dialog-PLAIN-10</font>
+                        <title></title>
+                        <titleFont>Dialog-PLAIN-10</titleFont>
+                        <titleVisible>true</titleVisible>
+                        <engineerFormat>false</engineerFormat>
+                        <modifier>1.0</modifier>
+                        <log>false</log>
+                        <gridVisible>true</gridVisible>
+                    </yAxis>
+                    <chartColor/>
+                    <notes/>
+                    <lines>
+                        <line/>
+                        <line/>
+                        <line/>
+                        <line/>
+                        <line/>
+                    </lines>
+                    <symbols>
+                        <symbol/>
+                        <symbol/>
+                        <symbol/>
+                        <symbol/>
+                        <symbol/>
+                    </symbols>
+                    <superposedGraphs>
+                        <graph id="2168849" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                            <type>Plot</type>
+                            <header>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </header>
+                            <footer>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </footer>
+                            <legend>
+<visible>true</visible>
+<font>Dialog-PLAIN-10</font>
+                            </legend>
+                            <xAxis>
+<precision>2</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Time (s)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </xAxis>
+                            <yAxis>
+<precision>0</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title></title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </yAxis>
+                            <chartColor/>
+                            <notes/>
+                            <lines>
+<line/>
+                            </lines>
+                            <symbols>
+<symbol/>
+                            </symbols>
+                            <attributes></attributes>
+                        </graph>
+                        <graph id="7996744" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                            <type>Plot</type>
+                            <header>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </header>
+                            <footer>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </footer>
+                            <legend>
+<visible>true</visible>
+<font>Dialog-PLAIN-10</font>
+                            </legend>
+                            <xAxis>
+<precision>2</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Time (s)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </xAxis>
+                            <yAxis>
+<precision>0</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title></title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </yAxis>
+                            <chartColor/>
+                            <notes/>
+                            <lines>
+<line/>
+                            </lines>
+                            <symbols>
+<symbol/>
+                            </symbols>
+                            <attributes></attributes>
+                        </graph>
+                        <graph id="16378584" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                            <type>Plot</type>
+                            <header>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </header>
+                            <footer>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </footer>
+                            <legend>
+<visible>true</visible>
+<font>Dialog-PLAIN-10</font>
+                            </legend>
+                            <xAxis>
+<precision>2</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Time (s)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </xAxis>
+                            <yAxis>
+<precision>0</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title></title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </yAxis>
+                            <chartColor/>
+                            <notes/>
+                            <lines>
+<line/>
+                            </lines>
+                            <symbols>
+<symbol/>
+                            </symbols>
+                            <attributes></attributes>
+                        </graph>
+                        <graph id="21875883" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                            <type>Plot</type>
+                            <header>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </header>
+                            <footer>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </footer>
+                            <legend>
+<visible>true</visible>
+<font>Dialog-PLAIN-10</font>
+                            </legend>
+                            <xAxis>
+<precision>2</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Time (s)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </xAxis>
+                            <yAxis>
+<precision>0</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title></title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </yAxis>
+                            <chartColor/>
+                            <notes/>
+                            <lines>
+<line/>
+                            </lines>
+                            <symbols>
+<symbol/>
+                            </symbols>
+                            <attributes></attributes>
+                        </graph>
+                        <graph id="16538284" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                            <type>Plot</type>
+                            <header>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </header>
+                            <footer>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </footer>
+                            <legend>
+<visible>true</visible>
+<font>Dialog-PLAIN-10</font>
+                            </legend>
+                            <xAxis>
+<precision>2</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Time (s)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </xAxis>
+                            <yAxis>
+<precision>0</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Voltage (V)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </yAxis>
+                            <chartColor/>
+                            <notes/>
+                            <lines>
+<line/>
+                            </lines>
+                            <symbols>
+<symbol/>
+                            </symbols>
+                            <attributes></attributes>
+                        </graph>
+                    </superposedGraphs>
+                    <attributes></attributes>
+                </graph>
+            </graphs>
+        </page>
+        <page>
+            <name>4</name>
+            <header>
+                <visible>false</visible>
+                <text></text>
+                <font>Dialog-BOLD-12</font>
+            </header>
+            <footer>
+                <visible>false</visible>
+                <text></text>
+                <font>Dialog-BOLD-11</font>
+            </footer>
+            <legend>
+                <visible>true</visible>
+                <text>[EMT2] circnamem - Mon Sep 05 16:19:54 CEST 2016 - C:\Users\ema\Documents\TRV_circname_188</text>
+                <font>Dialog-PLAIN-10</font>
+            </legend>
+            <numColumns>1</numColumns>
+            <autoLayout>true</autoLayout>
+            <graphs>
+                <graph id="18361279" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                    <type>Plot</type>
+                    <header>
+                        <visible>false</visible>
+                        <text></text>
+                        <font>Dialog-PLAIN-10</font>
+                    </header>
+                    <footer>
+                        <visible>false</visible>
+                        <text></text>
+                        <font>Dialog-PLAIN-10</font>
+                    </footer>
+                    <legend>
+                        <visible>true</visible>
+                        <font>Dialog-PLAIN-10</font>
+                    </legend>
+                    <xAxis>
+                        <precision>2</precision>
+                        <precisionIsDefault>true</precisionIsDefault>
+                        <font>Dialog-PLAIN-10</font>
+                        <title>Time (s)</title>
+                        <titleFont>Dialog-PLAIN-10</titleFont>
+                        <titleVisible>true</titleVisible>
+                        <engineerFormat>false</engineerFormat>
+                        <modifier>1.0</modifier>
+                        <log>false</log>
+                        <gridVisible>true</gridVisible>
+                    </xAxis>
+                    <yAxis>
+                        <precision>0</precision>
+                        <precisionIsDefault>true</precisionIsDefault>
+                        <font>Dialog-PLAIN-10</font>
+                        <title></title>
+                        <titleFont>Dialog-PLAIN-10</titleFont>
+                        <titleVisible>true</titleVisible>
+                        <engineerFormat>false</engineerFormat>
+                        <modifier>1.0</modifier>
+                        <log>false</log>
+                        <gridVisible>true</gridVisible>
+                    </yAxis>
+                    <chartColor/>
+                    <notes/>
+                    <lines>
+                        <line/>
+                        <line/>
+                        <line/>
+                        <line/>
+                        <line/>
+                    </lines>
+                    <symbols>
+                        <symbol/>
+                        <symbol/>
+                        <symbol/>
+                        <symbol/>
+                        <symbol/>
+                    </symbols>
+                    <superposedGraphs>
+                        <graph id="25732266" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                            <type>Plot</type>
+                            <header>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </header>
+                            <footer>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </footer>
+                            <legend>
+<visible>true</visible>
+<font>Dialog-PLAIN-10</font>
+                            </legend>
+                            <xAxis>
+<precision>2</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Time (s)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </xAxis>
+                            <yAxis>
+<precision>0</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title></title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </yAxis>
+                            <chartColor/>
+                            <notes/>
+                            <lines>
+<line/>
+                            </lines>
+                            <symbols>
+<symbol/>
+                            </symbols>
+                            <attributes></attributes>
+                        </graph>
+                        <graph id="12071401" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                            <type>Plot</type>
+                            <header>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </header>
+                            <footer>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </footer>
+                            <legend>
+<visible>true</visible>
+<font>Dialog-PLAIN-10</font>
+                            </legend>
+                            <xAxis>
+<precision>2</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Time (s)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </xAxis>
+                            <yAxis>
+<precision>0</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title></title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </yAxis>
+                            <chartColor/>
+                            <notes/>
+                            <lines>
+<line/>
+                            </lines>
+                            <symbols>
+<symbol/>
+                            </symbols>
+                            <attributes></attributes>
+                        </graph>
+                        <graph id="5121971" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                            <type>Plot</type>
+                            <header>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </header>
+                            <footer>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </footer>
+                            <legend>
+<visible>true</visible>
+<font>Dialog-PLAIN-10</font>
+                            </legend>
+                            <xAxis>
+<precision>2</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Time (s)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </xAxis>
+                            <yAxis>
+<precision>0</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title></title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </yAxis>
+                            <chartColor/>
+                            <notes/>
+                            <lines>
+<line/>
+                            </lines>
+                            <symbols>
+<symbol/>
+                            </symbols>
+                            <attributes></attributes>
+                        </graph>
+                        <graph id="10699195" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                            <type>Plot</type>
+                            <header>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </header>
+                            <footer>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </footer>
+                            <legend>
+<visible>true</visible>
+<font>Dialog-PLAIN-10</font>
+                            </legend>
+                            <xAxis>
+<precision>2</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Time (s)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </xAxis>
+                            <yAxis>
+<precision>0</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title></title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </yAxis>
+                            <chartColor/>
+                            <notes/>
+                            <lines>
+<line/>
+                            </lines>
+                            <symbols>
+<symbol/>
+                            </symbols>
+                            <attributes></attributes>
+                        </graph>
+                        <graph id="13504241" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                            <type>Plot</type>
+                            <header>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </header>
+                            <footer>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </footer>
+                            <legend>
+<visible>true</visible>
+<font>Dialog-PLAIN-10</font>
+                            </legend>
+                            <xAxis>
+<precision>2</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Time (s)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </xAxis>
+                            <yAxis>
+<precision>0</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Voltage (V)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </yAxis>
+                            <chartColor/>
+                            <notes/>
+                            <lines>
+<line/>
+                            </lines>
+                            <symbols>
+<symbol/>
+                            </symbols>
+                            <attributes></attributes>
+                        </graph>
+                    </superposedGraphs>
+                    <attributes></attributes>
+                </graph>
+            </graphs>
+        </page>
+        <page>
+            <name>5</name>
+            <header>
+                <visible>false</visible>
+                <text></text>
+                <font>Dialog-BOLD-12</font>
+            </header>
+            <footer>
+                <visible>false</visible>
+                <text></text>
+                <font>Dialog-BOLD-11</font>
+            </footer>
+            <legend>
+                <visible>true</visible>
+                <text>[EMT2] circnamem - Mon Sep 05 16:19:54 CEST 2016 - C:\Users\ema\Documents\TRV_circname_188</text>
+                <font>Dialog-PLAIN-10</font>
+            </legend>
+            <numColumns>1</numColumns>
+            <autoLayout>true</autoLayout>
+            <graphs>
+                <graph id="2210389" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                    <type>Plot</type>
+                    <header>
+                        <visible>false</visible>
+                        <text></text>
+                        <font>Dialog-PLAIN-10</font>
+                    </header>
+                    <footer>
+                        <visible>false</visible>
+                        <text></text>
+                        <font>Dialog-PLAIN-10</font>
+                    </footer>
+                    <legend>
+                        <visible>true</visible>
+                        <font>Dialog-PLAIN-10</font>
+                    </legend>
+                    <xAxis>
+                        <precision>2</precision>
+                        <precisionIsDefault>true</precisionIsDefault>
+                        <font>Dialog-PLAIN-10</font>
+                        <title>Time (s)</title>
+                        <titleFont>Dialog-PLAIN-10</titleFont>
+                        <titleVisible>true</titleVisible>
+                        <engineerFormat>false</engineerFormat>
+                        <modifier>1.0</modifier>
+                        <log>false</log>
+                        <gridVisible>true</gridVisible>
+                    </xAxis>
+                    <yAxis>
+                        <precision>0</precision>
+                        <precisionIsDefault>true</precisionIsDefault>
+                        <font>Dialog-PLAIN-10</font>
+                        <title></title>
+                        <titleFont>Dialog-PLAIN-10</titleFont>
+                        <titleVisible>true</titleVisible>
+                        <engineerFormat>false</engineerFormat>
+                        <modifier>1.0</modifier>
+                        <log>false</log>
+                        <gridVisible>true</gridVisible>
+                    </yAxis>
+                    <chartColor/>
+                    <notes/>
+                    <lines>
+                        <line/>
+                        <line/>
+                        <line/>
+                        <line/>
+                        <line/>
+                    </lines>
+                    <symbols>
+                        <symbol/>
+                        <symbol/>
+                        <symbol/>
+                        <symbol/>
+                        <symbol/>
+                    </symbols>
+                    <superposedGraphs>
+                        <graph id="19025528" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                            <type>Plot</type>
+                            <header>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </header>
+                            <footer>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </footer>
+                            <legend>
+<visible>true</visible>
+<font>Dialog-PLAIN-10</font>
+                            </legend>
+                            <xAxis>
+<precision>2</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Time (s)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </xAxis>
+                            <yAxis>
+<precision>0</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title></title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </yAxis>
+                            <chartColor/>
+                            <notes/>
+                            <lines>
+<line/>
+                            </lines>
+                            <symbols>
+<symbol/>
+                            </symbols>
+                            <attributes></attributes>
+                        </graph>
+                        <graph id="10262288" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                            <type>Plot</type>
+                            <header>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </header>
+                            <footer>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </footer>
+                            <legend>
+<visible>true</visible>
+<font>Dialog-PLAIN-10</font>
+                            </legend>
+                            <xAxis>
+<precision>2</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Time (s)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </xAxis>
+                            <yAxis>
+<precision>0</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title></title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </yAxis>
+                            <chartColor/>
+                            <notes/>
+                            <lines>
+<line/>
+                            </lines>
+                            <symbols>
+<symbol/>
+                            </symbols>
+                            <attributes></attributes>
+                        </graph>
+                        <graph id="10005729" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                            <type>Plot</type>
+                            <header>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </header>
+                            <footer>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </footer>
+                            <legend>
+<visible>true</visible>
+<font>Dialog-PLAIN-10</font>
+                            </legend>
+                            <xAxis>
+<precision>2</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Time (s)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </xAxis>
+                            <yAxis>
+<precision>0</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title></title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </yAxis>
+                            <chartColor/>
+                            <notes/>
+                            <lines>
+<line/>
+                            </lines>
+                            <symbols>
+<symbol/>
+                            </symbols>
+                            <attributes></attributes>
+                        </graph>
+                        <graph id="2198021" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                            <type>Plot</type>
+                            <header>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </header>
+                            <footer>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </footer>
+                            <legend>
+<visible>true</visible>
+<font>Dialog-PLAIN-10</font>
+                            </legend>
+                            <xAxis>
+<precision>2</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Time (s)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </xAxis>
+                            <yAxis>
+<precision>0</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title></title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </yAxis>
+                            <chartColor/>
+                            <notes/>
+                            <lines>
+<line/>
+                            </lines>
+                            <symbols>
+<symbol/>
+                            </symbols>
+                            <attributes></attributes>
+                        </graph>
+                        <graph id="29969527" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                            <type>Plot</type>
+                            <header>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </header>
+                            <footer>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </footer>
+                            <legend>
+<visible>true</visible>
+<font>Dialog-PLAIN-10</font>
+                            </legend>
+                            <xAxis>
+<precision>2</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Time (s)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </xAxis>
+                            <yAxis>
+<precision>0</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Voltage (V)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </yAxis>
+                            <chartColor/>
+                            <notes/>
+                            <lines>
+<line/>
+                            </lines>
+                            <symbols>
+<symbol/>
+                            </symbols>
+                            <attributes></attributes>
+                        </graph>
+                    </superposedGraphs>
+                    <attributes></attributes>
+                </graph>
+            </graphs>
+        </page>
+        <page>
+            <name>6</name>
+            <header>
+                <visible>false</visible>
+                <text></text>
+                <font>Dialog-BOLD-12</font>
+            </header>
+            <footer>
+                <visible>false</visible>
+                <text></text>
+                <font>Dialog-BOLD-11</font>
+            </footer>
+            <legend>
+                <visible>true</visible>
+                <text>[EMT2] circnamem - Mon Sep 05 16:19:54 CEST 2016 - C:\Users\ema\Documents\TRV_circname_188</text>
+                <font>Dialog-PLAIN-10</font>
+            </legend>
+            <numColumns>1</numColumns>
+            <autoLayout>true</autoLayout>
+            <graphs>
+                <graph id="26711567" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                    <type>Plot</type>
+                    <header>
+                        <visible>false</visible>
+                        <text></text>
+                        <font>Dialog-PLAIN-10</font>
+                    </header>
+                    <footer>
+                        <visible>false</visible>
+                        <text></text>
+                        <font>Dialog-PLAIN-10</font>
+                    </footer>
+                    <legend>
+                        <visible>true</visible>
+                        <font>Dialog-PLAIN-10</font>
+                    </legend>
+                    <xAxis>
+                        <precision>2</precision>
+                        <precisionIsDefault>true</precisionIsDefault>
+                        <font>Dialog-PLAIN-10</font>
+                        <title>Time (s)</title>
+                        <titleFont>Dialog-PLAIN-10</titleFont>
+                        <titleVisible>true</titleVisible>
+                        <engineerFormat>false</engineerFormat>
+                        <modifier>1.0</modifier>
+                        <log>false</log>
+                        <gridVisible>true</gridVisible>
+                    </xAxis>
+                    <yAxis>
+                        <precision>0</precision>
+                        <precisionIsDefault>true</precisionIsDefault>
+                        <font>Dialog-PLAIN-10</font>
+                        <title></title>
+                        <titleFont>Dialog-PLAIN-10</titleFont>
+                        <titleVisible>true</titleVisible>
+                        <engineerFormat>false</engineerFormat>
+                        <modifier>1.0</modifier>
+                        <log>false</log>
+                        <gridVisible>true</gridVisible>
+                    </yAxis>
+                    <chartColor/>
+                    <notes/>
+                    <lines>
+                        <line/>
+                        <line/>
+                        <line/>
+                        <line/>
+                        <line/>
+                    </lines>
+                    <symbols>
+                        <symbol/>
+                        <symbol/>
+                        <symbol/>
+                        <symbol/>
+                        <symbol/>
+                    </symbols>
+                    <superposedGraphs>
+                        <graph id="24080841" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                            <type>Plot</type>
+                            <header>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </header>
+                            <footer>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </footer>
+                            <legend>
+<visible>true</visible>
+<font>Dialog-PLAIN-10</font>
+                            </legend>
+                            <xAxis>
+<precision>2</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Time (s)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </xAxis>
+                            <yAxis>
+<precision>0</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title></title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </yAxis>
+                            <chartColor/>
+                            <notes/>
+                            <lines>
+<line/>
+                            </lines>
+                            <symbols>
+<symbol/>
+                            </symbols>
+                            <attributes></attributes>
+                        </graph>
+                        <graph id="10040417" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                            <type>Plot</type>
+                            <header>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </header>
+                            <footer>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </footer>
+                            <legend>
+<visible>true</visible>
+<font>Dialog-PLAIN-10</font>
+                            </legend>
+                            <xAxis>
+<precision>2</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Time (s)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </xAxis>
+                            <yAxis>
+<precision>0</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title></title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </yAxis>
+                            <chartColor/>
+                            <notes/>
+                            <lines>
+<line/>
+                            </lines>
+                            <symbols>
+<symbol/>
+                            </symbols>
+                            <attributes></attributes>
+                        </graph>
+                        <graph id="2684949" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                            <type>Plot</type>
+                            <header>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </header>
+                            <footer>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </footer>
+                            <legend>
+<visible>true</visible>
+<font>Dialog-PLAIN-10</font>
+                            </legend>
+                            <xAxis>
+<precision>2</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Time (s)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </xAxis>
+                            <yAxis>
+<precision>0</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title></title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </yAxis>
+                            <chartColor/>
+                            <notes/>
+                            <lines>
+<line/>
+                            </lines>
+                            <symbols>
+<symbol/>
+                            </symbols>
+                            <attributes></attributes>
+                        </graph>
+                        <graph id="29204819" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                            <type>Plot</type>
+                            <header>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </header>
+                            <footer>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </footer>
+                            <legend>
+<visible>true</visible>
+<font>Dialog-PLAIN-10</font>
+                            </legend>
+                            <xAxis>
+<precision>2</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Time (s)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </xAxis>
+                            <yAxis>
+<precision>0</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title></title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </yAxis>
+                            <chartColor/>
+                            <notes/>
+                            <lines>
+<line/>
+                            </lines>
+                            <symbols>
+<symbol/>
+                            </symbols>
+                            <attributes></attributes>
+                        </graph>
+                        <graph id="30439828" allowOverlap="true" className="ca.ireq.sim.viewer.ViewGraph">
+                            <type>Plot</type>
+                            <header>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </header>
+                            <footer>
+<visible>false</visible>
+<text></text>
+<font>Dialog-PLAIN-10</font>
+                            </footer>
+                            <legend>
+<visible>true</visible>
+<font>Dialog-PLAIN-10</font>
+                            </legend>
+                            <xAxis>
+<precision>2</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Time (s)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </xAxis>
+                            <yAxis>
+<precision>0</precision>
+<precisionIsDefault>true</precisionIsDefault>
+<font>Dialog-PLAIN-10</font>
+<title>Voltage (V)</title>
+<titleFont>Dialog-PLAIN-10</titleFont>
+<titleVisible>true</titleVisible>
+<engineerFormat>false</engineerFormat>
+<modifier>1.0</modifier>
+<log>false</log>
+<gridVisible>true</gridVisible>
+                            </yAxis>
+                            <chartColor/>
+                            <notes/>
+                            <lines>
+<line/>
+                            </lines>
+                            <symbols>
+<symbol/>
+                            </symbols>
+                            <attributes></attributes>
+                        </graph>
+                    </superposedGraphs>
+                    <attributes></attributes>
+                </graph>
+            </graphs>
+        </page>
+    </pages>
+    <theme>None</theme>
+</template>

@@ -1,0 +1,14 @@
+//Last Change: Esteban MALAVAL 2016-06-07
+//*Get this object
+dev = defaultObject();	// Get the currently selected device
+
+
+//*Parse all methods for this device
+parseScriptFile('Toolboxes/TRV Toolbox/Script/TRVgreybox_m.dwj');
+
+//*Create the object
+var oDevice = new oDevice_TRV(dev);
+
+//*Call to open the data forms of this object
+firstSimulation=true;
+oDevice.open();  //will call the save method when OK is clicked

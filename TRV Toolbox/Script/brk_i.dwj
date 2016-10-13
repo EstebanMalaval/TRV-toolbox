@@ -1,0 +1,73 @@
+//	Last change: JEAN MAHSEREDJIAN 2013-12-26 11:45:39 PM
+//   Update : ESTEBAN MALAVAL 2016-06-07
+//* Ideal switch 
+
+//*This script displays a properties box for this device
+//JavaScript based design with methods from EMTPWorks
+// 
+//*Get this object
+dev = defaultObject();	// Get the currently selected device
+
+
+//*Parse all methods for this device
+parseScriptFile('Toolboxes/TRV Toolbox/Script/brk_m.dwj');
+
+//*Create the object
+var oDevice = new oDevice_brk0(dev);
+
+//*Call to open the data forms of this object
+oDevice.open();  //will call the save method when OK is clicked
+
+
+
+//*This device can be accessed, its methods can be parsed and its data can be modified and saved using
+// object data fields and methods
+//*Documentation on data and methods (see also oDevice_vsine function vsine_m.dwj)
+// Data field names are self-explanatory and ordered as on the web pages
+// All data fields are strings
+// An empty string '' means default units (no multiplicator)
+// Only phase A is used for entering data into the single-phase version
+//*Main data. _A is for phase A and 1-phase, use _B and _C to access the other 2 phases
+//Odevice.tclose_A      closing time, phase A, also 1-phase case
+//Odevice.topen_A       opening time, phase A, also 1-phase case
+//Odevice.Imargin_A     current margin, phase A, also 1-phase case
+//
+//Odevice.tclose_units          closing time units, common for all 3 phases
+//Odevice.topen_units           opening time units, common for all 3 phases
+//Odevice.Imargin_units         current margin units, common for all 3 phases
+//
+//Odevice.random_type_A         Type of random data, '0' is None, '1' is Uniform, '2' is Gaussian, '3' is systematic
+//Odevice.depend_A              '0' is Master, '1' is Slave
+//Odevice.ref_sw_name_A         Reference switch name
+//Odevice.apply_at_type_A       Random closing or opening: '1' is closing time, '2' is opening time
+//Odevice.mean_A                Mean value of the random law
+//Odevice.mean_units_A          Units of Mean value
+//Odevice.deviation_A           Standard deviation for random law
+//Odevice.n_steps_A             Number of steps for the systematic switch
+//Odevice.Voltage_scope_A       Voltage scope, enter '?v' to actovate
+//Odevice.Current_scope_A       Current scope, enter '?i' to activate
+//Odevice.Power_scope_A         Power scope, enter '?p' to activate
+//Odevice.random_t_scope_A      Random switching times scope, enter '?t' to activate
+//Odevice.actual_t_scope_A      Real switching times scope, enter '?T' to activate
+//Odevice.Voltage_observe_A     Observe voltage, enter '>v' to activate
+//Odevice.Current_observe_A     Observe current, enter '>i' to activate
+//Odevice.Power_observe_A       Observe power, enter '>p' to activate
+//Odevice.Status_observe_A      Observe status, enter '>S' to activate
+
+
+//*active Methods and extra fields
+//oDevice.SaveData Saves data into device attributes
+//oDevice.open     Opens the data web
+//oDevice.dev      This device object in EMTPWorks
+//oDevice.SaveFormData     Initialized to true.
+
+//oDevice.WindowXsize
+//oDevice.WindowYsize
+
+// TRV Toolbox/Script/brk_m
+// oDevice.SCCchckbox					Indicate if the checkbox for Short-Circuit Current calculation was checked
+// oDevice.td										delay time for the second curve (reflection on the source)
+// oDevice.tp										final time of the second curve
+// oDevice.up									final voltage of the second curve
+// oDevice.isSLF								Indicate if the fault is a Short-Line fault. if it is equal to zero, the fault is a three-phases terminal fault
+// oDevice.TRV_breaker_class	Indicate the class of the breaker

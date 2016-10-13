@@ -1,0 +1,82 @@
+//	Last change: Henry GRAS 11-09-2015
+
+function breaker_redraw_o(observables){
+
+
+//*Find if any pins in the bundle
+if( observables.length == 0 ){
+    //check if the pin exists and remove it
+    if( this.Bundle_pin_exists > 0) {
+        remove_pins(this.dev,2, true);
+    }
+    return
+}
+
+//ReplaceDevFromLib('Libs\\nonlinear.clf','L nonlinear',this.dev,false)
+
+//*Add a bundle pin if it does not exist
+// Proceed with adding pins in the bundle
+init_pin_data();  //found in add_pins_to_drawing
+
+var thistype=this.dev.type;
+var pins=thistype.pins;        //_grab the pins from the old device
+
+//default positions
+var newXpos       =180;  //is a scalar when adding a new bundle
+var newYpos       =50; //is a scalar when adding a new bundle
+//Compatibility problems with old symbols
+if( pins[0].direction == 'N' || pins[0].direction == 'S'){
+   var newDirection  ='E' //is a scalar since adding a new bundle
+}else{
+   var newDirection  ='N' //is a scalar since adding a new bundle
+
+}
+
+var newpinnames = new Array();
+
+//*Phase A single phase or 3-phase case
+if(this.IdealSwitch.Voltage_observe_A == '>v') newpinnames.push('va')
+if(this.IdealSwitch.Current_observe_A == '>i') newpinnames.push('ia')
+if(this.IdealSwitch.Power_observe_A   == '>p') newpinnames.push('pa')
+if(this.IdealSwitch.Status_observe_A    == '>S') newpinnames.push('Sa')
+
+//*Phases B and C: attention the device symbol may change the number of phases dynamically
+// and without opening this form
+    if(this.IdealSwitch.Voltage_observe_B == '>v') newpinnames.push('vb')
+    if(this.IdealSwitch.Current_observe_B == '>i') newpinnames.push('ib')
+    if(this.IdealSwitch.Power_observe_B   == '>p') newpinnames.push('pb')
+    if(this.IdealSwitch.Status_observe_B    == '>S') newpinnames.push('Sb')
+
+    if(this.IdealSwitch.Voltage_observe_C == '>v') newpinnames.push('vc')
+    if(this.IdealSwitch.Current_observe_C == '>i') newpinnames.push('ic')
+    if(this.IdealSwitch.Power_observe_C   == '>p') newpinnames.push('pc')
+    if(this.IdealSwitch.Status_observe_C    == '>S') newpinnames.push('Sc')
+
+//_ New functions: newfunc for each pin
+var newfunc = new Array(newpinnames.length)
+for(ipin=0;ipin<newpinnames.length;ipin++){
+        newfunc[ipin]='O'; //output pin
+}
+
+//_ New phase attributes and length of the bundle
+newPhaseAttributes='';  //will take 3-phase or 1-phase by default
+newLen            =140; //bundle length
+//_pinsnobundle
+var oldNumberOfPins=thistype.numPins;  //grabe the existing number of bundle pins
+if( this.Bundle_pin_exists > 0){
+	
+ pins_no_bundle=oldNumberOfPins-1- this.Bundle_pin_exists;
+ changeBundle=true;
+ bundle_exist=true;
+}else{
+ pins_no_bundle=oldNumberOfPins;
+ changeBundle=false;
+ bundle_exist=false;
+}
+
+isbundle='Observe'; //-Bundle name
+
+add_pins_to_drawing(this.dev, newpinnames, newXpos, newYpos, newDirection,
+            newfunc, newPhaseAttributes, newLen,
+            isbundle, changeBundle, pins_no_bundle, bundle_exist , true)
+}

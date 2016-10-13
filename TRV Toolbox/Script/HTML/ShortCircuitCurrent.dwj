@@ -1,0 +1,67 @@
+
+
+function runEMTP()
+{
+	cct=currentCircuit();
+cct=cct.findByLocator('CC')
+setGlobalValue("RunningCircuit",cct);
+
+designpath= cct.getAttribute('CctPath');
+designfilename= designpath + cct.getAttribute('CctName');
+
+//When the above path is empty, we are in the EMTPWorks direcroty with a new design
+
+if(designpath.length==0){
+  alert('This design file has not been saved. You must first save this design!\n'+
+        'It is recommended to save this design in your personal directory and not under EMTPWorks program folder');
+}else{
+  //  designfilename= designpath + cct.getAttribute('CctName');
+  //-check if the project exists, create the project if it does not exist
+  myfile= SPFile(designfilename);
+  myfile.extension=''
+  designfilename_noex=myfile.name();
+  mydir=SPFile( designpath+ designfilename_noex+'_pj'); 
+
+  if( !mydir.directory()){ //just to create the directory
+    myfile.fullName(mydir+'/'+designfilename_noex+'.out' )
+    myfile.create();
+    myfile.remove();
+
+  }else{ //remove the previous file .out
+    myfile.fullName(mydir+'/'+designfilename_noex+'.out' )
+    if(myfile.exists){
+       myfile.remove();
+    }
+  }
+  //---------------------------------------------------------------------
+
+ //_Update all global variables
+ parseScriptFile('update_variables_in_black_boxes.dwj'); //-Go update_variables_in_black_boxes
+ 
+ //_Generate Netlist
+ str=runExportToString('report scripts/EMTP Netlist.rfm',null,'EMTP');
+ i=0;
+while(myfile.length==0)
+{
+	writeln(i);
+	i++;}
+}
+var f = SPFile();
+f.fullName(mydir+'/'+designfilename_noex+'ss.html' );
+f.openRead;
+text=f.readText;
+text2=text.split('<tr><td>'+GR.pins[0].signal.name+'</td><td>'+GR.pins[1].signal.name+'</td><td>+')[1];
+SCC=text2.split('</td><td>')[0];
+return SCC;
+}
+
+function loadLibrary(libraryPath,name)
+{
+	library = DWLibrary(libraryPath);
+	elementList = library.typeList;
+	for (i = 0; i< elementList.length ; i++)
+	{
+		if (elementList[i].name() == name) return elementList[i];
+	}
+	library.close;
+}
